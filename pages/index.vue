@@ -56,7 +56,7 @@
 
 <template>
   <div class="home">
-    <h1>Welcome back {{ this.$auth.user.name }}</h1>
+    <h1>Welcome back {{ claims.name }}</h1>
     <main>
       <section v-if="overdueItems.length > 0">
         <h2>Overdue</h2>
@@ -210,6 +210,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import PieChart from '~/components/charts/PieChart'
 import BarChart from '~/components/charts/BarChart'
 import Card from '~/components/Card'
@@ -221,6 +222,9 @@ export default {
     Card
   },
   computed: {
+    ...mapState([
+      'claims'
+    ]),
     TaxDividend () {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']
     },

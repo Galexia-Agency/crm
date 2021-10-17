@@ -322,7 +322,7 @@
 </style>
 
 <template>
-  <div class="contentWrapper">
+  <div v-if="authenticated" class="contentWrapper">
     <ui-modal
       ref="modal"
       :active="error.active"
@@ -407,7 +407,9 @@ export default {
     clientModal
   },
   async fetch () {
-    if (this.$auth.loggedIn) {
+    if (await this.$auth.isAuthenticated()) {
+      this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
+      this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
       const response = await this.$axios.$get('https://cors-wanker.joebailey.workers.dev/https://api.galexia.agency/',
         {
           headers: {
@@ -447,12 +449,9 @@ export default {
       }
       pandle = JSON.parse(localStorage.getItem('pandle'))
       // Set pandle headers
-      this.$axios.interceptors.request.use(function (config) {
-        config.headers['access-token'] = pandle.data['access-token']
-        config.headers.client = pandle.data.client
-        config.headers.uid = pandle.data.uid
-        return config
-      })
+      this.$axios.setHeader('access-token', pandle.data['access-token'])
+      this.$axios.setHeader('client', pandle.data.client)
+      this.$axios.setHeader('uid', pandle.data.uid)
 
       const pandleBankAccountChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
         {
@@ -521,7 +520,8 @@ export default {
       'contacts',
       'domains',
       'projects',
-      'clients'
+      'clients',
+      'authenticated'
     ]),
     filteredProjects () {
       const hotLeads = []
@@ -591,16 +591,18 @@ export default {
     }
   },
   methods: {
-    logout () {
+    async logout () {
+      await this.$auth.signOut()
+      this.$store.dispatch('okta', { authenticated: await this.$auth.isAuthenticated() })
       localStorage.clear()
-      const cookies = document.cookie.split(';')
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i]
-        const eqPos = cookie.indexOf('=')
-        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+      sessionStorage.clear()
+      const COOKIES = document.cookie.split(';')
+      for (let i = 0; i < COOKIES.length; i++) {
+        const COOKIE = COOKIES[i]
+        const EQ_POS = COOKIE.indexOf('=')
+        const NAME = EQ_POS > -1 ? COOKIE.substr(0, EQ_POS) : COOKIE
+        document.cookie = NAME + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
       }
-      window.location.href = `${this.$config.OKTA_ISSUER.replace('/oauth2', '')}/login/signout?fromURI=${window.location.origin}`
     },
     refresh () {
       this.refreshed = true

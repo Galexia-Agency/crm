@@ -1,5 +1,4 @@
 export default {
-  target: 'static',
   ssr: false,
   /*
    ** Headers of the page
@@ -25,6 +24,9 @@ export default {
       { innerHTML: '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400&family=Montserrat:ital,wght@0,600;0,700;1,600;1,700&family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" />' }
     ]
   },
+  /*
+   ** Router
+   */
   router: {
     middleware: ['auth']
   },
@@ -49,7 +51,8 @@ export default {
     '~plugins/board',
     '~plugins/asyncComputed',
     '~plugins/mixins/urls',
-    '~plugins/vueInlineSVG'
+    '~plugins/vueInlineSVG',
+    '~plugins/okta'
   ],
   /*
    ** Nuxt.js dev-modules
@@ -65,46 +68,14 @@ export default {
    */
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/auth-next',
     '@nuxtjs/pwa'
   ],
+  /*
+   ** Public Environment Variables
+   */
   publicRuntimeConfig: {
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
     OKTA_ISSUER: process.env.OKTA_ISSUER
-  },
-  auth: {
-    strategies: {
-      okta: {
-        scheme: 'oauth2',
-        endpoints: {
-          authorization: process.env.OKTA_ISSUER + '/v1/authorize',
-          token: process.env.OKTA_ISSUER + '/v1/token',
-          userInfo: process.env.OKTA_ISSUER + '/v1/userinfo',
-          logout: false
-        },
-        token: {
-          property: 'access_token',
-          type: 'Bearer',
-          global: true,
-          required: true
-        },
-        refreshToken: {
-          property: 'refresh_token',
-          maxAge: 60 * 60 * 24 * 30
-        },
-        responseType: 'code',
-        grantType: 'authorization_code',
-        clientId: process.env.OKTA_CLIENT_ID,
-        scope: ['openid', 'profile', 'email'],
-        codeChallengeMethod: 'S256',
-        redirect: {
-          login: '/login',
-          callback: '/',
-          home: '/',
-          logout: false
-        }
-      }
-    }
   },
   pwa: {
     workbox: {

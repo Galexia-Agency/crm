@@ -1,7 +1,8 @@
 import createPersistedState from 'vuex-persistedstate'
 
 export const state = () => ({
-  auth: false,
+  authenticated: false,
+  claims: [],
   contacts: [],
   domains: [],
   projects: [],

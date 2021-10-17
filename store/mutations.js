@@ -2,6 +2,12 @@ import { makeItem, makeList } from '~/utils/data'
 import { getItemById, getListById, getListByItemId } from '~/utils/board'
 
 const mutations = {
+  okta (state, { authenticated, claims }) {
+    state.authenticated = authenticated
+    if (claims) {
+      state.claims = claims
+    }
+  },
   error (state, data) {
     // eslint-disable-next-line no-console
     console.error(data.description)

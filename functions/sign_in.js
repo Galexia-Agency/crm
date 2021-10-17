@@ -1,3 +1,4 @@
+const qs = require('querystring')
 const axios = require('axios')
 const headers = {
   'Access-Control-Allow-Headers': 'authorization',
@@ -11,23 +12,52 @@ const headers = {
   'Content-Security-Policy': 'default-src "self"'
 }
 
+let response
+
 exports.handler = async function handler (event, context, callback) {
-  if (event.httpMethod === 'OPTIONS') {
-    return callback(null, {
-      statusCode: 200,
-      headers,
-      body: ''
-    })
-  } else {
-    const res = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
+  if (event.headers.authorization) {
+    const accessToken = event.headers.authorization.split(' ')
+    response = await axios.post(`${process.env.OKTA_ISSUER}/oauth2/default/v1/introspect?client_id=${process.env.OKTA_CLIENT_ID}`,
+      qs.stringify({
+        token: accessToken[1],
+        token_type_hint: 'access_token'
+      }),
       {
-        email: process.env.PANDLE_USERNAME,
-        password: process.env.PANDLE_PASSWORD
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
     )
-    return {
-      statusCode: 200,
-      body: JSON.stringify(res.headers)
+    if (event.httpMethod === 'OPTIONS') {
+      return callback(null, {
+        statusCode: 200,
+        headers,
+        body: ''
+      })
+    } else if (response.data.active === true) {
+      const res = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
+        {
+          email: process.env.PANDLE_USERNAME,
+          password: process.env.PANDLE_PASSWORD
+        }
+      )
+      return {
+        statusCode: 200,
+        body: JSON.stringify(res.headers)
+      }
+    } else {
+      return callback(null, {
+        statusCode: 401,
+        headers,
+        body: '401 - Unauthorized'
+      })
     }
+  } else {
+    return callback(null, {
+      statusCode: 401,
+      headers,
+      body: '401 - Unauthorized'
+    })
   }
 }

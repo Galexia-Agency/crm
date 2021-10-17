@@ -1,3 +1,4 @@
+const qs = require('querystring')
 const axios = require('axios')
 const headers = {
   'Access-Control-Allow-Headers': 'authorization',
@@ -14,63 +15,84 @@ const headers = {
 let response
 
 exports.handler = async function handler (event, context, callback) {
-  axios.interceptors.request.use(function (config) {
-    config.headers['access-token'] = event.headers['access-token']
-    config.headers.client = event.headers.client
-    config.headers.uid = event.headers.uid
-    return config
-  })
-  if (event.httpMethod === 'OPTIONS') {
-    return callback(null, {
-      statusCode: 200,
-      headers,
-      body: ''
-    })
-  } else if (event.body) {
-    const data = JSON.parse(event.body)
-    if (data.type === 'POST') {
-      try {
-        response = await axios.post('https://my.pandle.com/api/v1' + data.url, data.body)
-        return callback(null, {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(response.data)
-        })
-      } catch (e) {
-        return callback(null, {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify(e, response)
-        })
+  if (event.headers.authorization) {
+    const accessToken = event.headers.authorization.split(' ')
+    response = await axios.post(`${process.env.OKTA_ISSUER}/oauth2/default/v1/introspect?client_id=${process.env.OKTA_CLIENT_ID}`,
+      qs.stringify({
+        token: accessToken[1],
+        token_type_hint: 'access_token'
+      }),
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       }
-    } else if (data.type === 'GET') {
-      try {
-        response = await axios.get('https://my.pandle.com/api/v1' + data.url)
+    )
+    if (event.httpMethod === 'OPTIONS') {
+      return callback(null, {
+        statusCode: 200,
+        headers,
+        body: ''
+      })
+    } else if (event.body && response.data.active === true) {
+      axios.interceptors.request.use(function (config) {
+        config.headers['access-token'] = event.headers['access-token']
+        config.headers.client = event.headers.client
+        config.headers.uid = event.headers.uid
+        return config
+      })
+      const data = JSON.parse(event.body)
+      if (data.type === 'POST') {
+        try {
+          response = await axios.post('https://my.pandle.com/api/v1' + data.url, data.body)
+          return callback(null, {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(response.data)
+          })
+        } catch (e) {
+          return callback(null, {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify(e, response)
+          })
+        }
+      } else if (data.type === 'GET') {
+        try {
+          response = await axios.get('https://my.pandle.com/api/v1' + data.url)
+          return callback(null, {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(response.data)
+          })
+        } catch (e) {
+          return callback(null, {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify(e, response)
+          })
+        }
+      } else if (data.type === 'PATCH') {
+        try {
+          response = await axios.patch('https://my.pandle.com/api/v1' + data.url, data.body)
+          return callback(null, {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(response.data)
+          })
+        } catch (e) {
+          return callback(null, {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify(e, response)
+          })
+        }
+      } else {
         return callback(null, {
-          statusCode: 200,
+          statusCode: 401,
           headers,
-          body: JSON.stringify(response.data)
-        })
-      } catch (e) {
-        return callback(null, {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify(e, response)
-        })
-      }
-    } else if (data.type === 'PATCH') {
-      try {
-        response = await axios.patch('https://my.pandle.com/api/v1' + data.url, data.body)
-        return callback(null, {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify(response.data)
-        })
-      } catch (e) {
-        return callback(null, {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify(e, response)
+          body: ''
         })
       }
     } else {
@@ -84,7 +106,7 @@ exports.handler = async function handler (event, context, callback) {
     return callback(null, {
       statusCode: 401,
       headers,
-      body: ''
+      body: '401 - Unauthorized'
     })
   }
 }
