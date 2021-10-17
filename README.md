@@ -1,28 +1,18 @@
-# Galexia Creative Agency Ltd Nuxt Boilerplate
+# Galexia Creative Agency Ltd Project Management and Client Relationship Manager
 
-> A boilerplate Nuxt repository
+> Email me at [joe@galexia.agency](mailto:joe@galexia.agency) for a login
 
-## Get started
-
-1. Do a find and replace for 'REPLACE' filling in with company information.
-
-2. Go to [Real Favicon Generator](https://realfavicongenerator.net/) and create icons and configs.
-
-3. Head to [Style Guide Creator](style-guide-creator.joebailey.xyz) and choose the fonts and colors. Then copy the relevant Nuxt code.
-
-4. Update Cookie Banner colours
+[![Netlify Status](https://api.netlify.com/api/v1/badges/5a5beaf4-f7ee-4559-a684-eba66e158794/deploy-status)](https://app.netlify.com/sites/galexia-crm/deploys)
 
 ## Build Setup
 
 ```bash
 # install dependencies
-$ npm install
+$ yarn install
 
-# serve with hot reload at localhost:3000
-$ npm run start
+# serve with hot reload at localhost:8888
+$ netlify dev
 
 # generate static project
-$ npm run generate
+$ yarn generate --no-optional
 ```
-
-For detailed explanation on how things work, check out [Galexia docs](https://docs.galexia.agency).
