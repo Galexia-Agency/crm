@@ -1,5 +1,5 @@
 [build]
-  command = "npm run generate --no-optional"
+  command = "npm run build --no-optional"
   publish = "dist"
   functions = "functions"
 
