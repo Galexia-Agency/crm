@@ -80,7 +80,7 @@ export default {
           authorization: process.env.OKTA_ISSUER + '/v1/authorize',
           token: process.env.OKTA_ISSUER + '/v1/token',
           userInfo: process.env.OKTA_ISSUER + '/v1/userinfo',
-          logout: process.env.OKTA_ISSUER + '/v1/logout'
+          logout: false
         },
         token: {
           property: 'access_token',
