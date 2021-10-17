@@ -1,0 +1,38 @@
+[build]
+  command = "npm run generate --no-optional"
+  publish = "dist"
+  functions = "functions"
+
+[[redirects]]
+  from = "https://galexia-crm.netlify.app/*"
+  to = "https://crm.galexia.agency/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/index.html" 
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "upgrade-insecure-requests"
+
+[[headers]]
+  for = "/_nuxt/*"
+  [headers.values]
+    Cache-Control = "max-age=365000000, immutable"
+
+[[plugins]]
+  package = "netlify-plugin-cache-nuxt"

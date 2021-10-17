@@ -1,0 +1,11 @@
+.page-leave-active, .page-enter-active {
+  transition: opacity .25s ease-in-out
+}
+.page-enter, .page-leave-to {
+  opacity: 0
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active, .page-leave-active {
+    transition: none
+  }
+}

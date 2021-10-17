@@ -1,0 +1,368 @@
+<style lang="scss">
+
+/* Editor objects */
+.editor_object_standard {
+  border: 3px solid var(--base);
+  border-radius: 10px;
+  background: var(--back);
+  transition: .6s border cubic-bezier(.165, .84, .44, 1);
+  h3 {
+    position: relative;
+    left: 2rem;
+    padding: .6rem;
+    width: fit-content;
+    width: -moz-fit-content;
+    background: var(--base);
+    color: var(--fore);
+    border-radius: 0 0 10px 10px
+  }
+  #wrapper--rich_editor {
+    background: var(--back);
+    margin: 2rem
+  }
+
+  /* State */
+  &.is-active {
+    opacity: .4
+  }
+}
+.editor_object_complex {
+  display: grid;
+  padding: 2rem;
+  background: var(--back);
+  border: 2px solid var(--base);
+  border-radius: 10px;
+  transition: .6s border cubic-bezier(.165, .84, .44, 1);
+
+  /* State */
+  &.is-active {
+    opacity: .4
+  }
+}
+
+/* Editor */
+button.menu_button:focus {
+  box-shadow: none
+}
+#wrapper--rich_editor .control {
+  min-height: calc(120px + 48px);
+  padding: 0;
+  height: auto;
+  &:focus-within {
+    border-color: var(--primaryColor);
+    box-shadow: 0 0 0 .125em rgba(50, 115, 220, 25%)
+  }
+}
+div#rich_editor {
+  padding: 0;
+  ul[data-type='taskList'] {
+    list-style: none;
+    padding: 0;
+    li {
+      display: flex;
+      align-items: center;
+      label {
+        flex: 0 0 auto;
+        margin-right: .5rem
+      }
+    }
+  }
+  div[contenteditable] {
+    padding: .625em;
+    height: 100%;
+    min-height: 120px;
+    max-height: 40vh;
+    outline: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    overflow-y: auto;
+    resize: vertical;
+    white-space: pre-wrap;
+    > div:not(:first-child),
+    > p:not(:first-child) {
+      margin: .6rem 0
+    }
+    ul {
+      list-style: disc
+    }
+    ol {
+      list-style: numeric
+    }
+    ol, ul {
+      margin-left: 1.2em
+    }
+    hr {
+      background-color: var(--thumbBG)
+    }
+    img {
+      margin: 1rem 0
+    }
+    a {
+      text-decoration: underline
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  div#rich_editor > div[contenteditable] img {
+    max-width: 100%
+  }
+}
+@media (max-width: 576px) {
+  .editor_object_standard {
+    h3 {
+      left: 1rem
+    }
+    #wrapper--rich_editor {
+      margin: 1rem
+    }
+  }
+  .editor_object_complex {
+    padding: 1rem
+  }
+}
+
+// -----------------------------
+// Menu
+// -----------------------------
+
+/* Outer container of menu */
+.menu_bar_wrapper {
+  border-bottom: 1px solid #DBDBDB;
+
+  /* Inner container of menu */
+  #menu_bar {
+    padding: 0 1em;
+    button {
+      padding: 0;
+      margin: .8rem 1rem .6rem 0;
+      background-color: transparent
+    }
+    svg {
+      height: 20px;
+      width: 20px
+    }
+  }
+}
+</style>
+
+<template>
+  <div id="wrapper--rich_editor" class="field">
+    <label v-if="label" class="label">{{ label }}</label>
+    <div class="control textarea">
+      <div class="menu_bar_wrapper">
+        <div id="menu_bar" :class="{ editorFocused: caretInEditor }">
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('bold') }"
+            title="Bold"
+            @click="editor.chain().focus().toggleBold().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/bold.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('italic') }"
+            title="Italic"
+            @click="editor.chain().focus().toggleItalic().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/italic.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('underline') }"
+            title="Underline"
+            @click="editor.chain().focus().toggleUnderline().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/underline.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('ordered_list') }"
+            title="Ordered list"
+            @click="editor.chain().focus().toggleOrderedList().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/ol.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('bullet_list') }"
+            title="Bullet list"
+            @click="editor.chain().focus().toggleBulletList().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/ul.svg')" />
+          </button>
+          <button
+            class="menu_button"
+            :class="{ 'is-active': editor.isActive('taskList') }"
+            title="Checklist"
+            @click="editor.chain().focus().toggleTaskList().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/checklist.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('horizontalRule') }"
+            title="Horizontal line"
+            @click="editor.chain().focus().setHorizontalRule().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/horizontal-rule.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            :class="{ 'is-active': editor.isActive('link') }"
+            title="Hyperlink"
+            @click="editor.isActive('link') ? editor.chain().focus().unsetLink().run() : setLinkUrl()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/link.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            title="Image"
+            @click="showAddTemplate = false, $refs.ui_editor_input.show('image', 'Select your image to upload', 'Make sure that it\'s less than 1MB')"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/image.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            title="Undo"
+            @click="editor.chain().focus().undo().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/undo.svg')" />
+          </button>
+          <button
+            class="fadeIn menu_button"
+            title="Redo"
+            @click="editor.chain().focus().redo().run()"
+          >
+            <inline-svg :src="require('~/assets/svg/editor/redo.svg')" />
+          </button>
+        </div>
+        <ui-editor-input ref="ui_editor_input" />
+      </div>
+      <editor-content
+        id="rich_editor"
+        :editor="editor"
+        :class="{ editorFocused: caretInEditor }"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import Compressor from 'compressorjs'
+import { Editor, EditorContent } from '@tiptap/vue-2'
+import StarterKit from '@tiptap/starter-kit'
+import Undeline from '@tiptap/extension-underline'
+// eslint-disable-next-line import/no-named-as-default
+import Link from '@tiptap/extension-link'
+// eslint-disable-next-line import/no-named-as-default
+import TaskList from '@tiptap/extension-task-list'
+// eslint-disable-next-line import/no-named-as-default
+import TaskItem from '@tiptap/extension-task-item'
+import UiEditorInput from './Input'
+import LazyImage from './LazyImage'
+
+export default {
+  components: {
+    EditorContent,
+    UiEditorInput
+  },
+  props: {
+    // eslint-disable-next-line vue/require-default-prop
+    value: String,
+    // eslint-disable-next-line vue/require-default-prop
+    label: String
+  },
+  data () {
+    return {
+
+      // Editor
+      initialValue: null,
+      editor: null,
+      editState: false,
+      caretInEditor: false,
+      saving: false,
+
+      // Link
+      linkUrl: null,
+      linkMenuIsActive: false
+    }
+  },
+  beforeMount () {
+    this.initialValue = this.value
+    this.editor = new Editor({
+      content: this.value,
+      extensions: [
+        StarterKit,
+        Undeline,
+        Link,
+        TaskList,
+        TaskItem,
+        LazyImage
+      ],
+      onUpdate: ({ editor }) => {
+        this.$emit('editorUpdateShim', editor)
+      },
+      onFocus: () => {
+        this.caretInEditor = true
+        this.showAddTemplate = false
+      },
+      onBlur: () => {
+        this.caretInEditor = false
+      },
+      onDestroy: () => {
+        this.initialValue = null
+      }
+    })
+  },
+  beforeDestroy () {
+    if (this.editor) {
+      this.editor.destroy()
+    }
+  },
+  methods: {
+
+    // -----------------------------
+    // General
+    // -----------------------------
+
+    /**
+     * Sets the link of the selected text.
+     */
+    async setLinkUrl () {
+      const SRC = await this.$refs.ui_editor_input.show('link')
+      if (!SRC) {
+        return
+      }
+      this.editor.chain().focus().setLink({ href: SRC }).run()
+    },
+
+    /**
+     * Adds an image.
+     */
+    addImg () {
+      const FILE = document.getElementById('img_uploader').files[0]
+      const READER = new FileReader()
+      READER.addEventListener('load', () => {
+        this.editor.chain().focus().setImage({ src: READER.result.toString(), loading: 'lazy' }).run()
+      }, false)
+
+      if (FILE) {
+        // eslint-disable-next-line
+        new Compressor(FILE, {
+          quality: 0.6,
+          success (result) {
+            READER.readAsDataURL(result)
+          },
+          error (err) {
+            // eslint-disable-next-line no-console
+            console.error(err.message)
+          }
+        })
+      }
+    }
+  }
+}
+</script>
