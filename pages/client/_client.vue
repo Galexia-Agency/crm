@@ -68,37 +68,35 @@
         <project :key="project.id" :project="project" class="project container" />
       </template>
     </div>
-    <client-only>
-      <ui-modal
-        ref="modal"
-        :active="modal.contact"
-        :cancellable="1"
-        @close="hideContactModal"
-      >
-        <contact ref="contact" @cancel="hideContactModal" @edit="showEditContactModal" />
-      </ui-modal>
-      <ui-modal
-        ref="modal"
-        :active="modal.editContact"
-        @close="hideEditContactModal(), hideContactModal()"
-      >
-        <contactModal ref="editContact" @cancel="hideEditContactModal(), hideContactModal()" @submit="editContact" @add="addContact" />
-      </ui-modal>
-      <ui-modal
-        ref="modal"
-        :active="modal.newProject"
-        @close="hideNewProjectModal"
-      >
-        <projectModal ref="newProject" @submit="addProject" @cancel="hideNewProjectModal" />
-      </ui-modal>
-      <ui-modal
-        ref="modal"
-        :active="modal.client"
-        @close="hideClientModal"
-      >
-        <clientModal ref="client" @submit="editClient" @cancel="hideClientModal" />
-      </ui-modal>
-    </client-only>
+    <ui-modal
+      ref="modal"
+      :active="modal.contact"
+      :cancellable="1"
+      @close="hideContactModal"
+    >
+      <contact ref="contact" @cancel="hideContactModal" @edit="showEditContactModal" />
+    </ui-modal>
+    <ui-modal
+      ref="modal"
+      :active="modal.editContact"
+      @close="hideEditContactModal(), hideContactModal()"
+    >
+      <contactModal ref="editContact" @cancel="hideEditContactModal(), hideContactModal()" @submit="editContact" @add="addContact" />
+    </ui-modal>
+    <ui-modal
+      ref="modal"
+      :active="modal.newProject"
+      @close="hideNewProjectModal"
+    >
+      <projectModal ref="newProject" @submit="addProject" @cancel="hideNewProjectModal" />
+    </ui-modal>
+    <ui-modal
+      ref="modal"
+      :active="modal.client"
+      @close="hideClientModal"
+    >
+      <clientModal ref="client" @submit="editClient" @cancel="hideClientModal" />
+    </ui-modal>
     <div class="fixed">
       <button class="button primary" @click="showNewProjectModal({client_id: client.id})">
         New Project

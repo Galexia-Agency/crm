@@ -66,10 +66,14 @@ export default Node.create({
 
   addInputRules () {
     return [
-      nodeInputRule(inputRegex, this.type, (match) => {
-        const [, alt, src, title, loading] = match
+      nodeInputRule({
+        find: inputRegex,
+        type: this.type,
+        getAttributes: (match) => {
+          const [, alt, src, title, loading] = match
 
-        return { src, alt, title, loading }
+          return { src, alt, title, loading }
+        }
       })
     ]
   }

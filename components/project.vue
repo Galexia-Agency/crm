@@ -133,16 +133,14 @@
         <i class="fas fa-trash-alt" />
       </Toggle>
     </div>
-    <client-only>
-      <board v-show="show" :project-id="project.id" />
-      <ui-modal
-        ref="modal"
-        :active="modal"
-        @close="hideProjectModal"
-      >
-        <projectModal ref="project" @submit="updateProject" @cancel="hideProjectModal" />
-      </ui-modal>
-    </client-only>
+    <board v-show="show" :project-id="project.id" />
+    <ui-modal
+      ref="modal"
+      :active="modal"
+      @close="hideProjectModal"
+    >
+      <projectModal ref="project" @submit="updateProject" @cancel="hideProjectModal" />
+    </ui-modal>
   </div>
 </template>
 
