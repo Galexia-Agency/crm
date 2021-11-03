@@ -3,15 +3,18 @@
   .card {
     position: relative;
     border-radius: 3px;
-    cursor: move
-  }
-  .card.icons_draggable {
-    cursor: initial;
-    .icons {
-      display: none
+    cursor: move;
+    &.icons_draggable {
+      cursor: initial;
+      .icons {
+        display: none
+      }
+      .item-title {
+        max-width: 100%
+      }
     }
-    .item-title {
-      max-width: 100%
+    &.isnt_draggable {
+      cursor: initial
     }
   }
   .icons {
@@ -67,15 +70,17 @@
       <span v-if="!item.archived" class="icon icon-edit" @click="edit">
         <i class="fas fa-edit" />
       </span>
-      <span v-else class="icon icon-edit" @click="unarchive">
-        <i class="fas fa-edit" />
-      </span>
-      <span v-if="!item.archived" class="icon icon-edit" @click="archive">
-        <i>&#10006;</i>
-      </span>
-      <span v-else class="icon icon-edit" @click="remove">
-        <i>&#10006;</i>
-      </span>
+      <template v-if="icons && (project.admin.includes(claims.email) || (project.contributor && project.contributor.includes(claims.email)))">
+        <span v-if="item.archived" class="icon icon-edit" @click="unarchive">
+          <i class="fas fa-edit" />
+        </span>
+        <span v-if="!item.archived" class="icon icon-edit" @click="archive">
+          <i>&#10006;</i>
+        </span>
+        <span v-else-if="icons && project.admin.includes(claims.email)" class="icon icon-edit" @click="remove">
+          <i>&#10006;</i>
+        </span>
+      </template>
     </div>
     <div v-if="item">
       <a v-if="validURL(item.title)" class="item-title" target="_blank" :href="item.title" v-text="formatURL(item.title)" />
@@ -88,6 +93,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -98,15 +104,24 @@ export default {
     icons: {
       type: Boolean,
       default: true
+    },
+    project: {
+      type: Object,
+      default: null
     }
   },
   computed: {
+    ...mapState([
+      'claims'
+    ]),
+
     classes () {
       return {
         'is-due': this.isDue,
         'is-overdue': this.isOverdue,
         icons_draggable: !this.icons,
-        archived: this.item.archived
+        archived: this.item.archived,
+        isnt_draggable: this.icons && !(this.project.admin.includes(this.claims.email) || (this.project.contributor && this.project.contributor.includes(this.claims.email)))
       }
     },
 

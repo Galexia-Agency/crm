@@ -36,7 +36,8 @@ export default {
    */
   loading: {
     color: '#1A237E',
-    height: '3px'
+    height: '3px',
+    continuous: true
   },
   /*
    ** Global CSS

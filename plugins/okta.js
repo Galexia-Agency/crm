@@ -7,7 +7,7 @@ export default ({ app }) => {
     issuer: app.$config.OKTA_ISSUER + '/oauth2/default',
     clientId: app.$config.OKTA_CLIENT_ID,
     redirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback',
-    scopes: ['openid', 'profile', 'email'],
+    scopes: ['openid', 'profile', 'email', 'groups'],
     async onSessionExpired () {
       await Vue.prototype.$auth.logout({ postLogoutRedirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host : 'https://' + window.location.host })
     }

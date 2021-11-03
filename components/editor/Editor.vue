@@ -145,10 +145,21 @@ div#rich_editor {
     }
   }
 }
+#wrapper--rich_editor[disabled] {
+  pointer-events: none;
+  button svg * {
+    fill: #7A7A7A
+  }
+  .textarea, .textarea:hover {
+    color: #7A7A7A;
+    border-color: #DBDBDB;
+    box-shadow: none
+  }
+}
 </style>
 
 <template>
-  <div id="wrapper--rich_editor" class="field">
+  <div id="wrapper--rich_editor" class="field" :disabled="disabled">
     <label v-if="label" class="label">{{ label }}</label>
     <div class="control textarea">
       <div class="menu_bar_wrapper">
@@ -273,7 +284,11 @@ export default {
     // eslint-disable-next-line vue/require-default-prop
     value: String,
     // eslint-disable-next-line vue/require-default-prop
-    label: String
+    label: String,
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {

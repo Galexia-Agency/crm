@@ -10,6 +10,7 @@
         :class="{'is-danger': error}"
         v-bind="$attrs"
         :autofocus="autofocus"
+        :disabled="disabled"
       />
       <input
         v-else
@@ -20,9 +21,10 @@
         :class="{'is-danger': error}"
         v-bind="$attrs"
         :autofocus="autofocus"
+        :disabled="disabled"
         @keydown.enter="onEnter"
       >
-      <button v-if="type === 'date'" class="button is-primary" @click="resetDate">
+      <button v-if="type === 'date'" class="button is-primary" :disabled="disabled" @click="resetDate">
         X
       </button>
     </div>
@@ -45,6 +47,10 @@ export default {
       default: 'text'
     },
     autofocus: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }

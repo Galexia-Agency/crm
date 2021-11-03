@@ -371,7 +371,7 @@
         </template>
       </template>
       <br>
-      <button class="button primary" @click="showClientModal()">
+      <button v-if="claims.groups.includes('admin')" class="button primary" @click="showClientModal()">
         New Client
       </button>
       <button class="button primary" @click="logout()">
@@ -408,7 +408,7 @@ export default {
     if (await this.$auth.isAuthenticated()) {
       this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
       this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
-      const response = await this.$axios.$get('https://cors-wanker.joebailey.workers.dev/https://api.galexia.agency/',
+      const response = await this.$axios.$get(`https://cors-wanker.joebailey.workers.dev/https://api.galexia.agency/get/${this.claims.email}`,
         {
           headers: {
             Accept: 'application/json',
@@ -432,75 +432,77 @@ export default {
       this.$store.commit('domains', response[2])
       this.$store.commit('projects', response[3])
 
-      /* Pandle */
-      // If pandle data is not set in local storage
-      if (!localStorage.getItem('pandle')) {
-        const response = await this.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
-        localStorage.setItem('pandle', JSON.stringify(response))
-      }
-      let pandle = JSON.parse(localStorage.getItem('pandle'))
-      if (pandle.data.expiry) {
-        // Check if pandle data has expired
-        const unixTimestamp = pandle.data.expiry
-        if (new Date() > new Date(unixTimestamp * 1000)) {
+      if (this.claims.groups.includes('billing')) {
+        /* Pandle */
+        // If pandle data is not set in local storage
+        if (!localStorage.getItem('pandle')) {
           const response = await this.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
           localStorage.setItem('pandle', JSON.stringify(response))
         }
-        pandle = JSON.parse(localStorage.getItem('pandle'))
-        // Set pandle headers
-        this.$axios.setHeader('access-token', pandle.data['access-token'])
-        this.$axios.setHeader('client', pandle.data.client)
-        this.$axios.setHeader('uid', pandle.data.uid)
-
-        const pandleBankAccountChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies/46972/dashboard/bank_account_chart',
-            type: 'GET'
+        let pandle = JSON.parse(localStorage.getItem('pandle'))
+        if (pandle.data.expiry) {
+          // Check if pandle data has expired
+          const unixTimestamp = pandle.data.expiry
+          if (new Date() > new Date(unixTimestamp * 1000)) {
+            const response = await this.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
+            localStorage.setItem('pandle', JSON.stringify(response))
           }
-        )
-        this.$store.commit('pandleBankAccountChart', pandleBankAccountChart.data.data)
+          pandle = JSON.parse(localStorage.getItem('pandle'))
+          // Set pandle headers
+          this.$axios.setHeader('access-token', pandle.data['access-token'])
+          this.$axios.setHeader('client', pandle.data.client)
+          this.$axios.setHeader('uid', pandle.data.uid)
 
-        const pandleCashFlowChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies/46972/dashboard/cash_flow_chart',
-            type: 'GET'
-          }
-        )
-        this.$store.commit('pandleCashFlowChart', pandleCashFlowChart.data.data)
+          const pandleBankAccountChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+            {
+              url: '/companies/46972/dashboard/bank_account_chart?page=1&size=24',
+              type: 'GET'
+            }
+          )
+          this.$store.commit('pandleBankAccountChart', pandleBankAccountChart.data.data)
 
-        const pandleExpenseChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies/46972/dashboard/expense_chart',
-            type: 'GET'
-          }
-        )
-        this.$store.commit('pandleExpenseChart', pandleExpenseChart.data.data)
+          const pandleCashFlowChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+            {
+              url: '/companies/46972/dashboard/cash_flow_chart?page=1&size=24',
+              type: 'GET'
+            }
+          )
+          this.$store.commit('pandleCashFlowChart', pandleCashFlowChart.data.data)
 
-        const pandleProfitLossChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies/46972/dashboard/profit_and_loss_chart',
-            type: 'GET'
-          }
-        )
-        this.$store.commit('pandleProfitLossChart', pandleProfitLossChart.data.data)
+          const pandleExpenseChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+            {
+              url: '/companies/46972/dashboard/expense_chart?page=1&size=24',
+              type: 'GET'
+            }
+          )
+          this.$store.commit('pandleExpenseChart', pandleExpenseChart.data.data)
 
-        const pandleSalesChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies/46972/dashboard/sales_chart',
-            type: 'GET'
-          }
-        )
-        this.$store.commit('pandleSalesChart', pandleSalesChart.data.data)
+          const pandleProfitLossChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+            {
+              url: '/companies/46972/dashboard/profit_and_loss_chart?page=1&size=24',
+              type: 'GET'
+            }
+          )
+          this.$store.commit('pandleProfitLossChart', pandleProfitLossChart.data.data)
 
-        const pandleTaxDividendChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies/46972/dashboard/tax_and_dividend',
-            type: 'GET'
-          }
-        )
-        this.$store.commit('pandleTaxDividendChart', pandleTaxDividendChart.data.data)
-      } else {
-        this.$store.commit('error', { description: 'Cannot sign in to Pandle' })
+          const pandleSalesChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+            {
+              url: '/companies/46972/dashboard/sales_chart?page=1&size=24',
+              type: 'GET'
+            }
+          )
+          this.$store.commit('pandleSalesChart', pandleSalesChart.data.data)
+
+          const pandleTaxDividendChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+            {
+              url: '/companies/46972/dashboard/tax_and_dividend?page=1&size=24',
+              type: 'GET'
+            }
+          )
+          this.$store.commit('pandleTaxDividendChart', pandleTaxDividendChart.data.data)
+        } else {
+          this.$store.commit('error', { description: 'Cannot sign in to Pandle' })
+        }
       }
     } else {
       this.$router.push('/login')
@@ -523,7 +525,8 @@ export default {
       'domains',
       'projects',
       'clients',
-      'authenticated'
+      'authenticated',
+      'claims'
     ]),
     filteredProjects () {
       const hotLeads = []
@@ -559,7 +562,7 @@ export default {
               closedLead.push(project)
             } else if (project.status === 'Cancelled') {
               cancelled.push(project)
-            } else {
+            } else if (this.claims.groups.includes('admin')) {
               other.push(project)
             }
           }
@@ -573,7 +576,8 @@ export default {
           university.find(e => e.client_id === client.id) === undefined &&
           onGoing.find(e => e.client_id === client.id) === undefined &&
           closedLead.find(e => e.client_id === client.id) === undefined &&
-          cancelled.find(e => e.client_id === client.id) === undefined
+          cancelled.find(e => e.client_id === client.id) === undefined &&
+          this.claims.groups.includes('admin')
         ) {
           other.push(client)
         }
@@ -594,6 +598,7 @@ export default {
   },
   methods: {
     async logout () {
+      this.$nuxt.$loading.start()
       await this.$auth.signOut()
       this.$store.dispatch('okta', { authenticated: await this.$auth.isAuthenticated() })
       localStorage.clear()
@@ -605,6 +610,7 @@ export default {
         const NAME = EQ_POS > -1 ? COOKIE.substr(0, EQ_POS) : COOKIE
         document.cookie = NAME + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
       }
+      this.$nuxt.$loading.finish()
     },
     refresh () {
       this.refreshed = true

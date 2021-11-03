@@ -33,21 +33,21 @@
     <div class="fixed">
       <h1>
         {{ client.business_name }}
-        <a @click="showClientModal(client)">
+        <a v-if="claims.groups.includes('admin')" @click="showClientModal(client)">
           <i class="far fa-edit" />
         </a>
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
-      <div class="monies">
+      <div v-if="claims.groups.includes('billing')" class="monies">
         <h2 v-text="'Total Income: £' + income" />
         <h2 v-text="'Total Expenses: £' + expenses" />
         <h2 v-text="'Total Profit: £' + profit" />
         <h2 v-text="'Completion Total: £' + completion_total" />
       </div>
-      <button v-if="!client.pandle_id" class="button primary" @click="addClientPandle()">
+      <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" @click="addClientPandle()">
         Add to Pandle
       </button>
-      <div class="contact container">
+      <div v-if="claims.groups.includes('admin')" class="contact container">
         <template v-for="contact in contacts">
           <span :key="contact.id + 'i'" style="display: none">
             {{ contact.org = client.business_name }}
@@ -63,11 +63,9 @@
         </button>
       </div>
     </div>
-    <div class="projects container">
-      <template v-for="project in projects">
-        <project :key="project.id" :project="project" class="project container" />
-      </template>
-    </div>
+    <template v-for="project in projects">
+      <project :key="project.id" :project="project" class="project container" />
+    </template>
     <ui-modal
       ref="modal"
       :active="modal.contact"
@@ -97,7 +95,7 @@
     >
       <clientModal ref="client" @submit="editClient" @cancel="hideClientModal" />
     </ui-modal>
-    <div class="fixed">
+    <div v-if="claims.groups.includes('admin')" class="fixed">
       <button class="button primary" @click="showNewProjectModal({client_id: client.id})">
         New Project
       </button>
@@ -106,6 +104,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { dragscroll } from 'vue-dragscroll'
 import Contact from '~/components/modals/display/contactModal'
 import contactModal from '~/components/modals/update/contactModal'
@@ -164,40 +163,45 @@ export default {
         }
       }
       return c
-    }
+    },
+    ...mapState([
+      'claims'
+    ])
   },
   asyncComputed: {
     async income () {
       let income = 0
-      for (const project in this.projects) {
-        if (this.projects[project].bb_revenue) {
-          income = income + parseFloat(this.projects[project].bb_revenue)
-        }
-        if (this.projects[project].pandle_id) {
-          const pandleIncome = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: `/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`,
-              type: 'GET'
-            }
-          )
-          for (const a in pandleIncome.data.data) {
-            if (pandleIncome.data.data[a].attributes['total-amount']) {
-              income = income + parseFloat(pandleIncome.data.data[a].attributes['total-amount'])
+      if (this.claims.groups.includes('billing')) {
+        for (const project in this.projects) {
+          if (this.projects[project].bb_revenue) {
+            income = income + parseFloat(this.projects[project].bb_revenue)
+          }
+          if (this.projects[project].pandle_id) {
+            const pandleIncome = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+              {
+                url: `/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`,
+                type: 'GET'
+              }
+            )
+            for (const a in pandleIncome.data.data) {
+              if (pandleIncome.data.data[a].attributes['total-amount']) {
+                income = income + parseFloat(pandleIncome.data.data[a].attributes['total-amount'])
+              }
             }
           }
         }
-      }
-      if (this.client) {
-        if (this.client.pandle_id) {
-          const pandleIncome = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: `/companies/46972/customers/${this.client.pandle_id}/account`,
-              type: 'GET'
-            }
-          )
-          for (const a in pandleIncome.data.data) {
-            if (pandleIncome.data.data[a].attributes['total-amount']) {
-              income = income + parseFloat(pandleIncome.data.data[a].attributes['total-amount'])
+        if (this.client) {
+          if (this.client.pandle_id) {
+            const pandleIncome = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+              {
+                url: `/companies/46972/customers/${this.client.pandle_id}/account`,
+                type: 'GET'
+              }
+            )
+            for (const a in pandleIncome.data.data) {
+              if (pandleIncome.data.data[a].attributes['total-amount']) {
+                income = income + parseFloat(pandleIncome.data.data[a].attributes['total-amount'])
+              }
             }
           }
         }
@@ -206,20 +210,22 @@ export default {
     },
     async expenses () {
       let expenses = 0
-      for (const project in this.projects) {
-        if (this.projects[project].bb_expenses) {
-          expenses = expenses + parseFloat(this.projects[project].bb_expenses)
-        }
-        if (this.projects[project].pandle_id) {
-          const pandleExpenses = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: `/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`,
-              type: 'GET'
-            }
-          )
-          for (const a in pandleExpenses.data.data) {
-            if (pandleExpenses.data.data[a].attributes['total-amount']) {
-              expenses = expenses + parseFloat(pandleExpenses.data.data[a].attributes['total-amount'])
+      if (this.claims.groups.includes('billing')) {
+        for (const project in this.projects) {
+          if (this.projects[project].bb_expenses) {
+            expenses = expenses + parseFloat(this.projects[project].bb_expenses)
+          }
+          if (this.projects[project].pandle_id) {
+            const pandleExpenses = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+              {
+                url: `/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`,
+                type: 'GET'
+              }
+            )
+            for (const a in pandleExpenses.data.data) {
+              if (pandleExpenses.data.data[a].attributes['total-amount']) {
+                expenses = expenses + parseFloat(pandleExpenses.data.data[a].attributes['total-amount'])
+              }
             }
           }
         }

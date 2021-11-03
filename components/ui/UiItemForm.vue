@@ -7,12 +7,14 @@
         name="title"
         label="Title"
         :error="getError('title')"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
         @enter="validate"
       />
       <Editor
         v-if="title"
         v-model="description"
         label="Description"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
         @editorUpdateShim="editorUpdateShim"
       />
       <ui-input
@@ -20,11 +22,12 @@
         name="date"
         type="date"
         label="Date"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
         @enter="validate"
         @resetDate="resetDate"
       />
       <div class="field is-grouped">
-        <ui-button type="primary" @click="validate">
+        <ui-button type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))" @click="validate">
           {{ id ? 'Update' : 'Add' }}
         </ui-button>
         <ui-button type="text" @click="cancel">
@@ -36,6 +39,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Editor from '../editor/Editor'
 function data () {
   return {
@@ -56,9 +60,15 @@ export default {
     return data()
   },
   computed: {
+    ...mapState([
+      'claims'
+    ]),
     values () {
       return this.$data
     }
+  },
+  mounted () {
+    console.log(!(this.$parent.$parent.$parent.project.admin.includes(this.claims.email) || (this.$parent.$parent.$parent.project.contributor && this.$parent.$parent.$parent.project.contributor.includes(this.claims.email))))
   },
   methods: {
     editorUpdateShim (value) {

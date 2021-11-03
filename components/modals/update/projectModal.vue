@@ -106,6 +106,45 @@
         >
       </div>
       <div class="field">
+        <label for="viewer" class="label">
+          Project Viewers
+        </label>
+        <input
+          v-model="viewer"
+          type="text"
+          name="viewer"
+          class="input"
+          pattern="[^\s]+"
+          @input="noSpaces()"
+        >
+      </div>
+      <div class="field">
+        <label for="contributor" class="label">
+          Project Contributors
+        </label>
+        <input
+          v-model="contributor"
+          type="text"
+          name="contributor"
+          class="input"
+          pattern="[^\s]+"
+          @input="noSpaces()"
+        >
+      </div>
+      <div class="field">
+        <label for="admin" class="label">
+          Project Admins
+        </label>
+        <input
+          v-model="admin"
+          type="text"
+          name="admin"
+          class="input"
+          pattern="[^\s]+"
+          @input="noSpaces()"
+        >
+      </div>
+      <div class="field">
         <label for="completion" class="label">
           Completion Total
         </label>
@@ -168,7 +207,10 @@ function data () {
     pandle_id: null,
     completion_amount: 0,
     bb_revenue: 0,
-    bb_expenses: 0
+    bb_expenses: 0,
+    viewer: '',
+    contributor: '',
+    admin: 'joe@galexia.agency'
   }
 }
 export default {
@@ -194,6 +236,17 @@ export default {
     },
     reset () {
       Object.assign(this, data())
+    },
+    noSpaces () {
+      if (this.$data.viewer) {
+        this.$data.viewer = this.$data.viewer.replaceAll(' ', '')
+      }
+      if (this.$data.contributor) {
+        this.$data.contributor = this.$data.contributor.replaceAll(' ', '')
+      }
+      if (this.$data.admin) {
+        this.$data.admin = this.$data.admin.replaceAll(' ', '')
+      }
     }
   }
 }

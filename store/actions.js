@@ -38,7 +38,10 @@ const actions = {
         pandle_id: data.pandle_id,
         completion_amount: data.completion_amount,
         bb_revenue: data.bb_revenue,
-        bb_expenses: data.bb_expenses
+        bb_expenses: data.bb_expenses,
+        viewer: data.viewer,
+        contributor: data.contributor,
+        admin: data.admin
       },
       {
         headers: {
@@ -69,7 +72,10 @@ const actions = {
         pandle_id: data.pandle_id,
         completion_amount: data.completion_amount,
         bb_revenue: data.bb_revenue,
-        bb_expenses: data.bb_expenses
+        bb_expenses: data.bb_expenses,
+        viewer: data.viewer,
+        contributor: data.contributor,
+        admin: data.admin
       },
       {
         headers: {

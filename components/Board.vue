@@ -13,16 +13,20 @@
           <template v-for="(list, listIndex) in lists">
             <Draggable v-show="list.archived !== true || ($parent.showArchived && list.archived)" :key="list.id">
               <section ref="list" class="list-container" :data-id="list.id" :class="{archived: list.archived}">
-                <div class="list-header">
+                <div v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))" class="list-header">
                   <span class="list-drag-handle">&#x2630;</span>
                   <input class="list-title" :value="list.title" @blur="editList($event, list.id)">
                   <span v-if="!list.archived" class="list-delete" @click="archiveList(list.id)">&#10006;</span>
                   <template v-else>
                     <i class="list-delete fas fa-edit" @click="unarchiveList(list.id)" />
-                    <span class="list-delete" @click="removeList(list.id)">&#10006;</span>
+                    <span v-if="$parent.project.admin.includes($parent.claims.email)" class="list-delete" @click="removeList(list.id)">&#10006;</span>
                   </template>
                 </div>
+                <div v-else class="list-header">
+                  <p class="list-title" v-text="list.title" />
+                </div>
                 <Container
+                  v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))"
                   group-name="list"
                   drag-class="card-ghost"
                   drop-class="card-ghost-drop"
@@ -36,6 +40,7 @@
                     <Card
                       v-if="!item.archived || ($parent.showArchived && item.archived)"
                       :item="item"
+                      :project="$parent.project"
                       @edit="editItem"
                       @archive="archiveItem"
                       @unarchive="unarchiveItem"
@@ -43,8 +48,18 @@
                     />
                   </Draggable>
                 </Container>
+                <template v-for="item in list.items" v-else>
+                  <Card
+                    v-if="!item.archived || ($parent.showArchived && item.archived)"
+                    :key="item.id + + item.title + item.description + item.date"
+                    :item="item"
+                    :project="$parent.project"
+                    @edit="editItem"
+                  />
+                </template>
                 <div class="item-entry">
                   <ui-item-entry
+                    v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))"
                     :list-id="list.id"
                     placeholder="Add an item"
                     icon="ellipsis-h"
@@ -55,7 +70,7 @@
             </Draggable>
           </template>
         </Container>
-        <div class="new-list">
+        <div v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))" class="new-list">
           <ui-item-entry placeholder="Add a list" @enter="onAddList" />
         </div>
       </div>

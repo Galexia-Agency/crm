@@ -82,7 +82,7 @@
       <h2>
         {{ project.name }}
       </h2>
-      <a class="edit" @click="showProjectModal(project)">
+      <a v-if="project.admin.includes(claims.email)" class="edit" @click="showProjectModal(project)">
         <i class="far fa-edit" />
       </a>
       <a v-if="project.project_url" class="list-container" :href="project.project_url" target="_blank">
@@ -121,11 +121,11 @@
         <i class="fas fa-tasks" />
         <span v-text="project.status" />
       </div>
-      <a v-if="$parent.client.pandle_id && !project.pandle_id" class="list-container" @click="addProjectPandle(project)">
+      <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle(project)">
         <i class="fas fa-calculator" />
         Add to Pandle
       </a>
-      <a v-else-if="project.pandle_id" class="list-container" :href="`https://my.pandle.com/projects/${project.pandle_id}`" target="_blank">
+      <a v-else-if="project.pandle_id && claims.groups.includes('admin')" class="list-container" :href="`https://my.pandle.com/projects/${project.pandle_id}`" target="_blank">
         <i class="fas fa-calculator" />
         View in Pandle
       </a>
@@ -145,6 +145,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Toggle from '~/components/ui/UiToggle.vue'
 import Board from '~/components/Board'
 import projectModal from '~/components/modals/update/projectModal'
@@ -168,6 +169,11 @@ export default {
       show: true,
       showArchived: false
     }
+  },
+  computed: {
+    ...mapState([
+      'claims'
+    ])
   },
   methods: {
     changeArchived () {

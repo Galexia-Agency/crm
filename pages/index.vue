@@ -55,7 +55,7 @@
 </style>
 
 <template>
-  <div class="home">
+  <div v-if="$parent.$parent.projects" class="home">
     <h1>Welcome back {{ claims.name }}</h1>
     <main>
       <section v-if="overdueItems.length > 0">
@@ -83,7 +83,7 @@
         </section>
       </section>
     </main>
-    <main>
+    <main v-if="claims.groups.includes('billing')">
       <section>
         <h2>Projects Status</h2>
         <pie-chart class="chart" :chart-data="projects" />
