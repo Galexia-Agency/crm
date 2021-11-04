@@ -260,7 +260,6 @@ const actions = {
   },
   /* Pandle */
   async addClientPandle ({ dispatch }, data) {
-    console.log(data)
     const pandle = await this.$axios.post(window.location.origin + '/.netlify/functions/request', {
       type: 'POST',
       url: '/companies/46972/customers',
