@@ -260,6 +260,7 @@ const actions = {
   },
   /* Pandle */
   async addClientPandle ({ dispatch }, data) {
+    console.log(data)
     const pandle = await this.$axios.post(window.location.origin + '/.netlify/functions/request', {
       type: 'POST',
       url: '/companies/46972/customers',
@@ -282,7 +283,7 @@ const actions = {
           currency_id: '1',
           days_until_payment_due: 30,
           country: JSON.parse(data.address).country,
-          email: data.email.toLowerCase()
+          email: data.billing_email.toLowerCase()
         }
       }
     })
