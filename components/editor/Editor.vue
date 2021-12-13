@@ -78,6 +78,7 @@ div#rich_editor {
     overflow-y: auto;
     resize: vertical;
     white-space: pre-wrap;
+    scrollbar-gutter: stable;
     > div:not(:first-child),
     > p:not(:first-child) {
       margin: .6rem 0
