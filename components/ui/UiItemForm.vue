@@ -67,9 +67,6 @@ export default {
       return this.$data
     }
   },
-  mounted () {
-    console.log(!(this.$parent.$parent.$parent.project.admin.includes(this.claims.email) || (this.$parent.$parent.$parent.project.contributor && this.$parent.$parent.$parent.project.contributor.includes(this.claims.email))))
-  },
   methods: {
     editorUpdateShim (value) {
       this.description = value.getHTML()
