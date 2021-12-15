@@ -16,7 +16,8 @@
   }
   .fixed {
     position: sticky;
-    left: 0
+    left: 0;
+    max-width: 1000px
   }
   .monies {
     display: flex;
@@ -24,7 +25,8 @@
     gap: 1em
   }
   .about_the_business {
-    margin-bottom: 2em
+    margin-bottom: 2em;
+    white-space: break-spaces
   }
 </style>
 
