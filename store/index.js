@@ -1,5 +1,3 @@
-import createPersistedState from 'vuex-persistedstate'
-
 export const state = () => ({
   authenticated: false,
   claims: [],
@@ -71,13 +69,6 @@ export const state = () => ({
   }
 })
 
-let plugins
-
-if (process.env.NODE_ENV === 'production') {
-  plugins = [createPersistedState]
-}
-
 export default {
-  state,
-  plugins
+  state
 }
