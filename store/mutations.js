@@ -11,7 +11,7 @@ const mutations = {
   error (state, data) {
     // eslint-disable-next-line no-console
     console.error(data.description)
-    state.error.active = true
+    state.error.active = typeof data.active === 'undefined' ? true : data.active
     state.error.description = data.description
     state.error.data = data.data
   },

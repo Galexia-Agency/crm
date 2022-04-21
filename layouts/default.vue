@@ -326,12 +326,16 @@
     <ui-modal
       ref="modal"
       :active="error.active"
+      :cancellable="!error.data"
+      @close="$store.commit('error', { active: false })"
     >
       <div class="error">
         <h1>Uh oh! An error has occured</h1>
         <h2>{{ error.description }}</h2>
-        <p>Please copy the below information so as to not lose your changes</p>
-        <textarea :value="JSON.stringify(error.data)" rows="10" />
+        <template v-if="error.data">
+          <p>Please copy the below information so as to not lose your changes</p>
+          <textarea :value="JSON.stringify(error.data)" rows="10" />
+        </template>
       </div>
     </ui-modal>
     <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
