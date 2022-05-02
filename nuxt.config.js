@@ -54,8 +54,7 @@ export default {
     '~plugins/asyncComputed',
     '~plugins/mixins/urls',
     '~plugins/vueInlineSVG',
-    '~plugins/okta',
-    '~plugins/axios'
+    '~plugins/okta'
   ],
   /*
    ** Nuxt.js dev-modules

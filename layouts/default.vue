@@ -374,11 +374,10 @@
           />
         </template>
       </template>
-      <br>
-      <button v-if="claims.groups.includes('admin')" class="button primary" @click="showClientModal()">
+      <button v-if="claims.groups.includes('admin')" class="button primary" style="margin-top: .75em" @click="showClientModal()">
         New Client
       </button>
-      <button class="button primary" @click="logout()">
+      <button class="button primary" style="margin-top: .75em" @click="logout()">
         Logout
       </button>
     </nav>
