@@ -221,6 +221,98 @@ export default {
     BarChart,
     Card
   },
+  async fetch () {
+    let pandle
+    const self = this
+
+    async function pandleSignin () {
+      const response = await self.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
+      sessionStorage.setItem('pandle', JSON.stringify(response))
+    }
+
+    function pandleSetUp () {
+      pandle = JSON.parse(sessionStorage.getItem('pandle'))
+      // Set pandle headers
+      self.$axios.setHeader('access-token', pandle.data['access-token'])
+      self.$axios.setHeader('client', pandle.data.client)
+      self.$axios.setHeader('uid', pandle.data.uid)
+    }
+
+    function pandleFetch ({ commit, url, type }) {
+      if (sessionStorage.getItem(commit)) {
+        return self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
+      } else {
+        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+          .then(function (response) {
+            self.$store.commit(commit, response.data.data)
+            sessionStorage.setItem(commit, JSON.stringify(response.data.data))
+          })
+          .catch(function (e) {
+            const error = {}
+            error.description = e
+            self.$store.commit('error', error)
+          })
+      }
+    }
+
+    if (this.claims.groups.includes('billing')) {
+      /* Pandle */
+      // If pandle data is not set in local storage
+      if (!sessionStorage.getItem('pandle')) {
+        await pandleSignin()
+      } else if (JSON.parse(sessionStorage.getItem('pandle')).data.expiry) {
+        // Check if pandle data has expired
+        const unixTimestamp = JSON.parse(sessionStorage.getItem('pandle')).data.expiry
+        if (new Date() > new Date(unixTimestamp * 1000)) {
+          await pandleSignin()
+        }
+      } else {
+        this.$store.commit('error', { description: 'Cannot sign in to Pandle' })
+      }
+      pandleSetUp()
+      // Test login worked
+      try {
+        await this.$axios.post(window.location.origin + '/.netlify/functions/request',
+          {
+            url: '/companies',
+            type: 'GET'
+          }
+        )
+      } catch {
+        await pandleSignin()
+      }
+
+      const pandleURLs = [
+        {
+          url: '/companies/46972/dashboard/bank_account_chart?page=1&size=24',
+          commit: 'pandleBankAccountChart'
+        },
+        {
+          url: '/companies/46972/dashboard/cash_flow_chart?page=1&size=24',
+          commit: 'pandleCashFlowChart'
+        },
+        {
+          url: '/companies/46972/dashboard/expense_chart?page=1&size=24',
+          commit: 'pandleExpenseChart'
+        },
+        {
+          url: '/companies/46972/dashboard/profit_and_loss_chart?page=1&size=24',
+          commit: 'pandleProfitLossChart'
+        },
+        {
+          url: '/companies/46972/dashboard/sales_chart?page=1&size=24',
+          commit: 'pandleSalesChart'
+        },
+        {
+          url: '/companies/46972/dashboard/tax_and_dividend?page=1&size=24',
+          commit: 'pandleTaxDividendChart'
+        }
+      ]
+      Promise.all(pandleURLs.forEach(function (URL) {
+        pandleFetch(URL)
+      }))
+    }
+  },
   computed: {
     ...mapState([
       'claims'

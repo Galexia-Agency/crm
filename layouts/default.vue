@@ -322,7 +322,7 @@
 </style>
 
 <template>
-  <div v-if="authenticated" class="contentWrapper">
+  <div v-if="authenticated && !$fetchState.pending" class="contentWrapper">
     <ui-modal
       ref="modal"
       :active="error.active"
@@ -434,79 +434,6 @@ export default {
       this.$store.commit('contacts', response[1])
       this.$store.commit('domains', response[2])
       this.$store.commit('projects', response[3])
-
-      if (this.claims.groups.includes('billing')) {
-        /* Pandle */
-        // If pandle data is not set in local storage
-        if (!localStorage.getItem('pandle')) {
-          const response = await this.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
-          localStorage.setItem('pandle', JSON.stringify(response))
-        }
-        let pandle = JSON.parse(localStorage.getItem('pandle'))
-        if (pandle.data.expiry) {
-          // Check if pandle data has expired
-          const unixTimestamp = pandle.data.expiry
-          if (new Date() > new Date(unixTimestamp * 1000)) {
-            const response = await this.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
-            localStorage.setItem('pandle', JSON.stringify(response))
-          }
-          pandle = JSON.parse(localStorage.getItem('pandle'))
-          // Set pandle headers
-          this.$axios.setHeader('access-token', pandle.data['access-token'])
-          this.$axios.setHeader('client', pandle.data.client)
-          this.$axios.setHeader('uid', pandle.data.uid)
-
-          const pandleBankAccountChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: '/companies/46972/dashboard/bank_account_chart?page=1&size=24',
-              type: 'GET'
-            }
-          )
-          this.$store.commit('pandleBankAccountChart', pandleBankAccountChart.data.data)
-
-          const pandleCashFlowChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: '/companies/46972/dashboard/cash_flow_chart?page=1&size=24',
-              type: 'GET'
-            }
-          )
-          this.$store.commit('pandleCashFlowChart', pandleCashFlowChart.data.data)
-
-          const pandleExpenseChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: '/companies/46972/dashboard/expense_chart?page=1&size=24',
-              type: 'GET'
-            }
-          )
-          this.$store.commit('pandleExpenseChart', pandleExpenseChart.data.data)
-
-          const pandleProfitLossChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: '/companies/46972/dashboard/profit_and_loss_chart?page=1&size=24',
-              type: 'GET'
-            }
-          )
-          this.$store.commit('pandleProfitLossChart', pandleProfitLossChart.data.data)
-
-          const pandleSalesChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: '/companies/46972/dashboard/sales_chart?page=1&size=24',
-              type: 'GET'
-            }
-          )
-          this.$store.commit('pandleSalesChart', pandleSalesChart.data.data)
-
-          const pandleTaxDividendChart = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-            {
-              url: '/companies/46972/dashboard/tax_and_dividend?page=1&size=24',
-              type: 'GET'
-            }
-          )
-          this.$store.commit('pandleTaxDividendChart', pandleTaxDividendChart.data.data)
-        } else {
-          this.$store.commit('error', { description: 'Cannot sign in to Pandle' })
-        }
-      }
     } else {
       this.$router.push('/login')
     }
