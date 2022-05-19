@@ -72,7 +72,7 @@
         display: block;
         border-radius: .25rem;
         border: none;
-        box-shadow: 0 1.8px .7px rgba(0, 0, 0, .02), 0 4.3px 1.6px rgba(0, 0, 0, .02), 0 8.1px 3px rgba(0, 0, 0, .02), 0 14.5px 5.4px rgba(0, 0, 0, .02), 0 27.2px 10px rgba(0, 0, 0, .02), 0 65px 24px rgba(0, 0, 0, .05);
+        box-shadow: 0 5px 5px rgba(26, 35, 126, .075);
         background: -moz-linear-gradient(180deg, rgba(83, 75, 174, .15) 0%, rgba(26, 35, 126, .15) 100%);
         background: -webkit-linear-gradient(180deg, rgba(83, 75, 174, .15) 0%, rgba(26, 35, 126, .15) 100%);
         background: linear-gradient(180deg, rgba(83, 75, 174, .15) 0%, rgba(26, 35, 126, .15) 100%);
@@ -84,6 +84,15 @@
         min-height: 40px;
         max-height: none
       }
+    }
+    .okta-form-input-error {
+      span {
+        display: none
+      }
+
+      color: red;
+      text-align: left;
+      margin-bottom: .5em
     }
     .o-form-label label {
       font-size: 14px;
