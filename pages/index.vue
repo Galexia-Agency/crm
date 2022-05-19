@@ -15,12 +15,12 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     grid-gap: 2rem;
-    justify-items: center;
     width: auto;
     margin: auto
   }
   section {
     width: 100%;
+    max-width: 450px;
     table {
       width: 100%
     }
