@@ -354,7 +354,6 @@
       <project-nav-link v-if="filteredProjects.hotLeads.length > 0" type="Hot Leads" :clients="clients" :filtered-projects="filteredProjects.hotLeads" :search="search" />
       <project-nav-link v-if="filteredProjects.development.length > 0" type="Development" :clients="clients" :filtered-projects="filteredProjects.development" :search="search" />
       <project-nav-link v-if="filteredProjects.inHouse.length > 0" type="In House" :clients="clients" :filtered-projects="filteredProjects.inHouse" :search="search" />
-      <project-nav-link v-if="filteredProjects.university.length > 0" type="University" :clients="clients" :filtered-projects="filteredProjects.university" :search="search" />
       <project-nav-link v-if="filteredProjects.coldLeads.length > 0" type="Cold Leads" :clients="clients" :filtered-projects="filteredProjects.coldLeads" :search="search" />
       <project-nav-link v-if="filteredProjects.paused.length > 0" type="Paused" :clients="clients" :filtered-projects="filteredProjects.paused" :search="search" />
       <project-nav-link v-if="filteredProjects.onGoing.length > 0" type="On-Going" :clients="clients" :filtered-projects="filteredProjects.onGoing" :search="search" />
@@ -464,7 +463,6 @@ export default {
       const development = []
       const paused = []
       const inHouse = []
-      const university = []
       const onGoing = []
       const closedLead = []
       const cancelled = []
@@ -484,8 +482,6 @@ export default {
               paused.push(project)
             } else if (project.status === 'In House') {
               inHouse.push(project)
-            } else if (project.status === 'University') {
-              university.push(project)
             } else if (project.status === 'On-Going') {
               onGoing.push(project)
             } else if (project.status === 'Closed Lead') {
@@ -503,7 +499,6 @@ export default {
           development.find(e => e.client_id === client.id) === undefined &&
           paused.find(e => e.client_id === client.id) === undefined &&
           inHouse.find(e => e.client_id === client.id) === undefined &&
-          university.find(e => e.client_id === client.id) === undefined &&
           onGoing.find(e => e.client_id === client.id) === undefined &&
           closedLead.find(e => e.client_id === client.id) === undefined &&
           cancelled.find(e => e.client_id === client.id) === undefined &&
@@ -518,7 +513,6 @@ export default {
         development,
         paused,
         inHouse,
-        university,
         onGoing,
         closedLead,
         cancelled,

@@ -36,9 +36,6 @@
           <option value="In House">
             In House
           </option>
-          <option value="University">
-            University
-          </option>
           <option value="On-Going">
             On-Going
           </option>
