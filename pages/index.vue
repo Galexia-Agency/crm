@@ -105,10 +105,9 @@
           :chart-data="expenseData"
           :options="{
             tooltips: {
-              enabled: true,
               callbacks: {
-                label: function(tooltipItems, data) {
-                  return data.labels[tooltipItems.datasetIndex] + ': £' + data.datasets[tooltipItems.datasetIndex].data[tooltipItems.datasetIndex]
+                label: function(tooltipItem, data) {
+                  return data.labels[tooltipItem.index] + ': £' + data.datasets[0].data[tooltipItem.index]
                 }
               }
             }
@@ -325,7 +324,7 @@ export default {
         labels: ['Leads', 'Development', 'On-Going', 'Paused'],
         datasets: [
           {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF'],
+            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#FFA500'],
             data: [this.$parent.$parent.filteredProjects.hotLeads.length + this.$parent.$parent.filteredProjects.coldLeads.length, this.$parent.$parent.filteredProjects.development.length, this.$parent.$parent.filteredProjects.onGoing.length, this.$parent.$parent.filteredProjects.paused.length]
           }
         ]
@@ -359,7 +358,7 @@ export default {
         labels: Object.keys(this.count),
         datasets: [
           {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#FFC0CB', '#FFA500', '#edc240'],
+            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#FFC0CB', '#FFA500', '#edc240', '#0080FF'],
             data: this.clientSourceValues
           }
         ]
