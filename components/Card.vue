@@ -26,39 +26,24 @@
     grid-gap: .5rem;
     grid-auto-flow: column
   }
+  .icon {
+    height: 1.1rem;
+    width: 1.1rem
+  }
   .is-overdue {
     color: red;
     border: 1px solid red
   }
-  .card:hover {
-    .icon-due,
-    .icon-date {
-      display: none
-    }
-  }
-  .icon-edit, .icon-date {
-    color: #DDDDDD
-  }
   .icon-edit {
-    display: none;
-    margin-right: -5px;
+    opacity: 0;
     .card:hover & {
-      display: block
+      opacity: 1
     }
-  }
-  i {
-    font-style: normal
   }
   @media (hover: none) {
-    .card {
-      .icon-due,
-      .icon-date {
-        display: none
-      }
-    }
     .icon-edit {
       .card & {
-        display: block
+        opacity: 1
       }
     }
   }
@@ -67,26 +52,30 @@
 <template>
   <div class="card" :class="classes" :data-id="item.id">
     <div class="icons">
-      <span v-if="!item.archived" class="icon icon-edit" @click="edit">
-        <i class="fas fa-edit" />
-      </span>
       <template v-if="icons && (project.admin.includes(claims.email) || (project.contributor && project.contributor.includes(claims.email)))">
-        <span v-if="item.archived" class="icon icon-edit" @click="unarchive">
-          <i class="fas fa-edit" />
-        </span>
-        <span v-if="!item.archived" class="icon icon-edit" @click="archive">
-          <i>&#10006;</i>
-        </span>
-        <span v-else-if="icons && project.admin.includes(claims.email)" class="icon icon-edit" @click="remove">
-          <i>&#10006;</i>
-        </span>
+        <template v-if="item.archived">
+          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click="unarchive" />
+          <font-awesome-icon v-if="project.admin.includes(claims.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click="remove" />
+        </template>
+        <template v-else>
+          <font-awesome-icon :icon="['fa-solid', 'fa-edit']" class="icon icon-edit" @click="edit" />
+          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click="archive" />
+        </template>
       </template>
     </div>
     <div v-if="item">
       <a v-if="validURL(item.title)" class="item-title" target="_blank" :href="item.title" v-text="formatURL(item.title)" />
       <p v-else class="item-title" v-text="item.title" />
-      <p v-if="item.description && item.description !== '<p></p>' && item.description !== ' '" class="item-description">
-        &#x2630;
+      <p>
+        <font-awesome-icon v-if="item.description && item.description !== '<p></p>' && item.description !== ' '" :icon="['fa-solid', 'fa-bars']" />
+      </p>
+      <p v-if="item.date" class="item-date">
+        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        {{ item.day + ' ' + item.dayNo + ' ' + item.month + ' - ' + daysRemaining(item.dateUNIX) }}
+      </p>
+      <p v-if="item.assignee && item.assignee !== claims.email" class="item-date">
+        <font-awesome-icon :icon="['fa-solid', 'fa-user']" />
+        {{ item.assignee }}
       </p>
     </div>
   </div>
@@ -125,16 +114,12 @@ export default {
       }
     },
 
-    timestamp () {
-      return Number(new Date(this.item.date))
-    },
-
     isOverdue () {
-      return this.timestamp && this.timestamp < Date.now()
+      return this.item.dateUNIX && this.item.dateUNIX < Date.now()
     },
 
     isDue () {
-      const date = this.timestamp
+      const date = this.item.dateUNIX
       const due = date - (1000 * 60 * 60 * 24) * 3
       const now = Date.now()
       return date > now && now > due

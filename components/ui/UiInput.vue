@@ -1,6 +1,14 @@
+<style>
+  .help-text {
+    font-size: .8em;
+    display: block;
+    font-weight: 400
+  }
+</style>
+
 <template>
   <div class="field">
-    <label v-if="label" class="label">{{ label }}</label>
+    <label v-if="label" class="label">{{ label }}<span v-if="help" class="help-text">({{ help }})</span></label>
     <div class="control">
       <textarea
         v-if="type === 'textarea'"
@@ -53,6 +61,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    help: {
+      type: String,
+      default: null
     }
   },
 

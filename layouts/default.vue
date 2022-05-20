@@ -81,6 +81,9 @@
       max-width: calc(100% - 49px)
     }
   }
+  svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
+    box-sizing: border-box
+  }
   :focus:not(:focus-visible) {
     outline: none
   }
@@ -114,11 +117,15 @@
   .item-description {
     font-weight: 100
   }
-  .item-title {
+  .item-title, .item-date {
     font-size: .9rem;
     max-width: 82%;
     overflow-wrap: break-word;
     word-wrap: break-word
+  }
+  .item-date, .item-assignee {
+    color: var(--primaryColor);
+    opacity: .6
   }
 
   /* Menu */
@@ -207,9 +214,15 @@
     }
   }
   .list-header {
-    padding-bottom: 5px;
+    padding-bottom: 10px;
     padding-top: 10px;
     margin-top: -10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
     font-size: 18px;
     position: sticky;
     top: -10px;
@@ -217,10 +230,10 @@
     background: #F3F3F3
   }
   .list-header .list-delete {
-    display: none
+    opacity: 0
   }
   .list-header:hover .list-delete {
-    display: inline
+    opacity: 1
   }
   .list-title {
     border: none;
@@ -254,12 +267,10 @@
     transform: scale(1)
   }
   .list-drag-handle {
-    cursor: move;
-    padding: 5px
+    cursor: move
   }
   .list-delete {
-    cursor: pointer;
-    padding: 5px
+    cursor: pointer
   }
   .item-entry {
     padding-top: 10px;
@@ -319,10 +330,46 @@
     overflow: hidden;
     text-overflow: ellipsis
   }
+
+  /* Loading */
+  .sidebar-loading, .main-loading {
+    background-color: #E4E4E4;
+    animation: fade-data .6s linear infinite alternate-reverse
+  }
+  .loading-content {
+    background: linear-gradient(90deg, #F4F4F4 8%, #E4E4E4 18%, #F4F4F4 33%);
+    border-radius: 10px;
+    animation: shimmer-data 5s linear infinite forwards;
+    height: 20px;
+    margin-bottom: 20px
+  }
+  /* stylelint-disable-next-line at-rule-no-unknown */
+  @for $i from 2 through 10 {
+    .loading-content:nth-child(#{$i}) {
+      animation-delay: .25s * $i
+    }
+  }
+
+  @keyframes fade-data {
+    from {
+      opacity: .6
+    }
+    to {
+      opacity: 1
+    }
+  }
+  @keyframes shimmer-data {
+    from {
+      background-position: 0 0
+    }
+    to {
+      background-position: 100rem 0
+    }
+  }
 </style>
 
 <template>
-  <div v-if="authenticated && !$fetchState.pending" class="contentWrapper">
+  <div v-if="authenticated" class="contentWrapper">
     <ui-modal
       ref="modal"
       :active="error.active"
@@ -338,52 +385,63 @@
         </template>
       </div>
     </ui-modal>
-    <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
-    <nav>
-      <nuxt-link to="/">
-        <h2>Clients</h2>
-      </nuxt-link>
-      <input
-        v-model="search"
-        type="search"
-        rel="search"
-        placeholder="Search..."
-        aria-label="Search..."
-        class="search"
-      >
-      <project-nav-link v-if="filteredProjects.hotLeads.length > 0" type="Hot Leads" :clients="clients" :filtered-projects="filteredProjects.hotLeads" :search="search" />
-      <project-nav-link v-if="filteredProjects.development.length > 0" type="Development" :clients="clients" :filtered-projects="filteredProjects.development" :search="search" />
-      <project-nav-link v-if="filteredProjects.inHouse.length > 0" type="In House" :clients="clients" :filtered-projects="filteredProjects.inHouse" :search="search" />
-      <project-nav-link v-if="filteredProjects.coldLeads.length > 0" type="Cold Leads" :clients="clients" :filtered-projects="filteredProjects.coldLeads" :search="search" />
-      <project-nav-link v-if="filteredProjects.paused.length > 0" type="Paused" :clients="clients" :filtered-projects="filteredProjects.paused" :search="search" />
-      <project-nav-link v-if="filteredProjects.onGoing.length > 0" type="On-Going" :clients="clients" :filtered-projects="filteredProjects.onGoing" :search="search" />
-      <project-nav-link v-if="filteredProjects.closedLead.length > 0" type="Closed Leads" :clients="clients" :filtered-projects="filteredProjects.closedLead" :search="search" />
-      <project-nav-link v-if="filteredProjects.cancelled.length > 0" type="Cancelled" :clients="clients" :filtered-projects="filteredProjects.cancelled" :search="search" />
-      <template v-if="filteredProjects.other.length > 0">
-        <h4 id="other">
-          Other
-        </h4>
-        <template v-for="(project, index) in filteredProjects.other">
-          <nuxt-link
-            v-show="((!search) || ((project.business_name).toLowerCase()).startsWith(search.toLowerCase()))"
-            :key="index + project.business_name"
-            :to="`/client/${project.business_shortname.toLowerCase()}`"
-            class="navLink other"
-            v-text="project.business_name"
-          />
+    <template v-if="!$fetchState.pending">
+      <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
+      <button class="refresh" :class="{clicked: refreshed}" @click="refresh">
+        <font-awesome-icon :icon="['fa-solid', 'fa-sync']" />
+      </button>
+      <nav>
+        <nuxt-link to="/">
+          <h2>Clients</h2>
+        </nuxt-link>
+        <input
+          v-model="search"
+          type="search"
+          rel="search"
+          placeholder="Search..."
+          aria-label="Search..."
+          class="search"
+        >
+        <project-nav-link v-if="filteredProjects.hotLeads.length > 0" type="Hot Leads" :clients="clients" :filtered-projects="filteredProjects.hotLeads" :search="search" />
+        <project-nav-link v-if="filteredProjects.development.length > 0" type="Development" :clients="clients" :filtered-projects="filteredProjects.development" :search="search" />
+        <project-nav-link v-if="filteredProjects.inHouse.length > 0" type="In House" :clients="clients" :filtered-projects="filteredProjects.inHouse" :search="search" />
+        <project-nav-link v-if="filteredProjects.coldLeads.length > 0" type="Cold Leads" :clients="clients" :filtered-projects="filteredProjects.coldLeads" :search="search" />
+        <project-nav-link v-if="filteredProjects.paused.length > 0" type="Paused" :clients="clients" :filtered-projects="filteredProjects.paused" :search="search" />
+        <project-nav-link v-if="filteredProjects.onGoing.length > 0" type="On-Going" :clients="clients" :filtered-projects="filteredProjects.onGoing" :search="search" />
+        <project-nav-link v-if="filteredProjects.closedLead.length > 0" type="Closed Leads" :clients="clients" :filtered-projects="filteredProjects.closedLead" :search="search" />
+        <project-nav-link v-if="filteredProjects.cancelled.length > 0" type="Cancelled" :clients="clients" :filtered-projects="filteredProjects.cancelled" :search="search" />
+        <template v-if="filteredProjects.other.length > 0">
+          <h4 id="other">
+            Other
+          </h4>
+          <template v-for="(project, index) in filteredProjects.other">
+            <nuxt-link
+              v-show="((!search) || ((project.business_name).toLowerCase()).startsWith(search.toLowerCase()))"
+              :key="index + project.business_name"
+              :to="`/client/${project.business_shortname.toLowerCase()}`"
+              class="navLink other"
+              v-text="project.business_name"
+            />
+          </template>
         </template>
-      </template>
-      <button v-if="claims.groups.includes('admin')" class="button primary" style="margin-top: .75em" @click="showClientModal()">
-        New Client
-      </button>
-      <button class="button primary" style="margin-top: .75em" @click="logout()">
-        Logout
-      </button>
-    </nav>
-    <button class="refresh" :class="{clicked: refreshed}" @click="refresh">
-      <i class="fas fa-sync" />
-    </button>
-    <nuxt />
+        <button v-if="claims.groups.includes('admin')" class="button primary" style="margin-top: .75em" @click="showClientModal()">
+          New Client
+        </button>
+        <button class="button primary" style="margin-top: .75em" @click="logout()">
+          Logout
+        </button>
+      </nav>
+    </template>
+    <template v-else>
+      <nav class="sidebar-loading">
+        <div class="loading-content" />
+        <div class="loading-content" />
+        <div class="loading-content" />
+        <div class="loading-content" />
+        <div class="loading-content" />
+      </nav>
+    </template>
+    <nuxt keep-alive />
     <ui-modal
       ref="modal"
       :active="modal.client"
@@ -410,7 +468,8 @@ export default {
     if (await this.$auth.isAuthenticated()) {
       this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
       this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
-      const response = await this.$axios.$get('https://api.galexia.agency/get',
+      const self = this
+      await this.$axios.$get('https://api.galexia.agency/get',
         {
           headers: {
             Accept: 'application/json',
@@ -418,21 +477,27 @@ export default {
           }
         }
       )
-
-      response[3].forEach((project, index) => {
-        if (project.lists) {
-          response[3][index].lists = JSON.parse(project.lists)
-        }
-      })
-      const clients = await response[0].sort(function (a, b) {
-        const textA = a.business_shortname.toUpperCase()
-        const textB = b.business_shortname.toUpperCase()
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-      })
-      this.$store.commit('clients', clients)
-      this.$store.commit('contacts', response[1])
-      this.$store.commit('domains', response[2])
-      this.$store.commit('projects', response[3])
+        .then((response) => {
+          response[3].forEach((project, index) => {
+            if (project.lists) {
+              response[3][index].lists = JSON.parse(project.lists)
+            }
+          })
+          const clients = response[0].sort(function (a, b) {
+            const textA = a.business_shortname.toUpperCase()
+            const textB = b.business_shortname.toUpperCase()
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+          })
+          self.$store.commit('clients', clients)
+          self.$store.commit('contacts', response[1])
+          self.$store.commit('domains', response[2])
+          self.$store.commit('projects', response[3])
+        })
+        .catch(function (e) {
+          const error = {}
+          error.description = e
+          self.$store.commit('error', error)
+        })
     } else {
       this.$router.push('/login')
     }

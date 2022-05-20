@@ -6,7 +6,7 @@
   .container {
     margin: 2rem 0
   }
-  i {
+  svg {
     color: var(--primaryColor)
   }
   .client {
@@ -36,7 +36,7 @@
       <h1>
         {{ client.business_name }}
         <a v-if="claims.groups.includes('admin')" @click="showClientModal(client)">
-          <i class="far fa-edit" />
+          <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
         </a>
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
@@ -55,12 +55,12 @@
             {{ contact.org = client.business_name }}
           </span>
           <button :key="contact.id" class="list-container" @click="showContactModal(contact)">
-            <i class="fas fa-address-card" />
+            <font-awesome-icon :icon="['fa-solid', 'fa-address-card']" />
             <span v-text="contact.f_name" />
           </button>
         </template>
         <button class="list-container" @click="showEditContactModal({client_id: client.id})">
-          <i class="fas fa-plus" />
+          <font-awesome-icon :icon="['fa-solid', 'fa-plus']" />
           <span>New Contact</span>
         </button>
       </div>
@@ -130,6 +130,9 @@ export default {
   directives: {
     dragscroll
   },
+  async fetch () {
+    await this.pandleBootstrap()
+  },
   data () {
     return {
       modal: {
@@ -172,66 +175,72 @@ export default {
   },
   asyncComputed: {
     async income () {
+      const self = this
       let income = 0
+      function pandleFetch (url) {
+        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+          .then(function (response) {
+            for (const a in response.data.data) {
+              if (response.data.data[a].attributes['total-amount']) {
+                income = income + parseFloat(response.data.data[a].attributes['total-amount'])
+              }
+            }
+          })
+          .catch(function (e) {
+            const error = {}
+            error.description = e
+            self.$store.commit('error', error)
+          })
+      }
+      const URLs = []
       if (this.claims.groups.includes('billing')) {
         for (const project in this.projects) {
           if (this.projects[project].bb_revenue) {
             income = income + parseFloat(this.projects[project].bb_revenue)
           }
           if (this.projects[project].pandle_id) {
-            const pandleIncome = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-              {
-                url: `/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`,
-                type: 'GET'
-              }
-            )
-            for (const a in pandleIncome.data.data) {
-              if (pandleIncome.data.data[a].attributes['total-amount']) {
-                income = income + parseFloat(pandleIncome.data.data[a].attributes['total-amount'])
-              }
-            }
+            URLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`)
           }
         }
         if (this.client) {
           if (this.client.pandle_id) {
-            const pandleIncome = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-              {
-                url: `/companies/46972/customers/${this.client.pandle_id}/account`,
-                type: 'GET'
-              }
-            )
-            for (const a in pandleIncome.data.data) {
-              if (pandleIncome.data.data[a].attributes['total-amount']) {
-                income = income + parseFloat(pandleIncome.data.data[a].attributes['total-amount'])
-              }
-            }
+            URLs.push(`/companies/46972/customers/${this.client.pandle_id}/account`)
           }
         }
       }
+      await Promise.all(URLs.map(pandleFetch))
       return income
     },
     async expenses () {
+      const self = this
       let expenses = 0
+      function pandleFetch (url) {
+        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+          .then(function (response) {
+            for (const a in response.data.data) {
+              if (response.data.data[a].attributes['total-amount']) {
+                expenses = expenses + parseFloat(response.data.data[a].attributes['total-amount'])
+              }
+            }
+          })
+          .catch(function (e) {
+            const error = {}
+            error.description = e
+            self.$store.commit('error', error)
+          })
+      }
+      const URLs = []
       if (this.claims.groups.includes('billing')) {
         for (const project in this.projects) {
           if (this.projects[project].bb_expenses) {
             expenses = expenses + parseFloat(this.projects[project].bb_expenses)
           }
           if (this.projects[project].pandle_id) {
-            const pandleExpenses = await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-              {
-                url: `/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`,
-                type: 'GET'
-              }
-            )
-            for (const a in pandleExpenses.data.data) {
-              if (pandleExpenses.data.data[a].attributes['total-amount']) {
-                expenses = expenses + parseFloat(pandleExpenses.data.data[a].attributes['total-amount'])
-              }
-            }
+            URLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`)
           }
         }
       }
+      await Promise.all(URLs.map(pandleFetch))
       return expenses
     }
   },

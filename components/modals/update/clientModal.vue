@@ -8,28 +8,25 @@
 <template>
   <div class="query-form card">
     <div class="card-content">
-      <div class="field">
-        <label for="business_name" class="label">
-          Business Name *
-        </label>
-        <input
-          v-model="business_name"
-          name="business_name"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="business_shortname" class="label">
-          Business Shortname *
-        </label>
-        <input
-          v-model="business_shortname"
-          name="business_shortname"
-          class="input"
-          type="text"
-        >
-      </div>
+      <ui-input
+        v-model="business_name"
+        v-validate="'required'"
+        :error="getError('business_name')"
+        name="business_name"
+        label="Business Name *"
+        type="text"
+        autofocus
+        @enter="validate"
+      />
+      <ui-input
+        v-model="business_shortname"
+        v-validate="'required'"
+        :error="getError('business_shortname')"
+        name="business_shortname"
+        label="Business Shortname *"
+        type="text"
+        @enter="validate"
+      />
       <div class="field">
         <label for="about" class="label">
           About The Business

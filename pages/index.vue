@@ -31,7 +31,10 @@
     position: relative
   }
   .card {
-    display: block
+    display: block;
+    margin: 0;
+    // stylelint-disable-next-line declaration-no-important
+    cursor: pointer!important
   }
   table td:first-child {
     font-weight: bold
@@ -41,6 +44,11 @@
   }
   table tr:nth-of-type(odd) {
     background-color: var(--scrollbarBG)
+  }
+  .home-card-container {
+    margin-bottom: 1rem;
+    display: block;
+    cursor: pointer
   }
   @media (max-width: 1000px) {
     h1 {
@@ -56,155 +64,178 @@
 
 <template>
   <div v-if="$parent.$parent.projects" class="home">
-    <h1>Welcome back {{ claims.name }}</h1>
-    <main>
-      <section v-if="overdueItems.length > 0">
-        <h2>Overdue</h2>
-        <section class="list-container">
-          <div v-for="(item, index) in overdueItems" :key="item.id">
-            <h4 v-if="index === 0 || overdueItems[index - 1].day !== item.day" v-text="item.day + ' ' + item.dayNo + ' ' + item.month" />
-            <h6 v-if="index === 0 || overdueItems[index - 1].project !== item.project">
-              <nuxt-link :to="'/client/' + item.projectShort.toLowerCase()" v-text="item.project" />
-            </h6>
-            <Card :item="item" :icons="false" />
-          </div>
+    <template v-if="!$parent.$parent.$fetchState.pending">
+      <h1>Welcome back {{ claims.name }}</h1>
+      <main>
+        <section v-if="overdueItems.length > 0">
+          <h2>Overdue</h2>
+          <section class="list-container">
+            <div v-for="(item, index) in overdueItems" :key="item.id">
+              <h4 v-if="index === 0 || overdueItems[index - 1].day !== item.day" v-text="item.day + ' ' + item.dayNo + ' ' + item.month" />
+              <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName">
+                <nuxt-link :to="'/client/' + item.clientShortName.toLowerCase()" v-text="item.clientName" />
+              </h6>
+              <Card :item="item" :icons="false" />
+            </div>
+          </section>
         </section>
-      </section>
-      <section v-if="dueItems.length > 0">
-        <h2>To Do</h2>
-        <section class="list-container">
-          <div v-for="(item, index) in dueItems" :key="item.id">
-            <h4 v-if="index === 0 || dueItems[index - 1].day !== item.day" v-text="item.day + ' ' + item.dayNo + ' ' + item.month" />
-            <h6 v-if="index === 0 || dueItems[index - 1].project !== item.project">
-              <nuxt-link :to="'/client/' + item.projectShort.toLowerCase()" v-text="item.project" />
-            </h6>
-            <Card :item="item" :icons="false" />
-          </div>
+        <section v-if="dueItems.length > 0">
+          <h2>To Do</h2>
+          <section class="list-container">
+            <nuxt-link v-for="(item, index) in dueItems" :key="item.id" :to="'/client/' + item.clientShortName.toLowerCase()" class="home-card-container">
+              <h6 v-if="index === 0 || dueItems[index - 1].clientName !== item.clientName" v-text="item.clientName" />
+              <Card :item="item" :icons="false" />
+            </nuxt-link>
+          </section>
         </section>
-      </section>
-    </main>
-    <main v-if="claims.groups.includes('billing')">
-      <section>
-        <h2>Projects Status</h2>
-        <pie-chart class="chart" :chart-data="projects" />
-      </section>
-      <section>
-        <h2>Source of Clients</h2>
-        <pie-chart class="chart" :chart-data="clientSource" />
-      </section>
-      <section>
-        <h2>Hosting Locations</h2>
-        <pie-chart class="chart" :chart-data="projectHosting" />
-      </section>
-      <section>
-        <h2>
-          Expenses Report
-        </h2>
-        <pie-chart
-          class="chart"
-          :chart-data="expenseData"
-          :options="{
-            tooltips: {
-              callbacks: {
-                label: function(tooltipItem, data) {
-                  return data.labels[tooltipItem.index] + ': £' + data.datasets[0].data[tooltipItem.index]
+      </main>
+      <main v-if="claims.groups.includes('billing')">
+        <section>
+          <h2>Projects Status</h2>
+          <pie-chart class="chart" :chart-data="projects" />
+        </section>
+        <section>
+          <h2>Source of Clients</h2>
+          <pie-chart class="chart" :chart-data="clientSource" />
+        </section>
+        <section>
+          <h2>Hosting Locations</h2>
+          <pie-chart class="chart" :chart-data="projectHosting" />
+        </section>
+        <section>
+          <h2>
+            Expenses Report
+          </h2>
+          <pie-chart
+            class="chart"
+            :chart-data="expenseData"
+            :options="{
+              tooltips: {
+                callbacks: {
+                  label: function(tooltipItem, data) {
+                    return data.labels[tooltipItem.index] + ': £' + data.datasets[0].data[tooltipItem.index]
+                  }
                 }
               }
-            }
-          }"
-        />
-      </section>
-      <section>
-        <h2>
-          Bank Account Balance
-        </h2>
-        <bar-chart class="chart" :chart-data="bankAccountData" />
-      </section>
-      <section>
-        <h2>
-          Sales Performance
-        </h2>
-        <bar-chart class="chart" :chart-data="salesData" />
-      </section>
-      <section>
-        <h2>
-          Profit &amp; Loss Performance
-        </h2>
-        <bar-chart class="chart" :chart-data="profitLossData" />
-      </section>
-      <section>
-        <h2>
-          Cash Flow
-        </h2>
-        <bar-chart class="chart" :chart-data="cashFlowData" />
-      </section>
-      <section>
-        <h2>
-          Money Breakdown
-        </h2>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                Completion Total:
-              </td>
-              <td v-text="'£' + completion_total" />
-            </tr>
-            <tr>
-              <td>
-                Total Revenue
-              </td>
-              <td v-text="'£' + 0" />
-            </tr>
-            <tr>
-              <td>
-                Profit for the Period
-              </td>
-              <td v-text="'£' + TaxDividend['profit-for-period']" />
-            </tr>
-            <tr>
-              <td>
-                Reserves Brought Forward
-              </td>
-              <td v-text="'£' + TaxDividend['profit-carried-forward']" />
-            </tr>
-            <tr>
-              <td>
-                Corporation Tax Estimate
-              </td>
-              <td v-text="'£' + TaxDividend['estimated-corp-tax-to-pay']" />
-            </tr>
-            <tr>
-              <td>
-                Dividends Taken
-              </td>
-              <td v-text="'£' + TaxDividend['dividends-paid']" />
-            </tr>
-            <tr>
-              <td>
-                Available for Dividends
-              </td>
-              <td v-text="'£' + TaxDividend['available-amount']" />
-            </tr>
-          </tbody>
-        </table>
-      </section>
-      <section>
-        <h2>
-          Clients with a completion
-        </h2>
-        <table>
-          <tbody>
-            <tr v-for="client, index in clientsWithCompletion" :key="index">
-              <td>
-                <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
-              </td>
-              <td v-text="`£${client.project.completion_amount}`" />
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </main>
+            }"
+          />
+        </section>
+        <section>
+          <h2>
+            Bank Account Balance
+          </h2>
+          <bar-chart class="chart" :chart-data="bankAccountData" />
+        </section>
+        <section>
+          <h2>
+            Sales Performance
+          </h2>
+          <bar-chart class="chart" :chart-data="salesData" />
+        </section>
+        <section>
+          <h2>
+            Profit &amp; Loss Performance
+          </h2>
+          <bar-chart class="chart" :chart-data="profitLossData" />
+        </section>
+        <section>
+          <h2>
+            Cash Flow
+          </h2>
+          <bar-chart class="chart" :chart-data="cashFlowData" />
+        </section>
+        <section>
+          <h2>
+            Money Breakdown
+          </h2>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  Completion Total:
+                </td>
+                <td v-text="'£' + completion_total" />
+              </tr>
+              <tr>
+                <td>
+                  Total Revenue
+                </td>
+                <td v-text="'£' + 0" />
+              </tr>
+              <tr>
+                <td>
+                  Profit for the Period
+                </td>
+                <td v-text="'£' + TaxDividend['profit-for-period']" />
+              </tr>
+              <tr>
+                <td>
+                  Reserves Brought Forward
+                </td>
+                <td v-text="'£' + TaxDividend['profit-carried-forward']" />
+              </tr>
+              <tr>
+                <td>
+                  Corporation Tax Estimate
+                </td>
+                <td v-text="'£' + TaxDividend['estimated-corp-tax-to-pay']" />
+              </tr>
+              <tr>
+                <td>
+                  Dividends Taken
+                </td>
+                <td v-text="'£' + TaxDividend['dividends-paid']" />
+              </tr>
+              <tr>
+                <td>
+                  Available for Dividends
+                </td>
+                <td v-text="'£' + TaxDividend['available-amount']" />
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section>
+          <h2>
+            Clients with a completion
+          </h2>
+          <table>
+            <tbody>
+              <tr v-for="client, index in clientsWithCompletion" :key="index">
+                <td>
+                  <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
+                </td>
+                <td v-text="`£${client.project.completion_amount}`" />
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
+    </template>
+    <template v-else>
+      <main>
+        <section class="list-container">
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+        </section>
+        <section class="list-container">
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+          <div class="loading-content" />
+        </section>
+      </main>
+    </template>
   </div>
 </template>
 
@@ -221,23 +252,9 @@ export default {
     Card
   },
   async fetch () {
-    let pandle
+    await this.pandleBootstrap()
     const self = this
-
-    async function pandleSignin () {
-      const response = await self.$axios.get(window.location.origin + '/.netlify/functions/sign_in')
-      sessionStorage.setItem('pandle', JSON.stringify(response))
-    }
-
-    function pandleSetUp () {
-      pandle = JSON.parse(sessionStorage.getItem('pandle'))
-      // Set pandle headers
-      self.$axios.setHeader('access-token', pandle.data['access-token'])
-      self.$axios.setHeader('client', pandle.data.client)
-      self.$axios.setHeader('uid', pandle.data.uid)
-    }
-
-    function pandleFetch ({ commit, url, type }) {
+    function pandleFetch ({ commit, url }) {
       if (sessionStorage.getItem(commit)) {
         return self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
       } else {
@@ -255,32 +272,6 @@ export default {
     }
 
     if (this.claims.groups.includes('billing')) {
-      /* Pandle */
-      // If pandle data is not set in local storage
-      if (!sessionStorage.getItem('pandle')) {
-        await pandleSignin()
-      } else if (JSON.parse(sessionStorage.getItem('pandle')).data.expiry) {
-        // Check if pandle data has expired
-        const unixTimestamp = JSON.parse(sessionStorage.getItem('pandle')).data.expiry
-        if (new Date() > new Date(unixTimestamp * 1000)) {
-          await pandleSignin()
-        }
-      } else {
-        this.$store.commit('error', { description: 'Cannot sign in to Pandle' })
-      }
-      pandleSetUp()
-      // Test login worked
-      try {
-        await this.$axios.post(window.location.origin + '/.netlify/functions/request',
-          {
-            url: '/companies',
-            type: 'GET'
-          }
-        )
-      } catch {
-        await pandleSignin()
-      }
-
       const pandleURLs = [
         {
           url: '/companies/46972/dashboard/bank_account_chart?page=1&size=24',
@@ -307,7 +298,7 @@ export default {
           commit: 'pandleTaxDividendChart'
         }
       ]
-      Promise.all(pandleURLs.forEach(function (URL) {
+      Promise.all(pandleURLs.forEach((URL) => {
         pandleFetch(URL)
       }))
     }
@@ -566,15 +557,6 @@ export default {
       // handle case of empty input
       return e.childNodes.length === 0 ? '' : e.childNodes[0].nodeValue
     },
-    validURL (str) {
-      const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
-      return !!pattern.test(str)
-    },
     getLists (dueType) {
       function due (timestamp) {
         if (dueType === 'overdue') {
@@ -584,32 +566,23 @@ export default {
         }
       }
       const toDos = []
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
       this.$parent.$parent.projects.forEach((project) => {
         if (project.lists) {
           project.lists.forEach((list) => {
             list.items.forEach((item) => {
-              if (item.date) {
-                const timestamp = Number(new Date(item.date))
-                if (timestamp && due(timestamp)) {
-                  const date = new Date(item.date)
-                  // eslint-disable-next-line
-                  let newItem = { ...item }
-                  newItem.project = this.$parent.$parent.clients.find(client => client.id === project.client_id).business_name
-                  newItem.projectShort = this.$parent.$parent.clients.find(client => client.id === project.client_id).business_shortname
-                  newItem.dayNo = date.getDate()
-                  newItem.day = days[date.getDay()]
-                  newItem.month = months[date.getMonth()]
-                  newItem.date = date
-                  toDos.push(newItem)
+              if (item.asignee === this.claims.email || (this.claims.email === 'joe@galexia.agency' && !item.asignee)) {
+                if (item.date) {
+                  if (item.dateUNIX && due(item.dateUNIX)) {
+                    const newItem = { ...item }
+                    toDos.push(newItem)
+                  }
                 }
               }
             })
           })
         }
       })
-      return toDos.sort((a, b) => b.date - a.date).reverse()
+      return toDos.sort((a, b) => b.dateUNIX - a.dateUNIX).reverse()
     }
   }
 }

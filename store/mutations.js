@@ -74,19 +74,18 @@ const mutations = {
     state.projects.find(project => project.id === projectId).lists = state.projects.find(project => project.id === projectId).lists.filter(i => i.id !== listId)
   },
 
-  addItem (state, { projectId, listId, title, description, date }) {
+  addItem (state, { projectId, listId, title, description, date, dateUNIX, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }) {
     const list = getListById(state.projects.find(project => project.id === projectId).lists, listId)
     const createdDate = Date.now()
     const updatedDate = Date.now()
-    list.items.push(makeItem(title, description, date, createdDate, updatedDate))
+    list.items.push(makeItem({ title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }))
   },
 
-  updateItem (state, { projectId, itemId, title, description, date, createdDate }) {
-    const item = getItemById(state.projects.find(project => project.id === projectId).lists, itemId)
+  updateItem (state, { projectId, itemId, title, description, date, dateUNIX, createdDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }) {
     const updatedDate = Date.now()
-    if (item) {
-      Object.assign(item, makeItem(title, description, date, createdDate, updatedDate, itemId))
-    }
+    const updatedItem = makeItem({ title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee, itemId })
+    const item = getItemById(state.projects.find(project => project.id === projectId).lists, itemId)
+    Object.assign(item, updatedItem)
   },
 
   moveItem (state, [projectId, fromListRef, fromIndex, toListRef, toIndex]) {

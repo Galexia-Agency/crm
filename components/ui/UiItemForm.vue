@@ -26,6 +26,15 @@
         @enter="validate"
         @resetDate="resetDate"
       />
+      <ui-input
+        v-model="assignee"
+        name="assignee"
+        type="text"
+        label="Assignee"
+        help="Email Address"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
+        @enter="validate"
+      />
       <div class="field is-grouped">
         <ui-button type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))" @click="validate">
           {{ id ? 'Update' : 'Add' }}
@@ -47,9 +56,16 @@ function data () {
     title: '',
     description: ' ',
     date: null,
+    dayNo: null,
+    day: null,
+    month: null,
     message: '',
     createdDate: null,
-    updatedDate: null
+    updatedDate: null,
+    clientName: null,
+    clientShortName: null,
+    updatedBy: null,
+    assignee: 'joe@galexia.agency'
   }
 }
 export default {
@@ -76,16 +92,6 @@ export default {
       Object.assign(this, data)
       this.$el.querySelector('input').focus()
     },
-    validate () {
-      this.$validator
-        .validate()
-        .then((state) => {
-          if (state) {
-            return this.submit()
-          }
-          this.message = 'Please complete the required fields!'
-        })
-    },
     resetDate () {
       this.date = null
     },
@@ -97,13 +103,6 @@ export default {
     },
     reset () {
       Object.assign(this, data())
-    },
-    getError (name) {
-      if (this.errors) {
-        return (this.errors.first(name) || '').replace(/The .+ field/, 'This field')
-      } else {
-        return null
-      }
     }
   }
 }

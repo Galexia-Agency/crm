@@ -11,16 +11,17 @@
       <input
         :value="input"
         class="input"
+        enterkeyhint="enter"
         :placeholder="placeholder"
         @keydown.enter="onEnter"
-        @input="update($event)"
-        @paste="pasteMultiple($event)"
+        @input="update"
+        @paste="pasteMultiple"
       >
     </div>
     <div v-if="icon" class="control">
       <button type="submit" class="button is-primary" :disabled="input.length === 0" @click="onClick">
         <span class="icon is-small">
-          <i :class="`fas fa-${icon}`" />
+          <font-awesome-icon :icon="['fa-solid', `fa-${icon}`]" />
         </span>
       </button>
     </div>
@@ -53,6 +54,7 @@ export default {
   },
   methods: {
     onEnter ($event) {
+      console.log('enter')
       this.emit($event.metaKey || $event.ctrlKey)
     },
     onClick () {
@@ -68,13 +70,13 @@ export default {
         this.input = ''
       }
     },
-    update (evt) {
-      this.input = evt.target.value
+    update ($event) {
+      this.input = $event.target.value
     },
-    pasteMultiple (evt) {
+    pasteMultiple ($event) {
       const self = this
-      if (evt.clipboardData.getData('text').includes('\n')) {
-        evt.clipboardData.getData('text').split('\n').forEach((i) => {
+      if ($event.clipboardData.getData('text').includes('\n')) {
+        $event.clipboardData.getData('text').split('\n').forEach((i) => {
           this.$emit('enter', {
             id: self.listId,
             text: i

@@ -41,8 +41,15 @@
 }
 
 /* Editor */
-button.menu_button:focus {
-  box-shadow: none
+button.menu_button {
+  display: inline-flex;
+  border-radius: .25em;
+  &:focus {
+    box-shadow: none
+  }
+  &.is-active {
+    border: 1px solid black
+  }
 }
 #wrapper--rich_editor .control {
   min-height: calc(120px + 48px);

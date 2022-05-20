@@ -11,6 +11,7 @@
     text-overflow: ellipsis
   }
 </style>
+
 <template>
   <div>
     <h4 v-text="type" />

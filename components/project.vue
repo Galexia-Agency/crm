@@ -1,40 +1,19 @@
 <style scoped lang="scss">
-  h2 {
-    display: inline
-  }
   .edit {
-    color: var(--primaryColor)
+    color: var(--primaryColor);
+    font-size: 1.25rem
   }
   button.centered {
     cursor: pointer;
-    user-select: none;
-    h2 {
-      display: inline-grid;
-      place-content: center;
-      place-items: center;
-      grid-auto-flow: column;
-      gap: .5em
+    display: inline-grid;
+    place-content: center;
+    place-items: center;
+    font-size: 1.5rem;
+    .fa-sort-up {
+      margin-top: .4em
     }
-    i {
-      height: .66em;
-      width: .66em;
-      display: grid;
-      place-content: center;
-      place-items: center;
-      position: relative
-    }
-    i:before {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0
-    }
-    .fa-sort-up:before {
-      top: .1em
-    }
-    .fa-sort-down:before {
-      top: -.3em
+    .fa-sort-down {
+      margin-top: -.4em
     }
   }
   .project-details {
@@ -74,63 +53,61 @@
   <div>
     <div class="project-details">
       <button class="centered" @click="show = !show">
-        <h2>
-          <i v-if="show" class="fas fa-sort-up" />
-          <i v-else class="fas fa-sort-down" />
-        </h2>
+        <font-awesome-icon v-if="show" :icon="['fa-solid', 'fa-sort-up']" />
+        <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-down']" />
       </button>
       <h2>
         {{ project.name }}
       </h2>
       <a v-if="project.admin.includes(claims.email)" class="edit" @click="showProjectModal(project)">
-        <i class="far fa-edit" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
       </a>
       <a v-if="project.project_url" class="list-container" :href="project.project_url" target="_blank">
-        <i class="fas fa-desktop" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-desktop']" />
         <span>URL</span>
       </a>
       <a v-if="project.project_login_url" class="list-container" :href="project.project_login_url" target="_blank">
-        <i class="fas fa-sign-in-alt" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-sign-in-alt']" />
         <span>Login</span>
       </a>
       <a v-if="project.github_url" class="list-container" :href="project.github_url" target="_blank">
-        <i class="fab fa-github" />
+        <font-awesome-icon :icon="['fa-brands', 'fa-github']" />
         <span>GitHub</span>
       </a>
       <a v-if="project.drive_url" class="list-container" :href="project.drive_url" target="_blank">
-        <i class="fab fa-google-drive" />
+        <font-awesome-icon :icon="['fa-brands', 'fa-google-drive']" />
         <span>Drive</span>
       </a>
       <span v-if="project.hosting && project.hosting === 'Digital Ocean'" class="list-container">
-        <i class="fab fa-digital-ocean" />
+        <font-awesome-icon :icon="['fa-brands', 'fa-digital-ocean']" />
         <span>Digital Ocean</span>
       </span>
       <span v-else-if="project.hosting && project.hosting === 'Netlify'" class="list-container">
-        <i class="fas fa-cloud" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
         <span>Netlify</span>
       </span>
       <a v-else-if="project.hosting && validURL(project.hosting)" :href="project.hosting" target="_blank" class="list-container">
-        <i class="fas fa-cloud" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
         <span v-text="formatURL(project.hosting)" />
       </a>
       <span v-else-if="project.hosting" class="list-container">
-        <i class="fas fa-cloud" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
         <span v-text="project.hosting" />
       </span>
       <div class="list-container">
-        <i class="fas fa-tasks" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-tasks']" />
         <span v-text="project.status" />
       </div>
       <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle(project)">
-        <i class="fas fa-calculator" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
       </a>
       <a v-else-if="project.pandle_id && claims.groups.includes('admin')" class="list-container" :href="`https://my.pandle.com/projects/${project.pandle_id}`" target="_blank">
-        <i class="fas fa-calculator" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         View in Pandle
       </a>
       <Toggle :model="showArchived" label="Show Deleted Items" class="list-container" :class="{toggled: showArchived}" @input="showArchived = $event">
-        <i class="fas fa-trash-alt" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-trash-can']" />
       </Toggle>
     </div>
     <board v-show="show" :project-id="project.id" />

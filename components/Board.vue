@@ -14,12 +14,12 @@
             <Draggable v-show="list.archived !== true || ($parent.showArchived && list.archived)" :key="list.id">
               <section ref="list" class="list-container" :data-id="list.id" :class="{archived: list.archived}">
                 <div v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))" class="list-header">
-                  <span class="list-drag-handle">&#x2630;</span>
+                  <font-awesome-icon :icon="['fa-solid', 'fa-grip']" class="list-drag-handle" />
                   <input class="list-title" :value="list.title" @blur="editList($event, list.id)">
-                  <span v-if="!list.archived" class="list-delete" @click="archiveList(list.id)">&#10006;</span>
+                  <font-awesome-icon v-if="!list.archived" :icon="['fa-solid', 'fa-box-archive']" class="list-delete" @click="archiveList(list.id)" />
                   <template v-else>
-                    <i class="list-delete fas fa-edit" @click="unarchiveList(list.id)" />
-                    <span v-if="$parent.project.admin.includes($parent.claims.email)" class="list-delete" @click="removeList(list.id)">&#10006;</span>
+                    <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="list-delete" @click="unarchiveList(list.id)" />
+                    <font-awesome-icon v-if="$parent.project.admin.includes($parent.claims.email)" :icon="['fa-solid', 'fa-trash-can']" class="list-delete" @click="removeList(list.id)" />
                   </template>
                 </div>
                 <div v-else class="list-header">
@@ -173,7 +173,7 @@ export default {
         this.showModal({ title: text, description: '' })
         return
       }
-      this.addItem(id, text)
+      this.$store.dispatch('addItem', { projectId: this.projectId, listId: id, title: text })
     },
 
     onAddFullItem (item) {
@@ -181,12 +181,8 @@ export default {
       if (item.id) {
         this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
       } else {
-        this.addItem(this.activeListId, item.title, item.description, item.date)
+        this.$store.dispatch('addItem', { projectId: this.projectId, listId: this.activeListId, title: item.title, description: item.description, date: item.date, assignee: item.assignee })
       }
-    },
-
-    addItem (listId, title, description, date) {
-      this.$store.dispatch('addItem', { projectId: this.projectId, listId, title, description, date })
     },
 
     editItem (item) {

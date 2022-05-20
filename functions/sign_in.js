@@ -1,4 +1,3 @@
-const qs = require('querystring')
 const axios = require('axios')
 const headers = {
   'Access-Control-Allow-Headers': 'authorization',
@@ -18,10 +17,10 @@ exports.handler = async function handler (event, context, callback) {
   if (event.headers.authorization) {
     const accessToken = event.headers.authorization.split(' ')
     response = await axios.post(`${process.env.OKTA_ISSUER}/oauth2/default/v1/introspect?client_id=${process.env.OKTA_CLIENT_ID}`,
-      qs.stringify({
+      new URLSearchParams({
         token: accessToken[1],
         token_type_hint: 'access_token'
-      }),
+      }).toString(),
       {
         headers: {
           Accept: 'application/json',

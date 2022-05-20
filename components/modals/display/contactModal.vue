@@ -1,5 +1,5 @@
-<style scoped>
-  i {
+<style scoped lang="scss">
+  svg {
     color: var(--primaryColor)
   }
   .fa-address-card {
@@ -7,10 +7,10 @@
     margin-bottom: 1rem
   }
   .edit {
-    float: right
-  }
-  .fa-edit {
-    font-size: 1rem
+    float: right;
+    svg {
+      font-size: 1.25rem
+    }
   }
   a {
     display: block;
@@ -23,9 +23,9 @@
 <template>
   <div class="card">
     <div class="card-content">
-      <i class="fas fa-address-card" />
+      <font-awesome-icon :icon="['fa-solid', 'fa-address-card']" />
       <button class="edit" @click="edit">
-        <i class="far fa-edit" />
+        <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
       </button>
       <h2 v-if="contact.title && contact.f_name && contact.l_name" v-text="`${contact.f_name} ${contact.l_name} (${contact.title})`" />
       <h2 v-else-if="contact.f_name && contact.l_name" v-text="`${contact.f_name} ${contact.l_name}`" />
@@ -34,7 +34,7 @@
       <template v-if="contact.email">
         <template v-for="email in contact.email.split(',')">
           <a :key="email" target="_blank" :href="`mailto:${email.toLowerCase()}`">
-            <i class="fas fa-envelope" />
+            <font-awesome-icon :icon="['fa-solid', 'fa-envelope']" />
             {{ email.toLowerCase() }}
           </a>
         </template>
@@ -42,14 +42,14 @@
       <template v-if="contact.tel">
         <template v-for="tel in contact.tel.split(',')">
           <a :key="tel" target="_blank" :href="`tel:${tel}`">
-            <i class="fas fa-phone" />
+            <font-awesome-icon :icon="['fa-solid', 'fa-phone']" />
             {{ tel }}
           </a>
         </template>
       </template>
       <template v-if="contact.facebook">
         <a target="_blank" :href="contact.facebook">
-          <i class="fab fa-facebook-f" />
+          <font-awesome-icon :icon="['fa-brands', 'fa-facebook-f']" />
           {{ contact.facebook }}
         </a>
       </template>
