@@ -23,7 +23,7 @@
     right: 10px;
     cursor: pointer;
     display: grid;
-    grid-gap: .5rem;
+    gap: .5rem;
     grid-auto-flow: column
   }
   .icon {
