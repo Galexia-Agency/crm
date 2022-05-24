@@ -242,7 +242,9 @@ export default {
       Object.assign(this, data())
     },
     businessShortnameCreator ($event) {
-      this.business_shortname = encodeURIComponent($event.replaceAll(' ', '-').toLowerCase())
+      if (!this.business_shortname) {
+        this.business_shortname = encodeURIComponent($event.replaceAll(' ', '-').toLowerCase())
+      }
     }
   }
 }
