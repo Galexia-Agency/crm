@@ -112,7 +112,7 @@
               tooltips: {
                 callbacks: {
                   label: function(tooltipItem, data) {
-                    return data.labels[tooltipItem.index] + ': £' + data.datasets[0].data[tooltipItem.index]
+                    return data.labels[tooltipItem.index] + ': £' + data.datasets[0].data[tooltipItem.index].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
                   }
                 }
               }
@@ -159,37 +159,37 @@
                 <td>
                   Total Revenue
                 </td>
-                <td v-text="'£' + 0" />
+                <td v-text="'£' + revenue" />
               </tr>
               <tr>
                 <td>
                   Profit for the Period
                 </td>
-                <td v-text="'£' + TaxDividend['profit-for-period']" />
+                <td v-text="'£' + parseFloat(TaxDividend['profit-for-period']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Reserves Brought Forward
                 </td>
-                <td v-text="'£' + TaxDividend['profit-carried-forward']" />
+                <td v-text="'£' + parseFloat(TaxDividend['profit-carried-forward']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Corporation Tax Estimate
                 </td>
-                <td v-text="'£' + TaxDividend['estimated-corp-tax-to-pay']" />
+                <td v-text="'£' + parseFloat(TaxDividend['estimated-corp-tax-to-pay']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Dividends Taken
                 </td>
-                <td v-text="'£' + TaxDividend['dividends-paid']" />
+                <td v-text="'£' + parseFloat(TaxDividend['dividends-paid']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Available for Dividends
                 </td>
-                <td v-text="'£' + TaxDividend['available-amount']" />
+                <td v-text="'£' + parseFloat(TaxDividend['available-amount']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
             </tbody>
           </table>
@@ -204,7 +204,7 @@
                 <td>
                   <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
                 </td>
-                <td v-text="`£${client.project.completion_amount}`" />
+                <td v-text="`£${client.project.completion_amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
               </tr>
             </tbody>
           </table>
@@ -273,11 +273,11 @@ export default {
     if (this.claims.groups.includes('billing')) {
       const pandleURLs = [
         {
-          url: '/companies/46972/dashboard/bank_account_chart?page=1&size=24',
+          url: '/companies/46972/dashboard/bank_account_chart',
           commit: 'pandleBankAccountChart'
         },
         {
-          url: '/companies/46972/dashboard/cash_flow_chart?page=1&size=24',
+          url: '/companies/46972/dashboard/cash_flow_chart?page=2&size=24',
           commit: 'pandleCashFlowChart'
         },
         {
@@ -306,6 +306,18 @@ export default {
     ...mapState([
       'claims'
     ]),
+    revenue () {
+      let a = 0
+      for (const sale in this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values']) {
+        a = a + parseFloat(this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values'][sale].amount)
+      }
+      for (const project in this.$store.state.projects) {
+        if (this.$store.state.projects[project].bb_revenue) {
+          a = a + parseFloat(this.$store.state.projects[project].bb_revenue)
+        }
+      }
+      return a.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    },
     TaxDividend () {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']
     },
@@ -327,7 +339,7 @@ export default {
           c = c + parseInt(this.$store.state.projects[project].completion_amount)
         }
       }
-      return c
+      return c.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     clientsWithCompletion () {
       const c = []
@@ -404,7 +416,7 @@ export default {
     salesValues () {
       const a = []
       for (const elem in this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values'][elem].amount)
+        a.push(parseFloat(this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values'][elem].amount).toFixed(2))
       }
       return a
     },
@@ -429,7 +441,7 @@ export default {
     profitLossValues () {
       const a = []
       for (const elem in this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values'][elem].amount)
+        a.push(parseFloat(this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values'][elem].amount).toFixed(2))
       }
       return a
     },
@@ -454,7 +466,7 @@ export default {
     cashFlowValues () {
       const a = []
       for (const elem in this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values'][elem].amount)
+        a.push(parseFloat(this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values'][elem].amount).toFixed(2))
       }
       return a
     },
@@ -479,7 +491,7 @@ export default {
     expenseValues () {
       const a = []
       for (const elem in this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values'][elem].amount)
+        a.push(parseFloat(this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values'][elem].amount).toFixed(2))
       }
       return a
     },

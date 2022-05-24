@@ -24,7 +24,11 @@ export default {
         mode: 'single',
         callbacks: {
           label (tooltipItems, data) {
-            return '£' + tooltipItems.yLabel
+            if (parseFloat(tooltipItems.yLabel) > 0) {
+              return '£' + parseFloat(tooltipItems.yLabel).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            } else {
+              return '-£' + Math.abs(parseFloat(tooltipItems.yLabel).toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
           }
         }
       }

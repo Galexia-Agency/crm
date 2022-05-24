@@ -16,17 +16,17 @@
   }
   .fixed {
     position: sticky;
-    left: 0;
+    left: 0
+  }
+  .about_the_business {
+    margin-bottom: 2em;
+    white-space: break-spaces;
     max-width: 1000px
   }
   .monies {
     display: flex;
     flex-wrap: wrap;
     gap: 1em
-  }
-  .about_the_business {
-    margin-bottom: 2em;
-    white-space: break-spaces
   }
 </style>
 
@@ -41,10 +41,10 @@
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
       <div v-if="claims.groups.includes('billing')" class="monies">
-        <h2 v-text="'Total Income: £' + income" />
-        <h2 v-text="'Total Expenses: £' + expenses" />
-        <h2 v-text="'Total Profit: £' + profit" />
-        <h2 v-text="'Completion Total: £' + completion_total" />
+        <h2 v-text="'Total Income: £' + income.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Expenses: £' + expenses.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Profit: £' + profit.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Completion Total: £' + completion_total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
       <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" @click="addClientPandle()">
         Add to Pandle
