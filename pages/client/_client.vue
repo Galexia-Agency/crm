@@ -337,13 +337,34 @@ export default {
     },
     async addClientPandle () {
       const data = this.client
-      try {
-        await this.$store.dispatch('addClientPandle', data)
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
+      const error = {}
+      if (!data.billing_email) {
+        error.description = 'This client needs a Billing Email before they can be added to Pandle'
         this.$store.commit('error', error)
+      } else if (!data.address_line_1) {
+        error.description = 'This client needs an Address Line 1 before they can be added to Pandle'
+        this.$store.commit('error', error)
+      } else if (!data.town) {
+        error.description = 'This client needs a Town / City before they can be added to Pandle'
+        this.$store.commit('error', error)
+      } else if (!data.county) {
+        error.description = 'This client needs a County before they can be added to Pandle'
+        this.$store.commit('error', error)
+      } else if (!data.postcode) {
+        error.description = 'This client needs a Postcode before they can be added to Pandle'
+        this.$store.commit('error', error)
+      } else if (!data.country) {
+        error.description = 'This client needs a Country before they can be added to Pandle'
+        this.$store.commit('error', error)
+      } else {
+        try {
+          await this.$store.dispatch('addClientPandle', data)
+        } catch (e) {
+          const error = {}
+          error.description = e
+          error.data = data
+          this.$store.commit('error', error)
+        }
       }
     }
   }

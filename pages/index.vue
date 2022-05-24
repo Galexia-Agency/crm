@@ -1,8 +1,4 @@
 <style scoped lang="scss">
-  .chart {
-    max-width: 350px;
-    width: calc(100vw - 4rem)
-  }
   h1 {
     padding: 2rem;
     padding-bottom: 0
@@ -13,6 +9,7 @@
   main {
     overflow-y: auto;
     display: flex;
+    flex-wrap: wrap;
     gap: 2rem;
     width: auto;
     margin: auto
@@ -20,6 +17,10 @@
   section {
     width: 100%;
     max-width: 450px;
+    &.chart {
+      max-width: 350px;
+      width: calc(100vw - 4rem)
+    }
     table {
       width: 100%
     }
@@ -89,24 +90,23 @@
         </section>
       </main>
       <main v-if="claims.groups.includes('billing')">
-        <section>
+        <section class="chart">
           <h2>Projects Status</h2>
-          <pie-chart class="chart" :chart-data="projects" />
+          <pie-chart :chart-data="projects" />
         </section>
-        <section>
+        <section class="chart">
           <h2>Source of Clients</h2>
-          <pie-chart class="chart" :chart-data="clientSource" />
+          <pie-chart :chart-data="clientSource" />
         </section>
-        <section>
+        <section class="chart">
           <h2>Hosting Locations</h2>
-          <pie-chart class="chart" :chart-data="projectHosting" />
+          <pie-chart :chart-data="projectHosting" />
         </section>
-        <section>
+        <section class="chart">
           <h2>
             Expenses Report
           </h2>
           <pie-chart
-            class="chart"
             :chart-data="expenseData"
             :options="{
               tooltips: {
@@ -119,29 +119,29 @@
             }"
           />
         </section>
-        <section>
+        <section class="chart">
           <h2>
             Bank Account Balance
           </h2>
-          <bar-chart class="chart" :chart-data="bankAccountData" />
+          <bar-chart :chart-data="bankAccountData" />
         </section>
-        <section>
+        <section class="chart">
           <h2>
             Sales Performance
           </h2>
-          <bar-chart class="chart" :chart-data="salesData" />
+          <bar-chart :chart-data="salesData" />
         </section>
-        <section>
+        <section class="chart">
           <h2>
             Profit &amp; Loss Performance
           </h2>
-          <bar-chart class="chart" :chart-data="profitLossData" />
+          <bar-chart :chart-data="profitLossData" />
         </section>
-        <section>
+        <section class="chart">
           <h2>
             Cash Flow
           </h2>
-          <bar-chart class="chart" :chart-data="cashFlowData" />
+          <bar-chart :chart-data="cashFlowData" />
         </section>
         <section>
           <h2>

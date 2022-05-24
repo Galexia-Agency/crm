@@ -17,6 +17,7 @@
         type="text"
         autofocus
         @enter="validate"
+        @input="businessShortnameCreator"
       />
       <ui-input
         v-model="business_shortname"
@@ -239,6 +240,9 @@ export default {
     },
     reset () {
       Object.assign(this, data())
+    },
+    businessShortnameCreator ($event) {
+      this.business_shortname = encodeURIComponent($event.replace(' ', '-').toLowerCase())
     }
   }
 }
