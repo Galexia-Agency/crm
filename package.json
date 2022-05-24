@@ -1,7 +1,7 @@
 {
-  "name": "galexia-crm",
+  "name": "galexia-bos",
   "version": "1.0.0",
-  "description": "Galexia CRM",
+  "description": "Galexia Business Operating System",
   "author": "Galexia Creative Agency Ltd",
   "private": true,
   "scripts": {

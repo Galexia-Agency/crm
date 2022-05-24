@@ -5,7 +5,7 @@ export default {
    ** Headers of the page
    */
   head: {
-    titleTemplate: '%s | Galexia Creative Agency CRM',
+    titleTemplate: '%s | Galexia Creative Agency BOS',
     link: [
       { rel: 'apple-touch-icon', sizes: '60x60', href: '/apple-touch-icon-60x60.png?v=dLXLEPEjpj' },
       { rel: 'apple-touch-icon', sizes: '76x76', href: '/apple-touch-icon-76x76.png?v=dLXLEPEjpj' },
@@ -89,14 +89,14 @@ export default {
       offlinePage: '/index.html'
     },
     manifest: {
-      name: 'CRM',
-      shortName: 'CRM',
+      name: 'Galexia Business Operating System',
+      shortName: 'BOS',
       background_color: '#ffffff',
       display: 'standalone',
       lang: 'en-GB'
     },
     meta: {
-      name: 'CRM',
+      name: 'BOS',
       mobileAppIOS: true,
       theme_color: '#1a237e',
       lang: 'en-GB'
