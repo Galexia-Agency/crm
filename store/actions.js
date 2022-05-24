@@ -218,7 +218,7 @@ const actions = {
     const response = await this.$axios.$put('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
-        business_shortname: encodeURIComponent(data.business_shortname.replace(' ', '-').toLowerCase()),
+        business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
         about: data.about,
         address: JSON.stringify(data.address),
         source: data.source,
@@ -246,7 +246,7 @@ const actions = {
     const response = await this.$axios.$post('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
-        business_shortname: encodeURIComponent(data.business_shortname.replace(' ', '-').toLowerCase()),
+        business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
         about: data.about,
         address: adr,
         source: data.source,
@@ -306,7 +306,7 @@ const actions = {
           nominal_account_id: 2166632,
           business_name: data.business_name,
           name: data.business_name,
-          customer_ref: encodeURIComponent(data.business_shortname.replace(' ', '-').toLowerCase()),
+          customer_ref: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
           credit_limit: 0,
           currency_id: '1',
           days_until_payment_due: 30,
