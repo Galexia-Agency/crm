@@ -164,7 +164,8 @@ function data () {
     source: null,
     id: null,
     pandle_id: null,
-    billing_email: null
+    billing_email: null,
+    existing_shortname: null
   }
 }
 export default {
@@ -197,6 +198,9 @@ export default {
               country: 'United Kingdom',
               postcode: '',
               town: ''
+            }
+            if (this.business_shortname) {
+              this.existing_shortname = true
             }
           }
         } catch (e) {
@@ -242,7 +246,7 @@ export default {
       Object.assign(this, data())
     },
     businessShortnameCreator ($event) {
-      if (!this.business_shortname) {
+      if (!this.existing_shortname) {
         this.business_shortname = encodeURIComponent($event.replaceAll(' ', '-').toLowerCase())
       }
     }

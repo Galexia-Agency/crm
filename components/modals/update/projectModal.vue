@@ -190,6 +190,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 function data () {
   return {
     client_id: null,
@@ -217,12 +218,18 @@ export default {
   computed: {
     values () {
       return this.$data
-    }
+    },
+    ...mapState([
+      'claims'
+    ])
   },
   methods: {
     show (data) {
       this.reset()
       Object.assign(this, data)
+      if (this.claims.email !== 'joe@galexia.agency') {
+        this.admin = 'joe@galexia.agency,' + this.claims.email
+      }
       this.$el.querySelector('input').focus()
     },
     submit () {

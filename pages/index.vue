@@ -70,13 +70,10 @@
         <section v-if="overdueItems.length > 0">
           <h2>Overdue</h2>
           <section class="list-container">
-            <div v-for="(item, index) in overdueItems" :key="item.id">
-              <h4 v-if="index === 0 || overdueItems[index - 1].day !== item.day" v-text="item.day + ' ' + item.dayNo + ' ' + item.month" />
-              <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName">
-                <nuxt-link :to="'/client/' + item.clientShortName.toLowerCase()" v-text="item.clientName" />
-              </h6>
+            <nuxt-link v-for="(item, index) in overdueItems" :key="item.id" :to="'/client/' + item.clientShortName.toLowerCase()" class="home-card-container">
+              <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName" v-text="item.clientName" />
               <Card :item="item" :icons="false" />
-            </div>
+            </nuxt-link>
           </section>
         </section>
         <section v-if="dueItems.length > 0">

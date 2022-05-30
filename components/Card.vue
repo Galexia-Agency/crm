@@ -32,7 +32,10 @@
   }
   .is-overdue {
     color: red;
-    border: 1px solid red
+    border: 1px solid red;
+    .item-date {
+      color: red
+    }
   }
   .icon-edit {
     opacity: 0;
