@@ -71,7 +71,7 @@
           <h2>Overdue</h2>
           <section class="list-container">
             <nuxt-link v-for="(item, index) in overdueItems" :key="item.id" :to="'/client/' + item.clientShortName.toLowerCase()" class="home-card-container">
-              <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName" v-text="item.clientName" />
+              <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName" v-text="`${item.clientName} - ${item.projectName}`" />
               <Card :item="item" :icons="false" />
             </nuxt-link>
           </section>
@@ -80,7 +80,7 @@
           <h2>To Do</h2>
           <section class="list-container">
             <nuxt-link v-for="(item, index) in dueItems" :key="item.id" :to="'/client/' + item.clientShortName.toLowerCase()" class="home-card-container">
-              <h6 v-if="index === 0 || dueItems[index - 1].clientName !== item.clientName" v-text="item.clientName" />
+              <h6 v-if="index === 0 || dueItems[index - 1].clientName !== item.clientName" v-text="`${item.clientName} - ${item.projectName}`" />
               <Card :item="item" :icons="false" />
             </nuxt-link>
           </section>
@@ -582,6 +582,7 @@ export default {
                 if (item.date) {
                   if (item.dateUNIX && due(item.dateUNIX)) {
                     const newItem = { ...item }
+                    newItem.projectName = project.name
                     toDos.push(newItem)
                   }
                 }
