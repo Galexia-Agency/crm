@@ -409,6 +409,7 @@
         <project-nav-link v-if="filteredProjects.paused.length > 0" type="Paused" :clients="clients" :filtered-projects="filteredProjects.paused" :search="search" />
         <project-nav-link v-if="filteredProjects.onGoing.length > 0" type="On-Going" :clients="clients" :filtered-projects="filteredProjects.onGoing" :search="search" />
         <project-nav-link v-if="filteredProjects.closedLead.length > 0" type="Closed Leads" :clients="clients" :filtered-projects="filteredProjects.closedLead" :search="search" />
+        <project-nav-link v-if="filteredProjects.completed.length > 0" type="Completed" :clients="clients" :filtered-projects="filteredProjects.completed" :search="search" />
         <project-nav-link v-if="filteredProjects.cancelled.length > 0" type="Cancelled" :clients="clients" :filtered-projects="filteredProjects.cancelled" :search="search" />
         <template v-if="filteredProjects.other.length > 0">
           <h4 id="other">
@@ -530,6 +531,7 @@ export default {
       const inHouse = []
       const onGoing = []
       const closedLead = []
+      const completed = []
       const cancelled = []
       const other = []
       this.clients.forEach((client) => {
@@ -551,6 +553,8 @@ export default {
               onGoing.push(project)
             } else if (project.status === 'Closed Lead') {
               closedLead.push(project)
+            } else if (project.status === 'Completed') {
+              completed.push(project)
             } else if (project.status === 'Cancelled') {
               cancelled.push(project)
             } else if (this.claims.groups.includes('admin')) {
@@ -566,6 +570,7 @@ export default {
           inHouse.find(e => e.client_id === client.id) === undefined &&
           onGoing.find(e => e.client_id === client.id) === undefined &&
           closedLead.find(e => e.client_id === client.id) === undefined &&
+          completed.find(e => e.client_id === client.id) === undefined &&
           cancelled.find(e => e.client_id === client.id) === undefined &&
           this.claims.groups.includes('admin')
         ) {
@@ -580,6 +585,7 @@ export default {
         inHouse,
         onGoing,
         closedLead,
+        completed,
         cancelled,
         other
       }

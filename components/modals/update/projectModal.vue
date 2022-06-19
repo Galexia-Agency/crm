@@ -42,6 +42,9 @@
           <option value="Closed Lead">
             Closed Lead
           </option>
+          <option value="Completed">
+            Completed
+          </option>
           <option value="Cancelled">
             Cancelled
           </option>
