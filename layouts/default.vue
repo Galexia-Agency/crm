@@ -630,7 +630,7 @@ export default {
       this.hideClientModal()
       try {
         await this.$store.dispatch('addClient', data)
-        this.$router.push(data.business_shortname)
+        this.$router.push('/client/' + data.business_shortname)
       } catch (e) {
         const error = {}
         error.description = e
