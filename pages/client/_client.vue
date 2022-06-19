@@ -1,4 +1,4 @@
-<style scoped>
+<style scoped lang="scss">
   .list-container {
     display: inline-block;
     width: auto
@@ -12,7 +12,10 @@
   .client {
     height: 100vh;
     position: relative;
-    overflow-y: scroll
+    overflow-y: scroll;
+    &.blossomTreePhoto {
+      --primaryColor: #D485C4
+    }
   }
   .fixed {
     position: sticky;
@@ -31,7 +34,7 @@
 </style>
 
 <template>
-  <main v-if="client" v-dragscroll.x.nomiddle.noright.noback.noforward="!dragging && !hover" class="client">
+  <main v-if="client" v-dragscroll.x.nomiddle.noright.noback.noforward="!dragging && !hover" class="client" :class="{blossomTreePhoto}">
     <div class="fixed">
       <h1>
         {{ client.business_name }}
@@ -168,6 +171,14 @@ export default {
         }
       }
       return c
+    },
+    blossomTreePhoto () {
+      for (const project in this.projects) {
+        if (this.projects[project].admin.includes('chelsea@galexia.agency')) {
+          return true
+        }
+      }
+      return false
     },
     ...mapState([
       'claims'

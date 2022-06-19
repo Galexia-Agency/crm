@@ -1,4 +1,4 @@
-<style scoped>
+<style scoped lang="scss">
   .contentWrapper h4 {
     margin-top: .5rem;
     margin-bottom: .25em;
@@ -8,7 +8,10 @@
     display: block;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis
+    text-overflow: ellipsis;
+    &.blossomTreePhoto {
+      color: #D485C4
+    }
   }
 </style>
 
@@ -23,6 +26,7 @@
           :key="index + indexed"
           :to="`/client/${client.business_shortname.toLowerCase()}`"
           class="navLink"
+          :class="{blossomTreePhoto: project.admin.includes('chelsea@galexia.agency')}"
           v-text="client.business_name"
         />
       </template>
