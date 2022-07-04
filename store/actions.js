@@ -295,13 +295,13 @@ const actions = {
       body: {
         customer: {
           address_attributes: {
-            address_line_1: JSON.parse(data.address).line1,
-            address_line_2: JSON.parse(data.address).line2,
-            address_line_3: JSON.parse(data.address).line3,
-            county: JSON.parse(data.address).county,
-            country: JSON.parse(data.address).country,
-            postcode: JSON.parse(data.address).postcode,
-            town_city: JSON.parse(data.address).town
+            address_line_1: data.address.line1,
+            address_line_2: data.address.line2,
+            address_line_3: data.address.line3,
+            county: data.address.county,
+            country: data.address.country,
+            postcode: data.address.postcode,
+            town_city: data.address.town
           },
           nominal_account_id: 2166632,
           business_name: data.business_name,
@@ -310,7 +310,7 @@ const actions = {
           credit_limit: 0,
           currency_id: '1',
           days_until_payment_due: 30,
-          country: JSON.parse(data.address).country,
+          country: data.address.country,
           email: data.billing_email.toLowerCase()
         }
       }
