@@ -252,7 +252,8 @@ export default {
     const self = this
     function pandleFetch ({ commit, url }) {
       if (sessionStorage.getItem(commit)) {
-        return self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
+        self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
+        return Promise.resolve('done')
       } else {
         return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
           .then(function (response) {
@@ -294,8 +295,8 @@ export default {
           commit: 'pandleTaxDividendChart'
         }
       ]
-      Promise.all(pandleURLs.forEach((URL) => {
-        pandleFetch(URL)
+      Promise.all(pandleURLs.map(async (URL) => {
+        await pandleFetch(URL)
       }))
     }
   },
@@ -319,12 +320,32 @@ export default {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']
     },
     projects () {
+      const leads = this.$parent.$parent.filteredProjects.hotLeads.concat(this.$parent.$parent.filteredProjects.coldLeads).filter((thing, index, self) =>
+        index === self.findIndex(t => (
+          t.client_id === thing.client_id
+        ))
+      )
+      const development = this.$parent.$parent.filteredProjects.development.filter((thing, index, self) =>
+        index === self.findIndex(t => (
+          t.client_id === thing.client_id
+        ))
+      )
+      const onGoing = this.$parent.$parent.filteredProjects.onGoing.filter((thing, index, self) =>
+        index === self.findIndex(t => (
+          t.client_id === thing.client_id
+        ))
+      )
+      const paused = this.$parent.$parent.filteredProjects.paused.filter((thing, index, self) =>
+        index === self.findIndex(t => (
+          t.client_id === thing.client_id
+        ))
+      )
       return {
         labels: ['Leads', 'Development', 'On-Going', 'Paused'],
         datasets: [
           {
             backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#FFA500'],
-            data: [this.$parent.$parent.filteredProjects.hotLeads.length + this.$parent.$parent.filteredProjects.coldLeads.length, this.$parent.$parent.filteredProjects.development.length, this.$parent.$parent.filteredProjects.onGoing.length, this.$parent.$parent.filteredProjects.paused.length]
+            data: [leads.length, development.length, onGoing.length, paused.length]
           }
         ]
       }
