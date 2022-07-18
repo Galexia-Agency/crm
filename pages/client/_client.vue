@@ -136,11 +136,6 @@ export default {
   async fetch () {
     await this.pandleBootstrap()
   },
-  beforeMount () {
-    if (!this.client) {
-      this.$nuxt.context.error({ statusCode: 404, message: 'Client not found' })
-    }
-  },
   data () {
     return {
       modal: {

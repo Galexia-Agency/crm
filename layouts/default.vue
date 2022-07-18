@@ -493,6 +493,11 @@ export default {
           self.$store.commit('contacts', response[1])
           self.$store.commit('domains', response[2])
           self.$store.commit('projects', response[3])
+          if (self.$route.name === 'client-client') {
+            if (!self.$store.state.clients.find(client => client.business_shortname.toLowerCase() === self.$route.params.client)) {
+              self.$nuxt.context.error({ statusCode: 404, message: 'Client not found' })
+            }
+          }
         })
         .catch(function (e) {
           const error = {}
