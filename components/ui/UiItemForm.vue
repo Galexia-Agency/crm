@@ -1,3 +1,12 @@
+<style scoped lang="scss">
+  .card-modal-buttons-container {
+    justify-content: space-between;
+    > div {
+      display: flex
+    }
+  }
+</style>
+
 <template>
   <div class="query-form card">
     <div class="card-content">
@@ -35,12 +44,20 @@
         :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
         @enter="validate"
       />
-      <div class="field is-grouped">
-        <ui-button type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))" @click="validate">
-          {{ id ? 'Update' : 'Add' }}
-        </ui-button>
-        <ui-button type="text" @click="cancel">
-          Cancel
+      <div class="field last-updated">
+        Last updated by <strong>{{ updatedBy }}</strong> at <strong>{{ (new Date(updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedDate)).toLocaleDateString("en-GB") }}</strong>
+      </div>
+      <div class="field is-grouped card-modal-buttons-container">
+        <div>
+          <ui-button type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))" @click="validate">
+            {{ id ? 'Update' : 'Add' }}
+          </ui-button>
+          <ui-button type="text" @click="cancel">
+            Cancel
+          </ui-button>
+        </div>
+        <ui-button type="archive" @click="archive">
+          Archive
         </ui-button>
       </div>
     </div>
@@ -100,6 +117,9 @@ export default {
     },
     cancel () {
       this.$emit('cancel', this.values)
+    },
+    archive () {
+      this.$emit('archive', this.values)
     },
     reset () {
       Object.assign(this, data())

@@ -83,6 +83,7 @@
       <UiItemForm
         ref="form"
         @submit="onAddFullItem"
+        @archive="archiveItem"
         @cancel="hideModal"
       />
     </ui-modal>
@@ -192,6 +193,7 @@ export default {
     async archiveItem (item) {
       if (await this.$refs.confirm.show('Are you sure you want to archive this item?')) {
         this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
+        this.hideModal()
         this.$forceUpdate()
       }
     },

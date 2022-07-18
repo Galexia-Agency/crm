@@ -74,6 +74,14 @@
     .button.is-primary:hover, .button.is-primary.is-hovered {
       opacity: .9
     }
+    .button.is-archive[disabled], fieldset[disabled] .button.is-archive, .button.is-archive, .button.is-archive:hover, .button.is-archive.is-hovered {
+      background: transparent;
+      border: 1px solid red;
+      color: red
+    }
+    .button.is-archive:hover, .button.is-archive.is-hovered {
+      background: whitesmoke
+    }
     .input:focus, .textarea:focus, .select select:focus, .is-focused.input, .is-focused.textarea, .select select.is-focused, .input:active, .textarea:active, .select select:active, .is-active.input, .is-active.textarea, .select select.is-active {
       border-color: var(--primaryColor)
     }
@@ -261,7 +269,8 @@
   .card-ghost {
     transition: .25s all;
     box-shadow: 0 5px 10px rgba(0, 0, 0, .12);
-    transform: scale(1.1)
+    transform: scale(1.1);
+    cursor: move
   }
   .card-ghost-drop {
     transform: scale(1)
