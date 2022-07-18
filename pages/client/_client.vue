@@ -137,7 +137,7 @@ export default {
     await this.pandleBootstrap()
   },
   beforeMount () {
-    if (!client) {
+    if (!this.client) {
       error({ statusCode: 404, message: 'Client not found' })
     }
   },
