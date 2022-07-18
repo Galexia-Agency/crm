@@ -138,7 +138,7 @@ export default {
   },
   beforeMount () {
     if (!this.client) {
-      error({ statusCode: 404, message: 'Client not found' })
+      this.$nuxt.context.error({ statusCode: 404, message: 'Client not found' })
     }
   },
   data () {
