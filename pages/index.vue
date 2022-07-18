@@ -354,7 +354,7 @@ export default {
       let c = 0
       for (const project in this.$store.state.projects) {
         if (this.$store.state.projects[project].completion_amount !== null) {
-          c = c + parseInt(this.$store.state.projects[project].completion_amount)
+          c = c + parseFloat(this.$store.state.projects[project].completion_amount)
         }
       }
       return c.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')

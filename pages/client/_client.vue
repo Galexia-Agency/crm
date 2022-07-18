@@ -167,7 +167,7 @@ export default {
       let c = 0
       for (const project in this.projects) {
         if (this.projects[project].completion_amount !== null) {
-          c = c + parseInt(this.projects[project].completion_amount)
+          c = c + parseFloat(this.projects[project].completion_amount)
         }
       }
       return c
