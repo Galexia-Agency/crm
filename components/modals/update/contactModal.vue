@@ -1,105 +1,76 @@
 <template>
-  <div class="query-form card">
+  <form class="query-form card" @submit.prevent="submit">
     <div class="card-content">
-      <div class="field">
-        <label for="gender" class="label">
-          Gender
-        </label>
-        <select
-          v-model="title"
-          name="gender"
-          class="input"
-        >
-          <option value="Male">
-            Male
-          </option>
-          <option value="Female">
-            Female
-          </option>
-          <option value="Other">
-            Other
-          </option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f_name" class="label">
-          First Name *
-        </label>
-        <input
-          v-model="f_name"
-          name="f_name"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="l_name" class="label">
-          Last Name
-        </label>
-        <input
-          v-model="l_name"
-          name="l_name"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="tel" class="label">
-          Telephone
-        </label>
-        <input
-          v-model="tel"
-          name="tel"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="email" class="label">
-          Email *
-        </label>
-        <input
-          v-model="email"
-          name="email"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="role" class="label">
-          Role
-        </label>
-        <input
-          v-model="role"
-          name="role"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="fb" class="label">
-          Facebook Profile Link
-        </label>
-        <input
-          v-model="facebook"
-          name="fb"
-          class="input"
-          type="text"
-        >
-      </div>
+      <ui-input
+        v-model="title"
+        name="gender"
+        label="Gender"
+        type="select"
+        :autofocus="true"
+      >
+        <option value="Male">
+          Male
+        </option>
+        <option value="Female">
+          Female
+        </option>
+        <option value="Other">
+          Other
+        </option>
+      </ui-input>
+      <ui-input
+        v-model="f_name"
+        name="f_name"
+        label="First Name *"
+        type="text"
+        :required="true"
+      />
+      <ui-input
+        v-model="l_name"
+        name="l_name"
+        label="Last Name *"
+        type="text"
+        :required="true"
+      />
+      <ui-input
+        v-model="tel"
+        name="tel"
+        label="Telephone"
+        type="text"
+        pattern="[^\s]+"
+        @input="noSpaces()"
+      />
+      <ui-input
+        v-model="email"
+        name="email"
+        label="Email *"
+        type="text"
+        :required="true"
+        pattern="[^\s]+"
+        @input="noSpaces()"
+      />
+      <ui-input
+        v-model="role"
+        name="role"
+        label="Role"
+        type="text"
+      />
+      <ui-input
+        v-model="facebook"
+        name="fb"
+        label="Facebook Profile Link"
+        type="url"
+      />
       <div class="field is-grouped">
-        <ui-button v-if="id" type="primary" :disabled="f_name === null || email === null" @click="submit">
-          Update
+        <ui-button type="submit" style-type="primary" :disabled="f_name === null || email === null">
+          {{ id ? 'Update' : 'Add' }}
         </ui-button>
-        <ui-button v-else type="primary" :disabled="f_name === null || email === null" @click="submit">
-          Add
-        </ui-button>
-        <ui-button type="text" @click="cancel">
+        <ui-button style-type="text" @click="cancel">
           Cancel
         </ui-button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -133,7 +104,6 @@ export default {
     show (data) {
       this.reset()
       Object.assign(this, data)
-      this.$el.querySelector('input').focus()
     },
     submit () {
       if (this.id) {
@@ -147,6 +117,14 @@ export default {
     },
     reset () {
       Object.assign(this, data())
+    },
+    noSpaces () {
+      if (this.$data.tel) {
+        this.$data.tel = this.$data.tel.replaceAll(' ', '')
+      }
+      if (this.$data.email) {
+        this.$data.email = this.$data.email.replaceAll(' ', '')
+      }
     }
   }
 }

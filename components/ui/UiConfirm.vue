@@ -15,10 +15,10 @@
     <div class="query-form card">
       <form class="card-content" @submit.prevent="confirm">
         <p v-text="text" />
-        <ui-button autofocus type="primary" @click="confirm">
+        <ui-button :autofocus="true" style-type="primary" type="submit">
           Yes
         </ui-button>
-        <ui-button type="text" @click="cancel">
+        <ui-button style-type="text" @click="cancel">
           No
         </ui-button>
       </form>

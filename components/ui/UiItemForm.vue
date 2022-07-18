@@ -8,16 +8,15 @@
 </style>
 
 <template>
-  <div class="query-form card">
+  <form class="query-form card" @submit.prevent="submit">
     <div class="card-content">
       <ui-input
         v-model="title"
-        v-validate="'required'"
         name="title"
         label="Title"
-        :error="getError('title')"
         :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
-        @enter="validate"
+        :autofocus="true"
+        :required="true"
       />
       <Editor
         v-if="title"
@@ -32,7 +31,6 @@
         type="date"
         label="Date"
         :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
-        @enter="validate"
         @resetDate="resetDate"
       />
       <ui-input
@@ -42,26 +40,25 @@
         label="Assignee"
         help="Email Address"
         :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
-        @enter="validate"
       />
       <div class="field last-updated">
         Last updated by <strong>{{ updatedBy }}</strong> at <strong>{{ (new Date(updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedDate)).toLocaleDateString("en-GB") }}</strong>
       </div>
       <div class="field is-grouped card-modal-buttons-container">
         <div>
-          <ui-button type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))" @click="validate">
+          <ui-button type="submit" style-type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))">
             {{ id ? 'Update' : 'Add' }}
           </ui-button>
-          <ui-button type="text" @click="cancel">
+          <ui-button style-type="text" @click="cancel">
             Cancel
           </ui-button>
         </div>
-        <ui-button type="archive" @click="archive">
+        <ui-button style-type="archive" @click="archive">
           Archive
         </ui-button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>

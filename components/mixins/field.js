@@ -1,9 +1,8 @@
 export default {
   props: {
     name: String,
-    value: String,
-    label: String,
-    error: String
+    value: [String, Number],
+    label: String
   },
 
   computed: {

@@ -1,195 +1,131 @@
 <template>
-  <div class="query-form card">
+  <form class="query-form card" @submit.prevent="submit">
     <div class="card-content">
-      <div class="field">
-        <label for="name" class="label">
-          Name *
-        </label>
-        <input
-          v-model="name"
-          name="name"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="status" class="label">
-          Status *
-        </label>
-        <select
-          v-model="status"
-          name="status"
-          class="input"
-        >
-          <option value="Hot Lead">
-            Hot Lead
-          </option>
-          <option value="Cold Lead">
-            Cold Lead
-          </option>
-          <option value="Development">
-            Development
-          </option>
-          <option value="Paused">
-            Paused
-          </option>
-          <option value="In House">
-            In House
-          </option>
-          <option value="On-Going">
-            On-Going
-          </option>
-          <option value="Closed Lead">
-            Closed Lead
-          </option>
-          <option value="Completed">
-            Completed
-          </option>
-          <option value="Cancelled">
-            Cancelled
-          </option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="project_url" class="label">
-          Project URL
-        </label>
-        <input
-          v-model="project_url"
-          name="project_url"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="project_login_url" class="label">
-          Project Login URL
-        </label>
-        <input
-          v-model="project_login_url"
-          name="project_login_url"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="hosting" class="label">
-          Hosting
-        </label>
-        <input
-          v-model="hosting"
-          name="hosting"
-          class="input"
-          type="text"
-        >
-      </div>
-      <div class="field">
-        <label for="github_link" class="label">
-          GitHub Link
-        </label>
-        <input
-          v-model="github_url"
-          type="url"
-          name="github_url"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="drive_url" class="label">
-          Google Drive Link
-        </label>
-        <input
-          v-model="drive_url"
-          type="url"
-          name="drive_url"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="viewer" class="label">
-          Project Viewers
-        </label>
-        <input
-          v-model="viewer"
-          type="text"
-          name="viewer"
-          class="input"
-          pattern="[^\s]+"
-          @input="noSpaces()"
-        >
-      </div>
-      <div class="field">
-        <label for="contributor" class="label">
-          Project Contributors
-        </label>
-        <input
-          v-model="contributor"
-          type="text"
-          name="contributor"
-          class="input"
-          pattern="[^\s]+"
-          @input="noSpaces()"
-        >
-      </div>
-      <div class="field">
-        <label for="admin" class="label">
-          Project Admins
-        </label>
-        <input
-          v-model="admin"
-          type="text"
-          name="admin"
-          class="input"
-          pattern="[^\s]+"
-          @input="noSpaces()"
-        >
-      </div>
-      <div class="field">
-        <label for="completion" class="label">
-          Completion Total
-        </label>
-        <input
-          v-model="completion_amount"
-          type="number"
-          name="completion"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="bb_revenue" class="label">
-          Before Business Revenue
-        </label>
-        <input
-          v-model="bb_revenue"
-          type="number"
-          name="bb_revenue"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="bb_expenses" class="label">
-          Before Business Expenses
-        </label>
-        <input
-          v-model="bb_expenses"
-          type="number"
-          name="bb_expenses"
-          class="input"
-        >
-      </div>
+      <ui-input
+        v-model="name"
+        name="name"
+        label="Name *"
+        type="text"
+        :autofocus="true"
+        :required="true"
+      />
+      <ui-input
+        v-model="status"
+        name="status"
+        label="Status *"
+        type="select"
+        :required="true"
+      >
+        <option value="Hot Lead">
+          Hot Lead
+        </option>
+        <option value="Cold Lead">
+          Cold Lead
+        </option>
+        <option value="Development">
+          Development
+        </option>
+        <option value="Paused">
+          Paused
+        </option>
+        <option value="In House">
+          In House
+        </option>
+        <option value="On-Going">
+          On-Going
+        </option>
+        <option value="Closed Lead">
+          Closed Lead
+        </option>
+        <option value="Completed">
+          Completed
+        </option>
+        <option value="Cancelled">
+          Cancelled
+        </option>
+      </ui-input>
+      <ui-input
+        v-model="project_url"
+        name="project_url"
+        label="Project URL"
+        type="url"
+      />
+      <ui-input
+        v-model="project_login_url"
+        name="project_login_url"
+        label="Project Login URL"
+        type="url"
+      />
+      <ui-input
+        v-model="hosting"
+        name="hosting"
+        label="Hosting"
+        type="text"
+      />
+      <ui-input
+        v-model="github_url"
+        name="github_url"
+        label="GitHub Link"
+        type="url"
+      />
+      <ui-input
+        v-model="drive_url"
+        name="drive_url"
+        label="Google Drive Link"
+        type="url"
+      />
+      <ui-input
+        v-model="viewer"
+        name="viewer"
+        label="Project Viewers"
+        type="text"
+        pattern="[^\s]+"
+        @input="noSpaces()"
+      />
+      <ui-input
+        v-model="contributor"
+        name="contributor"
+        label="Project Contributors"
+        type="text"
+        pattern="[^\s]+"
+        @input="noSpaces()"
+      />
+      <ui-input
+        v-model="admin"
+        name="admin"
+        label="Project Admins"
+        type="text"
+        pattern="[^\s]+"
+        @input="noSpaces()"
+      />
+      <ui-input
+        v-model="completion_amount"
+        name="completion_amount"
+        label="Completion Total"
+        type="number"
+      />
+      <ui-input
+        v-model="bb_revenue"
+        name="bb_revenue"
+        label="Before Business Revenue"
+        type="number"
+      />
+      <ui-input
+        v-model="bb_expenses"
+        name="bb_expenses"
+        label="Before Business Expenses"
+        type="number"
+      />
       <div class="field is-grouped">
-        <ui-button v-if="id" type="primary" :disabled="name === '' || status === '' || completion_amount === '' || bb_revenue === '' || bb_expenses === ''" @click="submit">
-          Update
+        <ui-button type="submit" style-type="primary" :disabled="name === '' || status === '' || completion_amount === '' || bb_revenue === '' || bb_expenses === ''">
+          {{ id ? 'Update' : 'Add' }}
         </ui-button>
-        <ui-button v-else type="primary" :disabled="name === '' || status === '' || completion_amount === '' || bb_revenue === '' || bb_expenses === ''" @click="submit">
-          Add
-        </ui-button>
-        <ui-button type="text" @click="cancel">
+        <ui-button style-type="text" @click="cancel">
           Cancel
         </ui-button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -233,7 +169,6 @@ export default {
       if (this.claims.email !== 'joe@galexia.agency') {
         this.admin = 'joe@galexia.agency,' + this.claims.email
       }
-      this.$el.querySelector('input').focus()
     },
     submit () {
       this.$emit('submit', this.values)

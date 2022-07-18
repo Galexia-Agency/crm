@@ -6,144 +6,94 @@
 </style>
 
 <template>
-  <div class="query-form card">
+  <form class="query-form card" @submit.prevent="submit">
     <div class="card-content">
       <ui-input
         v-model="business_name"
-        v-validate="'required'"
-        :error="getError('business_name')"
         name="business_name"
         label="Business Name *"
         type="text"
-        autofocus
-        @enter="validate"
+        :autofocus="true"
+        :required="true"
         @input="businessShortnameCreator"
       />
       <ui-input
         v-model="business_shortname"
-        v-validate="'required'"
-        :error="getError('business_shortname')"
         name="business_shortname"
         label="Business Shortname *"
         type="text"
-        @enter="validate"
+        :required="true"
       />
-      <div class="field">
-        <label for="about" class="label">
-          About The Business
-        </label>
-        <textarea
-          v-model="about"
-          name="about"
-          class="input"
-          type="text"
-        />
-      </div>
-      <div class="field">
-        <label for="billing_email" class="label">
-          Billing Email
-        </label>
-        <input
-          v-model="billing_email"
-          name="billing_email"
-          class="input"
-          type="email"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          Address Line 1
-        </label>
-        <input
-          v-model="address.line1"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          Address Line 2
-        </label>
-        <input
-          v-model="address.line2"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          Address Line 3
-        </label>
-        <input
-          v-model="address.line3"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          Town / City
-        </label>
-        <input
-          v-model="address.town"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          County
-        </label>
-        <input
-          v-model="address.county"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          Postcode
-        </label>
-        <input
-          v-model="address.postcode"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="address" class="label">
-          Country
-        </label>
-        <input
-          v-model="address.country"
-          name="address"
-          class="input"
-        >
-      </div>
-      <div class="field">
-        <label for="source" class="label">
-          Source
-        </label>
-        <input
-          v-model="source"
-          name="source"
-          class="input"
-          type="text"
-        >
-      </div>
+      <ui-input
+        v-model="about"
+        name="about"
+        label="About The Business"
+        type="textarea"
+      />
+      <ui-input
+        v-model="billing_email"
+        name="billing_email"
+        label="Billing Email"
+        type="email"
+      />
+      <ui-input
+        v-model="address.line1"
+        name="address_line_1"
+        label="Address Line 1"
+        type="text"
+      />
+      <ui-input
+        v-model="address.line2"
+        name="address_line_2"
+        label="Address Line 2"
+        type="text"
+      />
+      <ui-input
+        v-model="address.line3"
+        name="address_line_3"
+        label="Address Line 3"
+        type="text"
+      />
+      <ui-input
+        v-model="address.town"
+        name="town_city"
+        label="Town / City"
+        type="text"
+      />
+      <ui-input
+        v-model="address.county"
+        name="county"
+        label="County"
+        type="text"
+      />
+      <ui-input
+        v-model="address.postcode"
+        name="postcode"
+        label="Postcode"
+        type="text"
+      />
+      <ui-input
+        v-model="address.country"
+        name="country"
+        label="Country"
+        type="text"
+      />
+      <ui-input
+        v-model="address.source"
+        name="source"
+        label="Source"
+        type="text"
+      />
       <div class="field is-grouped">
-        <ui-button v-if="id" type="primary" :disabled="business_name === null || business_shortname === null" @click="submit">
-          Update
+        <ui-button type="submit" style-type="primary" :disabled="business_name === null || business_shortname === null">
+          {{ id ? 'Update' : 'Add' }}
         </ui-button>
-        <ui-button v-else type="primary" :disabled="business_name === null || business_shortname === null" @click="submit">
-          Add
-        </ui-button>
-        <ui-button type="text" @click="cancel">
+        <ui-button style-type="text" @click="cancel">
           Cancel
         </ui-button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -227,7 +177,6 @@ export default {
           }
         }
       }
-      this.$el.querySelector('input').focus()
     },
     submit () {
       if (this.billing_email) {

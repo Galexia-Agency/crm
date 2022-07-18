@@ -1,11 +1,10 @@
 <template>
   <div class="control">
     <button
-      type="button"
-      :class="`button is-${type}`"
+      :type="type"
+      :class="`button is-${styleType}`"
       v-bind="$attrs"
       :disabled="disabled"
-      :autofocus="autofocus"
       @click="$emit('click')"
     >
       <slot />
@@ -20,6 +19,10 @@ export default {
       type: String,
       default: 'button'
     },
+    styleType: {
+      type: String,
+      default: 'button'
+    },
     disabled: {
       type: Boolean,
       default: false
@@ -27,6 +30,11 @@ export default {
     autofocus: {
       type: Boolean,
       default: false
+    }
+  },
+  mounted () {
+    if (this.autofocus) {
+      this.$el.querySelector('button').focus()
     }
   }
 }

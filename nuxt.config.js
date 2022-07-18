@@ -55,7 +55,6 @@ export default {
     '~plugins/asyncComputed',
     '~plugins/mixins/dates',
     '~plugins/mixins/urls',
-    '~plugins/mixins/forms',
     '~plugins/mixins/pandle',
     '~plugins/vueInlineSVG',
     '~plugins/okta',

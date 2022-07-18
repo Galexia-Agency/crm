@@ -9,7 +9,7 @@
   <div class="ui-item-entry field has-addons">
     <div class="control is-expanded">
       <input
-        :value="input"
+        v-model.trim="input"
         class="input"
         enterkeyhint="enter"
         :placeholder="placeholder"
@@ -54,7 +54,6 @@ export default {
   },
   methods: {
     onEnter ($event) {
-      console.log('enter')
       this.emit($event.metaKey || $event.ctrlKey)
     },
     onClick () {
