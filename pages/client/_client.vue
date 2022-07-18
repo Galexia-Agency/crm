@@ -136,6 +136,11 @@ export default {
   async fetch () {
     await this.pandleBootstrap()
   },
+  beforeMount () {
+    if (!client) {
+      error({ statusCode: 404, message: 'Client not found' })
+    }
+  },
   data () {
     return {
       modal: {
