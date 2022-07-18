@@ -3,7 +3,13 @@
   .card {
     position: relative;
     border-radius: 3px;
-    cursor: move;
+    cursor: pointer;
+    transition: background-color .25s ease-in-out;
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: rgb(225, 225, 225)
+    }
     &.icons_draggable {
       cursor: initial;
       .icons {
@@ -28,7 +34,11 @@
   }
   .icon {
     height: 1.1rem;
-    width: 1.1rem
+    width: 1.1rem;
+    transition: color .25s ease-in-out;
+    &:hover {
+      color: black
+    }
   }
   .is-overdue {
     color: red;
@@ -53,16 +63,15 @@
 </style>
 
 <template>
-  <div class="card" :class="classes" :data-id="item.id">
+  <div class="card" :class="classes" :data-id="item.id" @click="edit">
     <div class="icons">
       <template v-if="icons && (project.admin.includes(claims.email) || (project.contributor && project.contributor.includes(claims.email)))">
         <template v-if="item.archived">
-          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click="unarchive" />
-          <font-awesome-icon v-if="project.admin.includes(claims.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click="remove" />
+          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="unarchive" />
+          <font-awesome-icon v-if="project.admin.includes(claims.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click.stop="remove" />
         </template>
         <template v-else>
-          <font-awesome-icon :icon="['fa-solid', 'fa-edit']" class="icon icon-edit" @click="edit" />
-          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click="archive" />
+          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="archive" />
         </template>
       </template>
     </div>
