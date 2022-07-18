@@ -1,11 +1,16 @@
+import * as Automerge from 'automerge'
+
 const actions = {
   /* Projects */
   async updateProjectList ({ commit, state }, projectId) {
-    if (JSON.stringify(state.projects.find(project => project.id === projectId).lists)) {
+    const project = state.projects.find(project => project.id === projectId)
+    const projectList = JSON.parse(JSON.stringify(project.lists))
+    if (JSON.stringify(projectList)) {
       try {
-        await this.$axios.post('https://api.galexia.agency/projects/lists',
+        const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
           {
-            lists: JSON.stringify(state.projects.find(project => project.id === projectId).lists),
+            lists: JSON.stringify(projectList),
+            updated_at: project.updated_at,
             id: projectId
           },
           {
@@ -15,13 +20,67 @@ const actions = {
             }
           }
         )
+        const updatedProject = response.data[0]
+        updatedProject.lists = JSON.parse(updatedProject.lists)
+        commit('updateProject', response.data[0])
       } catch (e) {
-        const error = {}
-        error.active = true
-        error.description = e
-        error.data = state.projects.find(project => project.id === projectId).lists
-        commit('error', { error })
+        if (await e.response.status === 429) {
+          // try {
+          if (projectList.length > 0) {
+            for (const project in projectList) {
+              if (JSON.parse(e.response.data.lists)[project] && (projectList[project].id !== JSON.parse(e.response.data.lists)[project].id)) {
+                projectList.push(JSON.parse(e.response.data.lists)[project])
+              }
+              if (projectList[project].items.length > 0) {
+                for (const item in projectList[project].items) {
+                  if (JSON.parse(e.response.data.lists)[project].items[item] && (projectList[project].items[item].id !== JSON.parse(e.response.data.lists)[project].items[item].id)) {
+                    projectList[project].items.push(JSON.parse(e.response.data.lists)[project].items[item])
+                  }
+                }
+              }
+            }
+          }
+          const doc1 = Automerge.from(projectList)
+          const doc2 = Automerge.from(JSON.parse(e.response.data.lists))
+          const finalDoc = Automerge.merge(doc2, doc1)
+
+          const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
+            {
+              lists: JSON.stringify(Object.values(finalDoc)),
+              id: projectId,
+              force: true
+            },
+            {
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          const updatedProject = response.data[0]
+          updatedProject.lists = JSON.parse(updatedProject.lists)
+          commit('updateProject', response.data[0])
+          // } catch (e) {
+          //   const error = {}
+          //   error.active = true
+          //   error.description = e.message
+          //   error.data = projectList
+          //   commit('error', { error })
+          // }
+        } else {
+          const error = {}
+          error.active = true
+          error.description = e.message
+          error.data = projectList
+          commit('error', { error })
+        }
       }
+    } else {
+      const error = {}
+      error.active = true
+      error.description = 'Cannot stringify data'
+      error.data = projectList
+      commit('error', { error })
     }
   },
   async addProject ({ commit }, data) {

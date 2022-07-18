@@ -199,7 +199,7 @@ export default {
           })
           .catch(function (e) {
             const error = {}
-            error.description = e
+            error.description = e.message
             self.$store.commit('error', error)
           })
       }
@@ -236,7 +236,7 @@ export default {
           })
           .catch(function (e) {
             const error = {}
-            error.description = e
+            error.description = e.message
             self.$store.commit('error', error)
           })
       }

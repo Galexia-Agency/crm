@@ -26,6 +26,7 @@
     "@tiptap/extension-underline": "^2.0.0-beta.16",
     "@tiptap/starter-kit": "^2.0.0-beta.127",
     "@tiptap/vue-2": "^2.0.0-beta.60",
+    "automerge": "^1.0.1-preview.7",
     "axios": "^0.23.0",
     "bulma": "^0.9.3",
     "chart.js": "^2.9.4",
