@@ -6,25 +6,24 @@
 </style>
 
 <template>
-  <div class="ui-item-entry field has-addons">
+  <form class="ui-item-entry field has-addons" @submit.prevent="emit(false)">
     <div class="control is-expanded">
       <input
+        v-model="input"
         class="input"
-        enterkeyhint="enter"
         :placeholder="placeholder"
         @keydown="fixAndroid"
-        @keydown.enter="onEnter"
         @paste="pasteMultiple"
       >
     </div>
     <div v-if="icon" class="control">
-      <button type="submit" class="button is-primary" :disabled="input.length === 0" @click="onClick">
+      <button type="button" class="button is-primary" :disabled="input.length === 0" @click.prevent="emit(true)">
         <span class="icon is-small">
           <font-awesome-icon :icon="['fa-solid', `fa-${icon}`]" />
         </span>
       </button>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -52,12 +51,6 @@ export default {
     }
   },
   methods: {
-    onEnter ($event) {
-      this.emit($event.metaKey || $event.ctrlKey)
-    },
-    onClick () {
-      this.emit(true)
-    },
     emit (more) {
       if (this.input) {
         this.$emit('enter', {
@@ -83,11 +76,13 @@ export default {
       }
     },
     fixAndroid ($event) {
-      const self = this
-      setTimeout(function () {
-        self.input = $event.target.value
-        self.$emit('input', self.input)
-      }, 1)
+      if ($event.key !== 'Enter') {
+        const self = this
+        setTimeout(function () {
+          self.input = $event.target.value
+          self.$emit('input', self.input)
+        }, 1)
+      }
     }
   }
 }

@@ -58,7 +58,7 @@
                   />
                 </template>
                 <div class="item-entry">
-                  <ui-item-entry
+                  <UiItemEntry
                     v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))"
                     :list-id="list.id"
                     placeholder="Add an item"
@@ -71,11 +71,11 @@
           </template>
         </Container>
         <div v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))" class="new-list">
-          <ui-item-entry placeholder="Add a list" @enter="onAddList" />
+          <UiItemEntry placeholder="Add a list" @enter="onAddList" />
         </div>
       </div>
     </div>
-    <ui-modal
+    <UiModal
       ref="modal"
       :active="modal"
       @close="hideModal"
@@ -86,8 +86,8 @@
         @archive="archiveItem"
         @cancel="hideModal"
       />
-    </ui-modal>
-    <ui-confirm ref="confirm" />
+    </UiModal>
+    <UiConfirm ref="confirm" />
   </div>
 </template>
 
