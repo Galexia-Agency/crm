@@ -52,7 +52,7 @@
 <template>
   <div>
     <div class="project-details">
-      <button class="centered" @click="show = !show">
+      <button type="button" class="centered" @click="show = !show">
         <font-awesome-icon v-if="show" :icon="['fa-solid', 'fa-sort-up']" />
         <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-down']" />
       </button>

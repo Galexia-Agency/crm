@@ -396,7 +396,7 @@
     </ui-modal>
     <template v-if="!$fetchState.pending">
       <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
-      <button class="refresh" :class="{clicked: refreshed}" @click="refresh">
+      <button type="button" class="refresh" :class="{clicked: refreshed}" @click="refresh">
         <font-awesome-icon :icon="['fa-solid', 'fa-sync']" />
       </button>
       <nav>
@@ -434,10 +434,10 @@
             />
           </template>
         </template>
-        <button v-if="claims.groups.includes('admin')" class="button primary" style="margin-top: .75em" @click="showClientModal()">
+        <button v-if="claims.groups.includes('admin')" type="button" class="button primary" style="margin-top: .75em" @click="showClientModal()">
           New Client
         </button>
-        <button class="button primary" style="margin-top: .75em" @click="logout()">
+        <button type="button" class="button primary" style="margin-top: .75em" @click="logout()">
           Logout
         </button>
       </nav>

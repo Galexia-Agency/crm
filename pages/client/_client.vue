@@ -49,7 +49,7 @@
         <h2 v-text="'Total Profit: £' + profit.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
         <h2 v-text="'Completion Total: £' + completion_total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
-      <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" @click="addClientPandle()">
+      <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
         Add to Pandle
       </button>
       <div v-if="claims.groups.includes('admin')" class="contact container">
@@ -57,12 +57,12 @@
           <span :key="contact.id + 'i'" style="display: none">
             {{ contact.org = client.business_name }}
           </span>
-          <button :key="contact.id" class="list-container" @click="showContactModal(contact)">
+          <button :key="contact.id" type="button" class="list-container" @click="showContactModal(contact)">
             <font-awesome-icon :icon="['fa-solid', 'fa-address-card']" />
             <span v-text="contact.f_name" />
           </button>
         </template>
-        <button class="list-container" @click="showEditContactModal({client_id: client.id})">
+        <button type="button" class="list-container" @click="showEditContactModal({client_id: client.id})">
           <font-awesome-icon :icon="['fa-solid', 'fa-plus']" />
           <span>New Contact</span>
         </button>
@@ -101,7 +101,7 @@
       <clientModal ref="client" @submit="editClient" @cancel="hideClientModal" />
     </ui-modal>
     <div v-if="claims.groups.includes('admin')" class="fixed">
-      <button class="button primary" @click="showNewProjectModal({client_id: client.id})">
+      <button type="button" class="button primary" @click="showNewProjectModal({client_id: client.id})">
         New Project
       </button>
     </div>

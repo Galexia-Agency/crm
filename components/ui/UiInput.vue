@@ -62,7 +62,14 @@
           :required="required"
           @keydown.enter="onEnter"
         >
-        <button v-if="type === 'date'" class="button is-primary" :disabled="disabled" @click="resetDate">
+        <button
+          v-if="type === 'date'"
+          type="button"
+          class="button is-primary"
+          :disabled="disabled"
+          style="margin-top: .5em"
+          @click="resetDate"
+        >
           X
         </button>
       </div>

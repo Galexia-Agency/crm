@@ -24,7 +24,7 @@
   <div class="card">
     <div class="card-content">
       <font-awesome-icon :icon="['fa-solid', 'fa-address-card']" />
-      <button class="edit" @click="edit">
+      <button type="button" class="edit" @click="edit">
         <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
       </button>
       <h2 v-if="contact.title && contact.f_name && contact.l_name" v-text="`${contact.f_name} ${contact.l_name} (${contact.title})`" />

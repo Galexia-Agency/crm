@@ -1,5 +1,4 @@
 <style lang="scss">
-
 /* Editor objects */
 .editor_object_standard {
   border: 3px solid var(--base);
@@ -44,6 +43,7 @@
 button.menu_button {
   display: inline-flex;
   border-radius: .25em;
+  border: 1px solid transparent;
   &:focus {
     box-shadow: none
   }
@@ -96,7 +96,8 @@ div#rich_editor {
     ol {
       list-style: numeric
     }
-    ol, ul {
+    ol,
+    ul {
       margin-left: 1.2em
     }
     hr {
@@ -158,7 +159,8 @@ div#rich_editor {
   button svg * {
     fill: #7A7A7A
   }
-  .textarea, .textarea:hover {
+  .textarea,
+  .textarea:hover {
     color: #7A7A7A;
     border-color: #DBDBDB;
     box-shadow: none
@@ -173,6 +175,7 @@ div#rich_editor {
       <div class="menu_bar_wrapper">
         <div id="menu_bar" :class="{ editorFocused: caretInEditor }">
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('bold') }"
             title="Bold"
@@ -181,6 +184,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/bold.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('italic') }"
             title="Italic"
@@ -189,6 +193,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/italic.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('underline') }"
             title="Underline"
@@ -197,6 +202,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/underline.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('ordered_list') }"
             title="Ordered list"
@@ -205,6 +211,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/ol.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('bullet_list') }"
             title="Bullet list"
@@ -213,6 +220,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/ul.svg')" />
           </button>
           <button
+            type="button"
             class="menu_button"
             :class="{ 'is-active': editor.isActive('taskList') }"
             title="Checklist"
@@ -221,29 +229,46 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/checklist.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('horizontalRule') }"
             title="Horizontal line"
             @click="editor.chain().focus().setHorizontalRule().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/horizontal-rule.svg')" />
+            <inline-svg
+              :src="require('~/assets/svg/editor/horizontal-rule.svg')"
+            />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('link') }"
             title="Hyperlink"
-            @click="editor.isActive('link') ? editor.chain().focus().unsetLink().run() : setLinkUrl()"
+            @click="
+              editor.isActive('link')
+                ? editor.chain().focus().unsetLink().run()
+                : setLinkUrl()
+            "
           >
             <inline-svg :src="require('~/assets/svg/editor/link.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             title="Image"
-            @click="showAddTemplate = false, $refs.ui_editor_input.show('image', 'Select your image to upload', 'Make sure that it\'s less than 1MB')"
+            @click="
+              ;(showAddTemplate = false),
+                $refs.ui_editor_input.show(
+                  'image',
+                  'Select your image to upload',
+                  'Make sure that it\'s less than 1MB'
+                )
+            "
           >
             <inline-svg :src="require('~/assets/svg/editor/image.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             title="Undo"
             @click="editor.chain().focus().undo().run()"
@@ -251,6 +276,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/undo.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             title="Redo"
             @click="editor.chain().focus().redo().run()"
@@ -300,7 +326,6 @@ export default {
   },
   data () {
     return {
-
       // Editor
       initialValue: null,
       editor: null,
@@ -317,14 +342,7 @@ export default {
     this.initialValue = this.value
     this.editor = new Editor({
       content: this.value,
-      extensions: [
-        StarterKit,
-        Undeline,
-        Link,
-        TaskList,
-        TaskItem,
-        LazyImage
-      ],
+      extensions: [StarterKit, Undeline, Link, TaskList, TaskItem, LazyImage],
       onUpdate: ({ editor }) => {
         this.$emit('editorUpdateShim', editor)
       },
@@ -346,7 +364,6 @@ export default {
     }
   },
   methods: {
-
     // -----------------------------
     // General
     // -----------------------------
@@ -368,9 +385,17 @@ export default {
     addImg () {
       const FILE = document.getElementById('img_uploader').files[0]
       const READER = new FileReader()
-      READER.addEventListener('load', () => {
-        this.editor.chain().focus().setImage({ src: READER.result.toString(), loading: 'lazy' }).run()
-      }, false)
+      READER.addEventListener(
+        'load',
+        () => {
+          this.editor
+            .chain()
+            .focus()
+            .setImage({ src: READER.result.toString(), loading: 'lazy' })
+            .run()
+        },
+        false
+      )
 
       if (FILE) {
         // eslint-disable-next-line
