@@ -88,6 +88,7 @@
       />
     </UiModal>
     <UiConfirm ref="confirm" />
+    <ConflictsModal ref="conflicts" />
   </div>
 </template>
 
@@ -99,6 +100,7 @@ import Card from './Card'
 import UiItemForm from './ui/UiItemForm'
 import UiItemEntry from './ui/UiItemEntry'
 import UiConfirm from './ui/UiConfirm'
+import ConflictsModal from './modals/conflictModal'
 
 export default {
   components: {
@@ -107,7 +109,8 @@ export default {
     UiItemEntry,
     UiItemForm,
     Card,
-    UiConfirm
+    UiConfirm,
+    ConflictsModal
   },
   props: {
     projectId: {

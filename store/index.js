@@ -8,6 +8,15 @@ export const state = () => ({
   error: {
     active: false
   },
+  conflicts: {
+    promise: null,
+    resolvePromise: null,
+    before: '',
+    after: '',
+    updated: '',
+    type: 'text',
+    reveal: false
+  },
   pandle: {
     dashboard: {
       bankAccountChart: {

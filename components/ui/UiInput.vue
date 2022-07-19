@@ -39,7 +39,7 @@
           :disabled="disabled"
           :required="required"
         />
-        <div v-if="type === 'select'" class="select-wrapper">
+        <div v-else-if="type === 'select'" class="select-wrapper">
           <select
             v-model="input"
             :name="name"

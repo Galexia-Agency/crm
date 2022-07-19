@@ -15,6 +15,29 @@ const mutations = {
     state.error.description = data.description
     state.error.data = data.data
   },
+  conflicts (state, data) {
+    if (data.reveal || data.reveal === false) {
+      state.conflicts.reveal = data.reveal
+    }
+    if (data.promise || data.promise === null) {
+      state.conflicts.promise = data.promise
+    }
+    if (data.resolvePromise || data.resolvePromise === null) {
+      state.conflicts.resolvePromise = data.resolvePromise
+    }
+    if (data.before) {
+      state.conflicts.before = data.before
+    }
+    if (data.after) {
+      state.conflicts.after = data.after
+    }
+    if (data.updated) {
+      state.conflicts.updated = data.updated
+    }
+    if (data.type) {
+      state.conflicts.type = data.type
+    }
+  },
   clients (state, data) {
     state.clients = data
   },
@@ -83,7 +106,7 @@ const mutations = {
 
   updateItem (state, { projectId, itemId, title, description, date, dateUNIX, createdDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }) {
     const updatedDate = Date.now()
-    const updatedItem = makeItem({ title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee, itemId })
+    const updatedItem = makeItem({ title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee, id: itemId })
     const item = getItemById(state.projects.find(project => project.id === projectId).lists, itemId)
     Object.assign(item, updatedItem)
   },

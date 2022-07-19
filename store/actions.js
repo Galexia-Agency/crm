@@ -1,8 +1,22 @@
-import * as Automerge from 'automerge'
-
 const actions = {
   /* Projects */
-  async updateProjectList ({ commit, state }, projectId) {
+  conflicts ({ commit, state }, data) {
+    // Commit data to conflicts and set reveal to true to open the modal
+    commit('conflicts', { ...data, reveal: true })
+    // Delay promise shim - need to wait for 1 second before the above data is committed and we can listen for the promise
+    function delay (t, v) {
+      return new Promise(function (resolve) {
+        setTimeout(resolve.bind(null, v), t)
+      })
+    }
+    // Return a promise so we can await it
+    return new Promise((resolve) => {
+      return delay(1000).then(async function () {
+        return resolve(await state.conflicts.promise)
+      })
+    })
+  },
+  async updateProjectList ({ commit, state, dispatch }, projectId) {
     const project = state.projects.find(project => project.id === projectId)
     const projectList = JSON.parse(JSON.stringify(project.lists))
     if (JSON.stringify(projectList)) {
@@ -24,29 +38,97 @@ const actions = {
         updatedProject.lists = JSON.parse(updatedProject.lists)
         commit('updateProject', response.data[0])
       } catch (e) {
-        if (await e.response.status === 429) {
+        if (await e.response.status === 429 && JSON.parse(e.response.data.lists)) {
+          // Data from the database
+          const sourceOfTruth = JSON.parse(e.response.data.lists)
+          // What we're going to force push up to the database after having merged our changes with the truth
+          const whatToForcePush = sourceOfTruth
           // try {
+          // If there are any lists
           if (projectList.length > 0) {
-            for (const project in projectList) {
-              if (JSON.parse(e.response.data.lists)[project] && (projectList[project].id !== JSON.parse(e.response.data.lists)[project].id)) {
-                projectList.push(JSON.parse(e.response.data.lists)[project])
+            // Loop through the lists
+            for (const list of Object.keys(projectList)) {
+              // If we have a list that is different from the source of truth
+              if (!sourceOfTruth[list] || projectList[list].id !== sourceOfTruth[list].id) {
+                // Add our list to what we're going to push up
+                whatToForcePush.push(projectList[list])
+              } else {
+                // If the titles state don't match, open the conflict resolution modal
+                if (whatToForcePush[list].title !== projectList[list].title) {
+                  whatToForcePush[list].title = await dispatch('conflicts', {
+                    type: 'text',
+                    before: whatToForcePush[list].title,
+                    after: projectList[list].title
+                  })
+                }
+                // If the archived state don't match, open the conflict resolution modal
+                if (whatToForcePush[list].archived !== projectList[list].archived) {
+                  whatToForcePush[list].archived = await dispatch('conflicts', {
+                    type: 'checkbox',
+                    before: whatToForcePush[list].archived,
+                    after: projectList[list].archived
+                  })
+                }
               }
-              if (projectList[project].items.length > 0) {
-                for (const item in projectList[project].items) {
-                  if (JSON.parse(e.response.data.lists)[project].items[item] && (projectList[project].items[item].id !== JSON.parse(e.response.data.lists)[project].items[item].id)) {
-                    projectList[project].items.push(JSON.parse(e.response.data.lists)[project].items[item])
+              // If our list has items
+              if (projectList[list].items.length > 0) {
+                // Loop through the items in the list
+                for (const item of Object.keys(projectList[list].items)) {
+                  // If our item is not at the source, then add it to our force push
+                  if (!sourceOfTruth[list].items[item] || projectList[list].items[item].id !== sourceOfTruth[list].items[item].id) {
+                    whatToForcePush[list].items.push(projectList[list].items[item])
+                  } else {
+                    // If the titles don't match, open the conflict resolution modal
+                    if (whatToForcePush[list].items[item].title !== projectList[list].items[item].title) {
+                      whatToForcePush[list].items[item].title = await dispatch('conflicts', {
+                        type: 'text',
+                        before: whatToForcePush[list].items[item].title,
+                        after: projectList[list].items[item].title
+                      })
+                    }
+                    // If the dates don't match, open the conflict resolution modal
+                    if (whatToForcePush[list].items[item].date !== projectList[list].items[item].date) {
+                      whatToForcePush[list].items[item].date = await dispatch('conflicts', {
+                        type: 'date',
+                        before: whatToForcePush[list].items[item].date,
+                        after: projectList[list].items[item].date
+                      })
+                    }
+                    // If the assignees don't match, open the conflict resolution modal
+                    if (whatToForcePush[list].items[item].assignee !== projectList[list].items[item].assignee) {
+                      whatToForcePush[list].items[item].assignee = await dispatch('conflicts', {
+                        type: 'text',
+                        before: whatToForcePush[list].items[item].assignee,
+                        after: projectList[list].items[item].assignee
+                      })
+                    }
+                    // If the archived states don't match, open the conflict resolution modal
+                    if (whatToForcePush[list].items[item].archived !== projectList[list].items[item].archived) {
+                      whatToForcePush[list].items[item].archived = await dispatch('conflicts', {
+                        type: 'checkbox',
+                        before: whatToForcePush[list].items[item].archived,
+                        after: projectList[list].items[item].archived
+                      })
+                    }
+                    // If the descriptions don't match, open the conflict resolution modal
+                    if (whatToForcePush[list].items[item].description !== projectList[list].items[item].description) {
+                      whatToForcePush[list].items[item].description = await dispatch('conflicts', {
+                        type: 'editor',
+                        before: whatToForcePush[list].items[item].description,
+                        after: projectList[list].items[item].description
+                      })
+                    }
+                    whatToForcePush[list].items[item].updatedBy = 'System'
+                    whatToForcePush[list].items[item].updatedDate = Date.now()
                   }
                 }
               }
             }
           }
-          const doc1 = Automerge.from(projectList)
-          const doc2 = Automerge.from(JSON.parse(e.response.data.lists))
-          const finalDoc = Automerge.merge(doc2, doc1)
-
+          // Force push the lists as all conflicts have been resolved
           const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
             {
-              lists: JSON.stringify(Object.values(finalDoc)),
+              lists: JSON.stringify(whatToForcePush),
               id: projectId,
               force: true
             },
