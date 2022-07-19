@@ -9,12 +9,11 @@
   <div class="ui-item-entry field has-addons">
     <div class="control is-expanded">
       <input
-        v-model.trim="input"
+        v-model="input"
         class="input"
         enterkeyhint="enter"
         :placeholder="placeholder"
         @keydown.enter="onEnter"
-        @input="update"
         @paste="pasteMultiple"
       >
     </div>
@@ -68,9 +67,6 @@ export default {
         })
         this.input = ''
       }
-    },
-    update ($event) {
-      this.input = $event.target.value
     },
     pasteMultiple ($event) {
       const self = this
