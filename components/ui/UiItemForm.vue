@@ -41,7 +41,7 @@
         help="Email Address"
         :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
       />
-      <div class="field last-updated">
+      <div v-if="id" class="field last-updated">
         Last updated by <strong>{{ updatedBy }}</strong> at <strong>{{ (new Date(updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedDate)).toLocaleDateString("en-GB") }}</strong>
       </div>
       <div class="field is-grouped card-modal-buttons-container">
@@ -53,7 +53,7 @@
             Cancel
           </ui-button>
         </div>
-        <ui-button style-type="archive" @click="archive">
+        <ui-button v-if="id" style-type="archive" @click="archive">
           Archive
         </ui-button>
       </div>
