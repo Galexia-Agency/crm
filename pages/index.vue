@@ -148,7 +148,7 @@
             <tbody>
               <tr>
                 <td>
-                  Completion Total:
+                  Completion Total
                 </td>
                 <td v-text="'£' + completion_total" />
               </tr>
@@ -201,7 +201,7 @@
                 <td>
                   <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
                 </td>
-                <td v-text="`£${parseFloat(client.project.completion_amount).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
+                <td v-text="`£${parseFloat(client.completion_amount).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
               </tr>
             </tbody>
           </table>
@@ -360,18 +360,28 @@ export default {
       return c.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     clientsWithCompletion () {
-      const c = []
+      const c = {}
       for (const project in this.$store.state.projects) {
-        if (this.$store.state.projects[project].completion_amount !== null && this.$store.state.projects[project].completion_amount !== 0) {
-          const f = this.$store.state.clients.find(client => client.id === this.$store.state.projects[project].client_id)
-          f.project = this.$store.state.projects[project]
-          c.push(f)
+        if (this.$store.state.projects[project].completion_amount !== null && parseFloat(this.$store.state.projects[project].completion_amount) !== 0) {
+          const clientName = this.$store.state.clients.find(client => client.id === this.$store.state.projects[project].client_id).business_name
+          if (c[clientName]) {
+            c[clientName] += this.$store.state.projects[project].completion_amount
+          } else {
+            c[clientName] = this.$store.state.projects[project].completion_amount
+          }
         }
       }
-      c.sort(function (a, b) {
-        return b.project.completion_amount - a.project.completion_amount
+      const clients = []
+      Object.keys(c).map(key => [key, c[key]]).forEach((clientWithCompletion) => {
+        const object = {}
+        object.business_name = clientWithCompletion[0]
+        object.business_shortname = this.$store.state.clients.find(client => client.business_name === clientWithCompletion[0]).business_shortname
+        object.completion_amount = clientWithCompletion[1]
+        clients.push(object)
       })
-      return c
+      return clients.sort(function (a, b) {
+        return parseFloat(b)[1] - parseFloat(a)[1]
+      })
     },
     clientSource () {
       return {
