@@ -3,12 +3,14 @@
   .card {
     position: relative;
     border-radius: 3px;
-    cursor: pointer;
     transition: background-color .25s ease-in-out;
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: rgb(225, 225, 225)
+    &:not(.archived) {
+      &:hover,
+      &:active,
+      &:focus {
+        cursor: pointer;
+        background-color: rgb(225, 225, 225)
+      }
     }
     &.icons_draggable {
       cursor: initial;
@@ -140,7 +142,9 @@ export default {
 
   methods: {
     edit () {
-      this.$emit('edit', this.item)
+      if (!this.item.archived) {
+        this.$emit('edit', this.item)
+      }
     },
     unarchive () {
       this.$emit('unarchive', this.item)

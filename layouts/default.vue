@@ -71,7 +71,7 @@
     .button.is-primary[disabled], fieldset[disabled] .button.is-primary, .button.is-primary, .button.is-primary:hover, .button.is-primary.is-hovered {
       background: var(--primaryColor)
     }
-    .button.is-primary:hover, .button.is-primary.is-hovered {
+    fieldset:not([disabled]) .button.is-primary:not([disabled]):hover, fieldset:not([disabled]) .button.is-primary.is-hovered:not([disabled]) {
       opacity: .9
     }
     .button.is-archive[disabled], fieldset[disabled] .button.is-archive, .button.is-archive, .button.is-archive:hover, .button.is-archive.is-hovered {
@@ -277,6 +277,9 @@
   }
   .list-drag-handle {
     cursor: move
+  }
+  .list-container.archived .list-drag-handle {
+    cursor: not-allowed
   }
   .list-delete {
     cursor: pointer

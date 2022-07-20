@@ -5,7 +5,7 @@
         <Container
           lock-axis="x"
           orientation="horizontal"
-          drag-handle-selector=".list-drag-handle"
+          drag-handle-selector=".list-container:not(.archived) .list-drag-handle"
           @drop="onListDrop"
           @drag-start="$parent.$parent.dragging = true"
           @drag-end="$parent.$parent.dragging = false"
@@ -30,7 +30,7 @@
                   group-name="list"
                   drag-class="card-ghost"
                   drop-class="card-ghost-drop"
-                  non-drag-area-selector=".icon"
+                  non-drag-area-selector=".icon, .archived"
                   :animation-duration="100"
                   @drag-start="vibrate(200), $parent.$parent.dragging = true"
                   @drag-end="vibrate(300), $parent.$parent.dragging = false"

@@ -201,7 +201,7 @@
                 <td>
                   <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
                 </td>
-                <td v-text="`£${parseFloat(client.completion_amount).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
+                <td v-text="`£${client.completion_amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
               </tr>
             </tbody>
           </table>
@@ -365,9 +365,9 @@ export default {
         if (this.$store.state.projects[project].completion_amount !== null && parseFloat(this.$store.state.projects[project].completion_amount) !== 0) {
           const clientName = this.$store.state.clients.find(client => client.id === this.$store.state.projects[project].client_id).business_name
           if (c[clientName]) {
-            c[clientName] += this.$store.state.projects[project].completion_amount
+            c[clientName] += parseFloat(this.$store.state.projects[project].completion_amount)
           } else {
-            c[clientName] = this.$store.state.projects[project].completion_amount
+            c[clientName] = parseFloat(this.$store.state.projects[project].completion_amount)
           }
         }
       }
@@ -380,7 +380,7 @@ export default {
         clients.push(object)
       })
       return clients.sort(function (a, b) {
-        return parseFloat(b)[1] - parseFloat(a)[1]
+        return b.completion_amount - a.completion_amount
       })
     },
     clientSource () {
