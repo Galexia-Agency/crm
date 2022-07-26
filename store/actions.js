@@ -1,11 +1,30 @@
 const actions = {
   /* Projects */
-  async updateProjectList ({ commit, state }, projectId) {
-    if (JSON.stringify(state.projects.find(project => project.id === projectId).lists)) {
+  conflicts ({ commit, state }, data) {
+    // Commit data to conflicts and set reveal to true to open the modal
+    commit('conflicts', { ...data, reveal: true })
+    // Delay promise shim - need to wait for 1 second before the above data is committed and we can listen for the promise
+    function delay (t, v) {
+      return new Promise(function (resolve) {
+        setTimeout(resolve.bind(null, v), t)
+      })
+    }
+    // Return a promise so we can await it
+    return new Promise((resolve) => {
+      return delay(1000).then(async function () {
+        return resolve(await state.conflicts.promise)
+      })
+    })
+  },
+  async updateProjectList ({ commit, state, dispatch }, projectId) {
+    const project = state.projects.find(project => project.id === projectId)
+    const projectList = JSON.parse(JSON.stringify(project.lists))
+    if (JSON.stringify(projectList)) {
       try {
-        await this.$axios.post('https://api.galexia.agency/projects/lists',
+        const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
           {
-            lists: JSON.stringify(state.projects.find(project => project.id === projectId).lists),
+            lists: JSON.stringify(projectList),
+            updated_at: project.updated_at,
             id: projectId
           },
           {
@@ -15,13 +34,142 @@ const actions = {
             }
           }
         )
+        const updatedProject = response.data[0]
+        updatedProject.lists = JSON.parse(updatedProject.lists)
+        commit('updateProject', response.data[0])
       } catch (e) {
-        const error = {}
-        error.active = true
-        error.description = e
-        error.data = state.projects.find(project => project.id === projectId).lists
-        commit('error', { error })
+        if (await e.response.status === 429 && JSON.parse(e.response.data.lists)) {
+          // Data from the database
+          const sourceOfTruth = JSON.parse(e.response.data.lists)
+          // What we're going to force push up to the database after having merged our changes with the truth
+          const whatToForcePush = sourceOfTruth
+          try {
+            // If there are any lists
+            if (projectList.length > 0) {
+              // Loop through the lists
+              for (const list of Object.keys(projectList)) {
+                // If we have a list that is different from the source of truth
+                if (!sourceOfTruth[list] || projectList[list].id !== sourceOfTruth[list].id) {
+                  // Add our list to what we're going to push up
+                  whatToForcePush.push(projectList[list])
+                } else {
+                  // If the titles state don't match, open the conflict resolution modal
+                  if (whatToForcePush[list].title !== projectList[list].title) {
+                    whatToForcePush[list].title = await dispatch('conflicts', {
+                      title: 'List Title',
+                      type: 'text',
+                      before: whatToForcePush[list].title,
+                      after: projectList[list].title
+                    })
+                  }
+                  // If the archived state don't match, open the conflict resolution modal
+                  if (whatToForcePush[list].archived !== projectList[list].archived) {
+                    whatToForcePush[list].archived = await dispatch('conflicts', {
+                      title: 'List Archived State',
+                      type: 'checkbox',
+                      before: whatToForcePush[list].archived,
+                      after: projectList[list].archived
+                    })
+                  }
+                }
+                // If our list has items
+                if (projectList[list].items.length > 0) {
+                  // Loop through the items in the list
+                  for (const item of Object.keys(projectList[list].items)) {
+                    // If our item is not at the source, then add it to our force push
+                    if (!sourceOfTruth[list].items[item] || projectList[list].items[item].id !== sourceOfTruth[list].items[item].id) {
+                      whatToForcePush[list].items.push(projectList[list].items[item])
+                    } else {
+                      // If the titles don't match, open the conflict resolution modal
+                      if (whatToForcePush[list].items[item].title !== projectList[list].items[item].title) {
+                        whatToForcePush[list].items[item].title = await dispatch('conflicts', {
+                          title: 'Card Title',
+                          type: 'text',
+                          before: whatToForcePush[list].items[item].title,
+                          after: projectList[list].items[item].title
+                        })
+                      }
+                      // If the dates don't match, open the conflict resolution modal
+                      if (whatToForcePush[list].items[item].date !== projectList[list].items[item].date) {
+                        whatToForcePush[list].items[item].date = await dispatch('conflicts', {
+                          title: 'Card Due Date',
+                          type: 'date',
+                          before: whatToForcePush[list].items[item].date,
+                          after: projectList[list].items[item].date
+                        })
+                      }
+                      // If the assignees don't match, open the conflict resolution modal
+                      if (whatToForcePush[list].items[item].assignee !== projectList[list].items[item].assignee) {
+                        whatToForcePush[list].items[item].assignee = await dispatch('conflicts', {
+                          title: 'Card Assignee',
+                          type: 'text',
+                          before: whatToForcePush[list].items[item].assignee,
+                          after: projectList[list].items[item].assignee
+                        })
+                      }
+                      // If the archived states don't match, open the conflict resolution modal
+                      if (whatToForcePush[list].items[item].archived !== projectList[list].items[item].archived) {
+                        whatToForcePush[list].items[item].archived = await dispatch('conflicts', {
+                          title: 'Card Archived State',
+                          type: 'checkbox',
+                          before: whatToForcePush[list].items[item].archived,
+                          after: projectList[list].items[item].archived
+                        })
+                      }
+                      // If the descriptions don't match, open the conflict resolution modal
+                      if (whatToForcePush[list].items[item].description !== projectList[list].items[item].description) {
+                        whatToForcePush[list].items[item].description = await dispatch('conflicts', {
+                          title: 'Card Description',
+                          type: 'editor',
+                          before: whatToForcePush[list].items[item].description,
+                          after: projectList[list].items[item].description
+                        })
+                      }
+                      whatToForcePush[list].items[item].updatedBy = 'System'
+                      whatToForcePush[list].items[item].updatedDate = Date.now()
+                    }
+                  }
+                }
+              }
+            }
+            // Force push the lists as all conflicts have been resolved
+            const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
+              {
+                lists: JSON.stringify(whatToForcePush),
+                id: projectId,
+                force: true
+              },
+              {
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json'
+                }
+              }
+            )
+            const updatedProject = response.data[0]
+            updatedProject.lists = JSON.parse(updatedProject.lists)
+            commit('updateProject', response.data[0])
+          } catch (e) {
+            const error = {}
+            error.active = true
+            error.description = e.message
+            error.data = projectList
+            commit('error', { error })
+          }
+        } else {
+          const error = {}
+          error.active = true
+          error.description = e.message
+          error.data = projectList
+          commit('error', { error })
+        }
       }
+    } else {
+      const error = {}
+      error.active = true
+      error.description = 'Cannot stringify data'
+      error.data = projectList
+      commit('error', { error })
     }
   },
   async addProject ({ commit }, data) {

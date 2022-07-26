@@ -39,7 +39,7 @@
           :disabled="disabled"
           :required="required"
         />
-        <div v-if="type === 'select'" class="select-wrapper">
+        <div v-else-if="type === 'select'" class="select-wrapper">
           <select
             v-model="input"
             :name="name"
@@ -51,6 +51,13 @@
             <slot />
           </select>
         </div>
+        <input
+          v-else-if="type === 'checkbox'"
+          v-model="input"
+          :type="type"
+          :name="name"
+          :disabled="disabled"
+        >
         <input
           v-else
           v-model.trim="input"
