@@ -1,7 +1,7 @@
 export default {
   props: {
     name: String,
-    value: [String, Number],
+    value: [String, Number, Boolean],
     label: String
   },
 

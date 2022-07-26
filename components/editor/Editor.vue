@@ -60,6 +60,9 @@ button.menu_button {
     box-shadow: 0 0 0 .125em rgba(50, 115, 220, 25%)
   }
 }
+#wrapper--rich_editor[disabled] .control {
+  min-height: 120px
+}
 div#rich_editor {
   padding: 0;
   ul[data-type='taskList'] {
@@ -172,7 +175,7 @@ div#rich_editor {
   <div id="wrapper--rich_editor" class="field" :disabled="disabled">
     <label v-if="label" class="label">{{ label }}</label>
     <div class="control textarea">
-      <div class="menu_bar_wrapper">
+      <div v-if="!disabled" class="menu_bar_wrapper">
         <div id="menu_bar" :class="{ editorFocused: caretInEditor }">
           <button
             type="button"

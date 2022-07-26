@@ -11,6 +11,7 @@ export const state = () => ({
   conflicts: {
     promise: null,
     resolvePromise: null,
+    title: '',
     before: '',
     after: '',
     updated: '',

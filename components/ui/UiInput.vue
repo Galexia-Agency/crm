@@ -52,6 +52,13 @@
           </select>
         </div>
         <input
+          v-else-if="type === 'checkbox'"
+          v-model="input"
+          :type="type"
+          :name="name"
+          :disabled="disabled"
+        >
+        <input
           v-else
           v-model.trim="input"
           :type="type"
