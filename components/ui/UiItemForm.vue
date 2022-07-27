@@ -79,7 +79,13 @@ function data () {
     clientName: null,
     clientShortName: null,
     updatedBy: null,
-    assignee: 'joe@galexia.agency'
+    assignee: 'joe@galexia.agency',
+
+    // Images
+    cloudinaryImages: {
+      startingWith: [],
+      endingWith: []
+    }
   }
 }
 export default {
@@ -95,21 +101,37 @@ export default {
     ]),
     values () {
       return this.$data
+    },
+    baseURL () {
+      if (process.env.NODE_ENV !== 'production') {
+        return 'http://localhost:8888'
+      } else {
+        return null
+      }
     }
   },
   methods: {
     editorUpdateShim (value) {
       this.description = value.getHTML()
     },
-    show (data) {
+    async show (data) {
       this.reset()
       Object.assign(this, data)
-      this.$el.querySelector('input').focus()
+      // Search for images in the editor
+      const FOUND_IMGS = await this.imgFinder(this.description)
+      this.cloudinaryImages.startingWith = FOUND_IMGS
+      this.cloudinaryImages.endingWith = FOUND_IMGS
     },
     resetDate () {
       this.date = null
     },
-    submit () {
+    async submit () {
+      this.cloudinaryImages.endingWith = await this.imgFinder(this.description)
+      await this.deleteOldImgs()
+      this.cloudinaryImages = {
+        startingWith: [],
+        endingWith: []
+      }
       this.$emit('submit', this.values)
     },
     cancel () {
@@ -120,6 +142,52 @@ export default {
     },
     reset () {
       Object.assign(this, data())
+    },
+    /**
+     * Finds all the images in the html.
+     * @param {string} html - The html to search.
+     * @returns An array of all the found ids of cloudinary images.
+     */
+    async imgFinder (html) {
+      const IMG_REGEX = /<img.*?src="(.*?)".*?>/gi
+      const RETURN_ARR = []
+      let finder
+      while ((finder = IMG_REGEX.exec(html)) !== null) {
+        if (finder.index === IMG_REGEX.lastIndex) {
+          IMG_REGEX.lastIndex++
+        }
+        for (const [groupIndex, match] of finder.entries()) {
+          if (groupIndex === 1) {
+            if (match.includes('base64')) {
+              await this.$axios.post(`${this.baseURL}/.netlify/functions/upload-image`, { file: match }).then((response) => {
+                RETURN_ARR.push(response.data.url)
+                this.cloudinaryImages.startingWith.push(response.data.url)
+                this.cloudinaryImages.endingWith.push(response.data.url)
+                this.description = this.description.replace(`${match}"`, `${response.data.url}" loading="lazy"`)
+              })
+            } else {
+              RETURN_ARR.push(match)
+            }
+          } else if (match.includes('base64')) {
+            const WRAPPED_REGEX = /<p>(<img.*?">).*?<\/p>/gi
+            let wrappedFinder
+            while ((wrappedFinder = WRAPPED_REGEX.exec(this.description)) !== null) {
+              if (wrappedFinder.index === WRAPPED_REGEX.lastIndex) {
+                WRAPPED_REGEX.lastIndex++
+              }
+              this.description = this.description.replace(wrappedFinder[0], wrappedFinder[1])
+            }
+          }
+        }
+      }
+      return RETURN_ARR
+    },
+    async deleteOldImgs () {
+      for (const img of this.cloudinaryImages.startingWith) {
+        if (!this.cloudinaryImages.endingWith.includes(img)) {
+          await this.$axios.post(`${this.baseURL}/.netlify/functions/delete-image`, { file: img })
+        }
+      }
     }
   }
 }

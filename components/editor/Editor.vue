@@ -260,11 +260,10 @@ div#rich_editor {
             class="fadeIn menu_button"
             title="Image"
             @click="
-              ;(showAddTemplate = false),
-                $refs.ui_editor_input.show(
+              ;$refs.ui_editor_input.show(
                   'image',
                   'Select your image to upload',
-                  'Make sure that it\'s less than 1MB'
+                  'Make sure that it\'s less than 5MB'
                 )
             "
           >
@@ -302,7 +301,7 @@ div#rich_editor {
 import Compressor from 'compressorjs'
 import { Editor, EditorContent } from '@tiptap/vue-2'
 import StarterKit from '@tiptap/starter-kit'
-import Undeline from '@tiptap/extension-underline'
+import Underline from '@tiptap/extension-underline'
 // eslint-disable-next-line import/no-named-as-default
 import Link from '@tiptap/extension-link'
 // eslint-disable-next-line import/no-named-as-default
@@ -345,13 +344,12 @@ export default {
     this.initialValue = this.value
     this.editor = new Editor({
       content: this.value,
-      extensions: [StarterKit, Undeline, Link, TaskList, TaskItem, LazyImage],
+      extensions: [StarterKit, Underline, Link, TaskList, TaskItem, LazyImage],
       onUpdate: ({ editor }) => {
         this.$emit('editorUpdateShim', editor)
       },
       onFocus: () => {
         this.caretInEditor = true
-        this.showAddTemplate = false
       },
       onBlur: () => {
         this.caretInEditor = false
@@ -388,30 +386,32 @@ export default {
     addImg () {
       const FILE = document.getElementById('img_uploader').files[0]
       const READER = new FileReader()
-      READER.addEventListener(
-        'load',
-        () => {
-          this.editor
-            .chain()
-            .focus()
-            .setImage({ src: READER.result.toString(), loading: 'lazy' })
-            .run()
-        },
-        false
-      )
+      READER.addEventListener('load', () => {
+        const base64Image = READER.result.toString()
+        this.editor
+          .chain()
+          .focus()
+          .setImage({ src: base64Image, loading: 'lazy' })
+          .run()
+      }, false)
 
       if (FILE) {
-        // eslint-disable-next-line
-        new Compressor(FILE, {
-          quality: 0.6,
-          success (result) {
-            READER.readAsDataURL(result)
-          },
-          error (err) {
-            // eslint-disable-next-line no-console
-            console.error(err.message)
-          }
-        })
+        if (FILE.size < 5100000) {
+          // eslint-disable-next-line no-new
+          new Compressor(FILE, {
+            quality: 0.6,
+            success (result) {
+              READER.readAsDataURL(result)
+            },
+            error (err) {
+              // eslint-disable-next-line no-console
+              console.error(err.message)
+            }
+          })
+        } else {
+          this.$refs.ui_editor_input.show('File size is too big', 'Please compress it to 5MB or lower', true, true)
+          document.getElementById('img_uploader').value = ''
+        }
       }
     }
   }
