@@ -157,6 +157,7 @@ export default {
     async imgFinder (html) {
       const IMG_REGEX = /<img.*?src="(.*?)".*?>/gi
       const RETURN_ARR = []
+      const imagesToUpload = []
       let finder
       while ((finder = IMG_REGEX.exec(html)) !== null) {
         if (finder.index === IMG_REGEX.lastIndex) {
@@ -165,12 +166,7 @@ export default {
         for (const [groupIndex, match] of finder.entries()) {
           if (groupIndex === 1) {
             if (match.includes('base64')) {
-              await this.$axios.post(`${this.baseURL}/.netlify/functions/upload-image`, { file: match }).then((response) => {
-                RETURN_ARR.push(response.data.url)
-                this.cloudinaryImages.startingWith.push(response.data.url)
-                this.cloudinaryImages.endingWith.push(response.data.url)
-                this.description = this.description.replace(`${match}"`, `${response.data.url}" loading="lazy"`)
-              })
+              imagesToUpload.push(match)
             } else {
               RETURN_ARR.push(match)
             }
@@ -186,14 +182,41 @@ export default {
           }
         }
       }
+      const self = this
+      function uploadImage (image) {
+        return self.$axios.post(`${self.baseURL}/.netlify/functions/upload-image`, { file: image })
+          .then((response) => {
+            RETURN_ARR.push(response.data.url)
+            self.cloudinaryImages.startingWith.push(response.data.url)
+            self.cloudinaryImages.endingWith.push(response.data.url)
+            self.description = self.description.replace(`${image}"`, `${response.data.url}" loading="lazy"`)
+          })
+          .catch(function (e) {
+            const error = {}
+            error.description = e.message
+            self.$store.commit('error', error)
+          })
+      }
+      await Promise.all(imagesToUpload.map(uploadImage))
       return RETURN_ARR
     },
     async deleteOldImgs () {
-      for (const img of this.cloudinaryImages.startingWith) {
-        if (!this.cloudinaryImages.endingWith.includes(img)) {
-          await this.$axios.post(`${this.baseURL}/.netlify/functions/delete-image`, { file: img })
+      const imagesToDelete = []
+      for (const image of this.cloudinaryImages.startingWith) {
+        if (!this.cloudinaryImages.endingWith.includes(image)) {
+          imagesToDelete.push(image)
         }
       }
+      const self = this
+      function deleteImage (image) {
+        return self.$axios.post(`${self.baseURL}/.netlify/functions/delete-image`, { file: image })
+          .catch(function (e) {
+            const error = {}
+            error.description = e.message
+            self.$store.commit('error', error)
+          })
+      }
+      await Promise.all(imagesToDelete.map(deleteImage))
     }
   }
 }
