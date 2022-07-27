@@ -137,7 +137,13 @@ export default {
     cancel () {
       this.$emit('cancel', this.values)
     },
-    archive () {
+    async archive () {
+      this.cloudinaryImages.endingWith = await this.imgFinder(this.description)
+      await this.deleteOldImgs()
+      this.cloudinaryImages = {
+        startingWith: [],
+        endingWith: []
+      }
       this.$emit('archive', this.values)
     },
     reset () {

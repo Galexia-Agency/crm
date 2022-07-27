@@ -180,10 +180,10 @@ export default {
       this.$store.dispatch('addItem', { projectId: this.projectId, listId: id, title: text })
     },
 
-    onAddFullItem (item) {
+    async onAddFullItem (item) {
       this.hideModal()
       if (item.id) {
-        this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
+        await this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
       } else {
         this.$store.dispatch('addItem', { projectId: this.projectId, listId: this.activeListId, title: item.title, description: item.description, date: item.date, assignee: item.assignee })
       }
@@ -194,6 +194,7 @@ export default {
     },
 
     async archiveItem (item) {
+      await this.onAddFullItem(item)
       if (await this.$refs.confirm.show('Are you sure you want to archive this item?')) {
         this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
         this.hideModal()
