@@ -101,13 +101,6 @@ export default {
     ]),
     values () {
       return this.$data
-    },
-    baseURL () {
-      if (process.env.NODE_ENV !== 'production') {
-        return 'http://localhost:8888'
-      } else {
-        return null
-      }
     }
   },
   methods: {
@@ -184,7 +177,7 @@ export default {
       }
       const self = this
       function uploadImage (image) {
-        return self.$axios.post(`${self.baseURL}/.netlify/functions/upload-image`, { file: image })
+        return self.$axios.post(location.origin + '/.netlify/functions/upload-image', { file: image })
           .then((response) => {
             RETURN_ARR.push(response.data.url)
             self.cloudinaryImages.startingWith.push(response.data.url)
@@ -209,7 +202,7 @@ export default {
       }
       const self = this
       function deleteImage (image) {
-        return self.$axios.post(`${self.baseURL}/.netlify/functions/delete-image`, { file: image })
+        return self.$axios.post(location.origin + '/.netlify/functions/delete-image', { file: image })
           .catch(function (e) {
             const error = {}
             error.description = e.message
