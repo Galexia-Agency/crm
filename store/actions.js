@@ -34,8 +34,6 @@ const actions = {
             }
           }
         )
-        const updatedProject = response[0]
-        updatedProject.lists = JSON.parse(updatedProject.lists)
         commit('updateProject', response[0])
       } catch (e) {
         if (await e.response.status === 429 && JSON.parse(e.response.lists)) {
@@ -91,6 +89,8 @@ const actions = {
                       }
                       // If the dates don't match, open the conflict resolution modal
                       if (whatToForcePush[list].items[item].date !== projectList[list].items[item].date) {
+                        console.log('Force Push: ', whatToForcePush[list].items[item].date)
+                        console.log('Database Content: ', projectList[list].items[item].date)
                         whatToForcePush[list].items[item].date = await dispatch('conflicts', {
                           title: 'Card Due Date',
                           type: 'date',
@@ -109,6 +109,8 @@ const actions = {
                       }
                       // If the archived states don't match, open the conflict resolution modal
                       if (whatToForcePush[list].items[item].archived !== projectList[list].items[item].archived) {
+                        console.log('Force Push: ', whatToForcePush[list].items[item].archived)
+                        console.log('Database Content: ', projectList[list].items[item].archived)
                         whatToForcePush[list].items[item].archived = await dispatch('conflicts', {
                           title: 'Card Archived State',
                           type: 'checkbox',
