@@ -21,7 +21,7 @@ const actions = {
     const projectList = JSON.parse(JSON.stringify(project.lists))
     if (JSON.stringify(projectList)) {
       try {
-        const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
+        const response = await this.$axios.$post('https://api.galexia.agency/projects/lists',
           {
             lists: JSON.stringify(projectList),
             updated_at: project.updated_at,
@@ -34,13 +34,13 @@ const actions = {
             }
           }
         )
-        const updatedProject = response.data[0]
+        const updatedProject = response[0]
         updatedProject.lists = JSON.parse(updatedProject.lists)
-        commit('updateProject', response.data[0])
+        commit('updateProject', response[0])
       } catch (e) {
-        if (await e.response.status === 429 && JSON.parse(e.response.data.lists)) {
+        if (await e.response.status === 429 && JSON.parse(e.response.lists)) {
           // Data from the database
-          const sourceOfTruth = JSON.parse(e.response.data.lists)
+          const sourceOfTruth = JSON.parse(e.response.lists)
           // What we're going to force push up to the database after having merged our changes with the truth
           const whatToForcePush = sourceOfTruth
           try {
@@ -133,7 +133,7 @@ const actions = {
               }
             }
             // Force push the lists as all conflicts have been resolved
-            const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
+            const response = await this.$axios.$post('https://api.galexia.agency/projects/lists',
               {
                 lists: JSON.stringify(whatToForcePush),
                 id: projectId,
@@ -146,9 +146,9 @@ const actions = {
                 }
               }
             )
-            const updatedProject = response.data[0]
+            const updatedProject = response[0]
             updatedProject.lists = JSON.parse(updatedProject.lists)
-            commit('updateProject', response.data[0])
+            commit('updateProject', response[0])
           } catch (e) {
             const error = {}
             error.active = true
@@ -173,7 +173,7 @@ const actions = {
     }
   },
   async addProject ({ commit }, data) {
-    const response = await this.$axios.put('https://api.galexia.agency/projects',
+    const response = await this.$axios.$put('https://api.galexia.agency/projects',
       {
         client_id: data.client_id,
         name: data.name,
@@ -207,7 +207,7 @@ const actions = {
     return response
   },
   async updateProject ({ commit }, data) {
-    const response = await this.$axios.post('https://api.galexia.agency/projects',
+    const response = await this.$axios.$post('https://api.galexia.agency/projects',
       {
         id: data.id,
         name: data.name,
@@ -315,7 +315,7 @@ const actions = {
 
   /* Contacts */
   async addContact ({ commit }, data) {
-    const response = await this.$axios.put('https://api.galexia.agency/contacts',
+    const response = await this.$axios.$put('https://api.galexia.agency/contacts',
       {
         client_id: data.client_id,
         f_name: data.f_name,
@@ -338,7 +338,7 @@ const actions = {
     return response
   },
   async updateContact ({ commit }, data) {
-    const response = await this.$axios.post('https://api.galexia.agency/contacts',
+    const response = await this.$axios.$post('https://api.galexia.agency/contacts',
       {
         f_name: data.f_name,
         l_name: data.l_name,
@@ -363,7 +363,7 @@ const actions = {
   },
   /* Clients */
   async addClient ({ commit }, data) {
-    const response = await this.$axios.put('https://api.galexia.agency/clients',
+    const response = await this.$axios.$put('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
         business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
@@ -391,7 +391,7 @@ const actions = {
     } catch (e) {
       adr = JSON.stringify(data.address)
     }
-    const response = await this.$axios.post('https://api.galexia.agency/clients',
+    const response = await this.$axios.$post('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
         business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
@@ -411,7 +411,7 @@ const actions = {
     )
     let pandle
     if (data.pandle_id) {
-      pandle = await this.$axios.patch(window.location.origin + '/.netlify/functions/request', {
+      pandle = await this.$axios.$patch(window.location.origin + '/.netlify/functions/request', {
         type: 'PATCH',
         url: `/companies/46972/customers/${data.pandle_id}`,
         body: {
@@ -437,7 +437,7 @@ const actions = {
   },
   /* Pandle */
   async addClientPandle ({ dispatch }, data) {
-    const pandle = await this.$axios.post(window.location.origin + '/.netlify/functions/request', {
+    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/request', {
       type: 'POST',
       url: '/companies/46972/customers',
       body: {
@@ -465,7 +465,7 @@ const actions = {
     })
     const res = {}
     Object.assign(res, data)
-    res.pandle_id = pandle.data.data.id
+    res.pandle_id = pandle.data.id
     dispatch('updateClient', res)
     return pandle
   },
@@ -475,7 +475,7 @@ const actions = {
     const day = dateObj.getUTCDate()
     const year = dateObj.getUTCFullYear()
 
-    const pandle = await this.$axios.post(window.location.origin + '/.netlify/functions/request', {
+    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/request', {
       type: 'POST',
       url: '/companies/46972/projects',
       body: {
@@ -488,7 +488,7 @@ const actions = {
     })
     const res = {}
     Object.assign(res, data)
-    res.pandle_id = pandle.data.data.id
+    res.pandle_id = pandle.data.id
     dispatch('updateProject', res)
     return pandle
   }

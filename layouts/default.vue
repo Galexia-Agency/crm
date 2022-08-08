@@ -482,7 +482,7 @@ export default {
       this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
       this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
       const self = this
-      await this.$axios.get('https://api.galexia.agency/get',
+      await this.$axios.$get('https://api.galexia.agency/get',
         {
           headers: {
             Accept: 'application/json',

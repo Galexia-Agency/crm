@@ -189,11 +189,11 @@ export default {
       const self = this
       let income = 0
       function pandleFetch (url) {
-        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
           .then(function (response) {
-            for (const a in response.data.data) {
-              if (response.data.data[a].attributes['total-amount']) {
-                income = income + parseFloat(response.data.data[a].attributes['total-amount'])
+            for (const a in response.data) {
+              if (response.data[a].attributes['total-amount']) {
+                income = income + parseFloat(response.data[a].attributes['total-amount'])
               }
             }
           })
@@ -226,11 +226,11 @@ export default {
       const self = this
       let expenses = 0
       function pandleFetch (url) {
-        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
           .then(function (response) {
-            for (const a in response.data.data) {
-              if (response.data.data[a].attributes['total-amount']) {
-                expenses = expenses + parseFloat(response.data.data[a].attributes['total-amount'])
+            for (const a in response.data) {
+              if (response.data[a].attributes['total-amount']) {
+                expenses = expenses + parseFloat(response.data[a].attributes['total-amount'])
               }
             }
           })

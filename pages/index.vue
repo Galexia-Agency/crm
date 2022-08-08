@@ -255,10 +255,10 @@ export default {
         self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
         return Promise.resolve('done')
       } else {
-        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
           .then(function (response) {
-            self.$store.commit(commit, response.data.data)
-            sessionStorage.setItem(commit, JSON.stringify(response.data.data))
+            self.$store.commit(commit, response.data)
+            sessionStorage.setItem(commit, JSON.stringify(response.data))
           })
           .catch(function (e) {
             const error = {}
