@@ -397,7 +397,7 @@
         </template>
       </div>
     </ui-modal>
-    <template v-if="!$fetchState.pending">
+    <template>
       <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
       <button type="button" class="refresh" :class="{clicked: refreshed}" @click="refresh">
         <font-awesome-icon :icon="['fa-solid', 'fa-sync']" />
@@ -445,15 +445,6 @@
         </button>
       </nav>
     </template>
-    <template v-else>
-      <nav class="sidebar-loading">
-        <div class="loading-content" />
-        <div class="loading-content" />
-        <div class="loading-content" />
-        <div class="loading-content" />
-        <div class="loading-content" />
-      </nav>
-    </template>
     <nuxt keep-alive />
     <ui-modal
       ref="modal"
@@ -476,49 +467,6 @@ export default {
     projectNavLink,
     Hamburger,
     clientModal
-  },
-  async fetch () {
-    if (await this.$auth.isAuthenticated()) {
-      this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
-      this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
-      const self = this
-      await this.$axios.$get('https://api.galexia.agency/get',
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-        .then((response) => {
-          response[3].forEach((project, index) => {
-            if (project.lists) {
-              response[3][index].lists = JSON.parse(project.lists)
-            }
-          })
-          const clients = response[0].sort(function (a, b) {
-            const textA = a.business_shortname.toUpperCase()
-            const textB = b.business_shortname.toUpperCase()
-            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-          })
-          self.$store.commit('clients', clients)
-          self.$store.commit('contacts', response[1])
-          self.$store.commit('domains', response[2])
-          self.$store.commit('projects', response[3])
-          if (self.$route.name === 'client-client') {
-            if (!self.$store.state.clients.find(client => client.business_shortname.toLowerCase() === self.$route.params.client)) {
-              self.$nuxt.context.error({ statusCode: 404, message: 'Client not found' })
-            }
-          }
-        })
-        .catch(function (e) {
-          const error = {}
-          error.description = e.message
-          self.$store.commit('error', error)
-        })
-    } else {
-      this.$router.push('/login')
-    }
   },
   data () {
     return {

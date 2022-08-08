@@ -64,7 +64,7 @@
 
 <template>
   <div v-if="$parent.$parent.projects" class="home">
-    <template v-if="!$parent.$parent.$fetchState.pending">
+    <template>
       <h1>Welcome back {{ claims.name }}</h1>
       <main>
         <section v-if="overdueItems.length > 0">
@@ -205,30 +205,6 @@
               </tr>
             </tbody>
           </table>
-        </section>
-      </main>
-    </template>
-    <template v-else>
-      <main>
-        <section class="list-container">
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-        </section>
-        <section class="list-container">
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
         </section>
       </main>
     </template>

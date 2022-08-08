@@ -134,7 +134,51 @@ export default {
     dragscroll
   },
   async fetch () {
+    // Set Up Pandle
     await this.pandleBootstrap()
+
+    // Income
+    const IncomeURLs = []
+    if (this.claims.groups.includes('billing')) {
+      for (const project in this.projects) {
+        if (this.projects[project].bb_revenue) {
+          this.income = this.income + parseFloat(this.projects[project].bb_revenue)
+        }
+        if (this.projects[project].pandle_id) {
+          IncomeURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`)
+        }
+      }
+      if (this.client) {
+        if (this.client.pandle_id) {
+          IncomeURLs.push(`/companies/46972/customers/${this.client.pandle_id}/account`)
+        }
+      }
+    }
+
+    // Expenses
+    const ExpensesURLs = []
+    if (this.claims.groups.includes('billing')) {
+      for (const project in this.projects) {
+        if (this.projects[project].bb_expenses) {
+          this.expenses = this.expenses + parseFloat(this.projects[project].bb_expenses)
+        }
+        if (this.projects[project].pandle_id) {
+          ExpensesURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`)
+        }
+      }
+    }
+
+    // Pandle Fetch
+    if (IncomeURLs) {
+      for (const value of await Promise.all(IncomeURLs.map(this.pandleFetch))) {
+        this.income = this.income + value
+      }
+    }
+    if (ExpensesURLs) {
+      for (const value of await Promise.all(ExpensesURLs.map(this.pandleFetch))) {
+        this.expenses = this.expenses + value
+      }
+    }
   },
   data () {
     return {
@@ -144,7 +188,9 @@ export default {
         editContact: false,
         client: false
       },
-      dragging: false
+      dragging: false,
+      income: 0,
+      expenses: 0
     }
   },
   computed: {
@@ -184,78 +230,24 @@ export default {
       'claims'
     ])
   },
-  asyncComputed: {
-    async income () {
-      const self = this
-      let income = 0
-      function pandleFetch (url) {
-        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
-          .then(function (response) {
-            for (const a in response.data) {
-              if (response.data[a].attributes['total-amount']) {
-                income = income + parseFloat(response.data[a].attributes['total-amount'])
-              }
-            }
-          })
-          .catch(function (e) {
-            const error = {}
-            error.description = e.message
-            self.$store.commit('error', error)
-          })
-      }
-      const URLs = []
-      if (this.claims.groups.includes('billing')) {
-        for (const project in this.projects) {
-          if (this.projects[project].bb_revenue) {
-            income = income + parseFloat(this.projects[project].bb_revenue)
-          }
-          if (this.projects[project].pandle_id) {
-            URLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`)
-          }
-        }
-        if (this.client) {
-          if (this.client.pandle_id) {
-            URLs.push(`/companies/46972/customers/${this.client.pandle_id}/account`)
-          }
-        }
-      }
-      await Promise.all(URLs.map(pandleFetch))
-      return income
-    },
-    async expenses () {
-      const self = this
-      let expenses = 0
-      function pandleFetch (url) {
-        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
-          .then(function (response) {
-            for (const a in response.data) {
-              if (response.data[a].attributes['total-amount']) {
-                expenses = expenses + parseFloat(response.data[a].attributes['total-amount'])
-              }
-            }
-          })
-          .catch(function (e) {
-            const error = {}
-            error.description = e.message
-            self.$store.commit('error', error)
-          })
-      }
-      const URLs = []
-      if (this.claims.groups.includes('billing')) {
-        for (const project in this.projects) {
-          if (this.projects[project].bb_expenses) {
-            expenses = expenses + parseFloat(this.projects[project].bb_expenses)
-          }
-          if (this.projects[project].pandle_id) {
-            URLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`)
-          }
-        }
-      }
-      await Promise.all(URLs.map(pandleFetch))
-      return expenses
-    }
-  },
   methods: {
+    pandleFetch (url) {
+      let value = 0
+      return this.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+        .then(function (response) {
+          for (const a in response.data) {
+            if (response.data[a].attributes['total-amount']) {
+              value = value + parseFloat(response.data[a].attributes['total-amount'])
+            }
+          }
+          return value
+        })
+        .catch(function (e) {
+          const error = {}
+          error.description = e.message
+          this.$store.commit('error', error)
+        })
+    },
     showContactModal (data) {
       this.dragging = true
       this.modal.contact = true

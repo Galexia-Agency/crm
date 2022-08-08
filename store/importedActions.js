@@ -1,4 +1,4 @@
-const actions = {
+export default {
   /* Projects */
   conflicts ({ commit, state }, data) {
     // Commit data to conflicts and set reveal to true to open the modal
@@ -495,5 +495,3 @@ const actions = {
     return pandle
   }
 }
-
-export default actions
