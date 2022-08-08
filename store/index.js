@@ -82,7 +82,8 @@ export const state = () => ({
 })
 
 export const actions = {
-  async nuxtClientInit ({ commit }, { route, store, error, redirect, $auth, $axios }) {
+  async nuxtClientInit ({ commit }, { route, store, $auth, $axios }) {
+    // console.log(app.router.push)
     if (await $auth.isAuthenticated()) {
       commit('okta', { authenticated: await $auth.isAuthenticated(), claims: await $auth.getUser() })
       $axios.setHeader('Authorization', `Bearer ${$auth.getAccessToken()}`)
@@ -109,19 +110,19 @@ export const actions = {
           commit('contacts', response[1])
           commit('domains', response[2])
           commit('projects', response[3])
-          if (route.name === 'client-client') {
+          if (route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
-              error({ statusCode: 404, message: 'Client not found' })
+              window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })
             }
           }
         })
         .catch(function (e) {
           const error = {}
           error.description = e.message
-          self.$store.commit('error', error)
+          commit('error', error)
         })
     } else {
-      redirect('/login')
+      window.onNuxtReady(() => { window.$nuxt.$router.push('/login') })
     }
   },
   ...importedActions
