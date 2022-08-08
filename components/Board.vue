@@ -194,13 +194,15 @@ export default {
     },
 
     async archiveItem (item) {
-      // Update item first as we may have archived it from the modal
-      await this.onAddFullItem(item)
       // Confirm the user wants to archive this item
       if (await this.$refs.confirm.show('Are you sure you want to archive this item?')) {
+        // Update item first as we may have archived it from the modal
+        await this.onAddFullItem(item)
         this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
         this.hideModal()
         this.$forceUpdate()
+      } else {
+        await this.onAddFullItem(item)
       }
     },
 
