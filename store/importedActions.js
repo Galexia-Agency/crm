@@ -34,7 +34,9 @@ export default {
             }
           }
         )
-        commit('updateProject', response[0])
+        const list = response[0]
+        list.lists = JSON.parse(response[0].lists)
+        commit('updateProject', list)
       } catch (e) {
         if (await e.response.status === 429 && JSON.parse(e.response.lists)) {
           // Data from the database
@@ -89,8 +91,6 @@ export default {
                       }
                       // If the dates don't match, open the conflict resolution modal
                       if (whatToForcePush[list].items[item].date !== projectList[list].items[item].date) {
-                        console.log('Force Push: ', whatToForcePush[list].items[item].date)
-                        console.log('Database Content: ', projectList[list].items[item].date)
                         whatToForcePush[list].items[item].date = await dispatch('conflicts', {
                           title: 'Card Due Date',
                           type: 'date',
@@ -109,8 +109,6 @@ export default {
                       }
                       // If the archived states don't match, open the conflict resolution modal
                       if (whatToForcePush[list].items[item].archived !== projectList[list].items[item].archived) {
-                        console.log('Force Push: ', whatToForcePush[list].items[item].archived)
-                        console.log('Database Content: ', projectList[list].items[item].archived)
                         whatToForcePush[list].items[item].archived = await dispatch('conflicts', {
                           title: 'Card Archived State',
                           type: 'checkbox',
@@ -280,7 +278,7 @@ export default {
     commit('addItem', { projectId, listId, title, description, date, dateUNIX, dayNo, day, month, clientName, clientShortName, updatedBy, assignee })
     dispatch('updateProjectList', projectId)
   },
-  updateItem ({ state, commit, dispatch, getters }, { projectId, itemId, title, description, date, createdDate, clientName, clientShortName, assignee }) {
+  async updateItem ({ state, commit, dispatch, getters }, { projectId, itemId, title, description, date, createdDate, clientName, clientShortName, assignee }) {
     assignee = assignee || state.claims.email
     clientName = clientName || getters.getClientById(getters.getProjectById(projectId).client_id).business_name
     clientShortName = clientShortName || getters.getClientById(getters.getProjectById(projectId).client_id).business_shortname
@@ -296,7 +294,7 @@ export default {
       dateUNIX = Number(new Date(date))
     }
     commit('updateItem', { projectId, itemId, title, description, date, dateUNIX, dayNo, day, month, createdDate, clientName, clientShortName, updatedBy, assignee })
-    dispatch('updateProjectList', projectId)
+    return await dispatch('updateProjectList', projectId)
   },
   moveItem ({ commit, dispatch }, [projectId, fromListRef, fromIndex, toListRef, toIndex]) {
     commit('moveItem', [projectId, fromListRef, fromIndex, toListRef, toIndex])

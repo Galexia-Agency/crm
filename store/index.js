@@ -83,7 +83,6 @@ export const state = () => ({
 
 export const actions = {
   async nuxtClientInit ({ commit }, { route, store, $auth, $axios }) {
-    // console.log(app.router.push)
     if (await $auth.isAuthenticated()) {
       commit('okta', { authenticated: await $auth.isAuthenticated(), claims: await $auth.getUser() })
       $axios.setHeader('Authorization', `Bearer ${$auth.getAccessToken()}`)

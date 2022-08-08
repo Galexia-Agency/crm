@@ -183,9 +183,9 @@ export default {
     async onAddFullItem (item) {
       this.hideModal()
       if (item.id) {
-        await this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
+        return await this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
       } else {
-        this.$store.dispatch('addItem', { projectId: this.projectId, listId: this.activeListId, title: item.title, description: item.description, date: item.date, assignee: item.assignee })
+        return await this.$store.dispatch('addItem', { projectId: this.projectId, listId: this.activeListId, title: item.title, description: item.description, date: item.date, assignee: item.assignee })
       }
     },
 
@@ -194,7 +194,9 @@ export default {
     },
 
     async archiveItem (item) {
+      // Update item first as we may have archived it from the modal
       await this.onAddFullItem(item)
+      // Confirm the user wants to archive this item
       if (await this.$refs.confirm.show('Are you sure you want to archive this item?')) {
         this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
         this.hideModal()
