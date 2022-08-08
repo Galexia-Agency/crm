@@ -173,7 +173,7 @@ const actions = {
     }
   },
   async addProject ({ commit }, data) {
-    const response = await this.$axios.$put('https://api.galexia.agency/projects',
+    const response = await this.$axios.put('https://api.galexia.agency/projects',
       {
         client_id: data.client_id,
         name: data.name,
@@ -207,7 +207,7 @@ const actions = {
     return response
   },
   async updateProject ({ commit }, data) {
-    const response = await this.$axios.$post('https://api.galexia.agency/projects',
+    const response = await this.$axios.post('https://api.galexia.agency/projects',
       {
         id: data.id,
         name: data.name,
@@ -315,7 +315,7 @@ const actions = {
 
   /* Contacts */
   async addContact ({ commit }, data) {
-    const response = await this.$axios.$put('https://api.galexia.agency/contacts',
+    const response = await this.$axios.put('https://api.galexia.agency/contacts',
       {
         client_id: data.client_id,
         f_name: data.f_name,
@@ -338,7 +338,7 @@ const actions = {
     return response
   },
   async updateContact ({ commit }, data) {
-    const response = await this.$axios.$post('https://api.galexia.agency/contacts',
+    const response = await this.$axios.post('https://api.galexia.agency/contacts',
       {
         f_name: data.f_name,
         l_name: data.l_name,
@@ -363,7 +363,7 @@ const actions = {
   },
   /* Clients */
   async addClient ({ commit }, data) {
-    const response = await this.$axios.$put('https://api.galexia.agency/clients',
+    const response = await this.$axios.put('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
         business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
@@ -391,7 +391,7 @@ const actions = {
     } catch (e) {
       adr = JSON.stringify(data.address)
     }
-    const response = await this.$axios.$post('https://api.galexia.agency/clients',
+    const response = await this.$axios.post('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
         business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
