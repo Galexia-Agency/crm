@@ -109,7 +109,7 @@ export const actions = {
           commit('contacts', response[1])
           commit('domains', response[2])
           commit('projects', response[3])
-          if (route.name && route.name === 'client-client') {
+          if (route && route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })
             }
