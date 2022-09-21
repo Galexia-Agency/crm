@@ -50,6 +50,17 @@
     display: block;
     cursor: pointer
   }
+  .netdata {
+    width: 100%;
+    iframe {
+      min-height: 200px;
+      margin: 1rem 0
+    }
+    a {
+      display: block;
+      text-align: center
+    }
+  }
   @media (max-width: 1000px) {
     h1 {
       padding: 1.5rem;
@@ -85,6 +96,15 @@
             </nuxt-link>
           </section>
         </section>
+      </main>
+      <main>
+        <div class="netdata">
+          <h2>
+            Digital Ocean Server Overview
+          </h2>
+          <iframe src="https://netdata.galexia.agency/bos-dashboard.html" width="100%" />
+          <a href="https://netdata.galexia.agency/">View full stats here</a>
+        </div>
       </main>
       <main v-if="claims.groups.includes('billing')">
         <section class="chart">
@@ -565,7 +585,16 @@ export default {
       return a
     }
   },
+  mounted () {
+    this.$el.querySelector('.netdata iframe').addEventListener('onload', this.updateIframeHeight())
+    window.addEventListener('resize', this.updateIframeHeight())
+    window.addEventListener('orientationchange', this.updateIframeHeight())
+    screen.orientation.addEventListener('change', this.updateIframeHeight())
+  },
   methods: {
+    updateIframeHeight () {
+      this.$el.querySelector('.netdata iframe').style.height = this.$el.querySelector('.netdata iframe').contentWindow.document.body.offsetHeight + 'px'
+    },
     htmlDecode (input) {
       const e = document.createElement('textarea')
       e.innerHTML = input
