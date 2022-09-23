@@ -586,10 +586,12 @@ export default {
     }
   },
   mounted () {
-    this.$el.querySelector('.netdata iframe').addEventListener('onload', this.updateIframeHeight())
-    window.addEventListener('resize', this.updateIframeHeight())
-    window.addEventListener('orientationchange', this.updateIframeHeight())
-    screen.orientation.addEventListener('change', this.updateIframeHeight())
+    if (this.claims.email === 'joe@galexia.agency') {
+      this.$el.querySelector('.netdata iframe').addEventListener('onload', this.updateIframeHeight())
+      window.addEventListener('resize', this.updateIframeHeight())
+      window.addEventListener('orientationchange', this.updateIframeHeight())
+      screen.orientation.addEventListener('change', this.updateIframeHeight())
+    }
   },
   methods: {
     updateIframeHeight () {
