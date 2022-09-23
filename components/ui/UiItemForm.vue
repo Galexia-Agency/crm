@@ -45,17 +45,17 @@
         Last updated by <strong>{{ updatedBy }}</strong> at <strong>{{ (new Date(updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedDate)).toLocaleDateString("en-GB") }}</strong>
       </div>
       <div class="field is-grouped card-modal-buttons-container">
-        <div>
-          <ui-button type="submit" style-type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))">
-            {{ id ? 'Update' : 'Add' }}
-          </ui-button>
-          <ui-button style-type="text" @click="cancel">
-            Cancel
-          </ui-button>
-        </div>
         <ui-button v-if="id" style-type="archive" @click="archive">
           Archive
         </ui-button>
+        <div>
+          <ui-button style-type="text" @click="cancel">
+            Cancel
+          </ui-button>
+          <ui-button type="submit" style-type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))">
+            {{ id ? 'Update' : 'Add' }}
+          </ui-button>
+        </div>
       </div>
     </div>
   </form>
