@@ -404,7 +404,7 @@
       </button>
       <nav>
         <nuxt-link to="/">
-          <h2>Clients</h2>
+          <h2>Home</h2>
         </nuxt-link>
         <input
           v-model="search"
