@@ -97,7 +97,7 @@
           </section>
         </section>
       </main>
-      <main>
+      <main v-if="claims.email === 'joe@galexia.agency'">
         <div class="netdata">
           <h2>
             Digital Ocean Server Overview
