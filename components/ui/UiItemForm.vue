@@ -79,7 +79,13 @@ function data () {
     clientName: null,
     clientShortName: null,
     updatedBy: null,
-    assignee: 'joe@galexia.agency'
+    assignee: 'joe@galexia.agency',
+
+    // Images
+    cloudinaryImages: {
+      startingWith: [],
+      endingWith: []
+    }
   }
 }
 export default {
@@ -101,25 +107,109 @@ export default {
     editorUpdateShim (value) {
       this.description = value.getHTML()
     },
-    show (data) {
+    async show (data) {
       this.reset()
       Object.assign(this, data)
-      this.$el.querySelector('input').focus()
+      // Search for images in the editor
+      const FOUND_IMGS = await this.imgFinder(this.description)
+      this.cloudinaryImages.startingWith = FOUND_IMGS
+      this.cloudinaryImages.endingWith = FOUND_IMGS
     },
     resetDate () {
       this.date = null
     },
-    submit () {
+    async submit () {
+      this.cloudinaryImages.endingWith = await this.imgFinder(this.description)
+      await this.deleteOldImgs()
+      this.cloudinaryImages = {
+        startingWith: [],
+        endingWith: []
+      }
       this.$emit('submit', this.values)
     },
     cancel () {
       this.$emit('cancel', this.values)
     },
-    archive () {
+    async archive () {
+      this.cloudinaryImages.endingWith = await this.imgFinder(this.description)
+      await this.deleteOldImgs()
+      this.cloudinaryImages = {
+        startingWith: [],
+        endingWith: []
+      }
       this.$emit('archive', this.values)
     },
     reset () {
       Object.assign(this, data())
+    },
+    /**
+     * Finds all the images in the html.
+     * @param {string} html - The html to search.
+     * @returns An array of all the found ids of cloudinary images.
+     */
+    async imgFinder (html) {
+      const IMG_REGEX = /<img.*?src="(.*?)".*?>/gi
+      const RETURN_ARR = []
+      const imagesToUpload = []
+      let finder
+      while ((finder = IMG_REGEX.exec(html)) !== null) {
+        if (finder.index === IMG_REGEX.lastIndex) {
+          IMG_REGEX.lastIndex++
+        }
+        for (const [groupIndex, match] of finder.entries()) {
+          if (groupIndex === 1) {
+            if (match.includes('base64')) {
+              imagesToUpload.push(match)
+            } else {
+              RETURN_ARR.push(match)
+            }
+          } else if (match.includes('base64')) {
+            const WRAPPED_REGEX = /<p>(<img.*?">).*?<\/p>/gi
+            let wrappedFinder
+            while ((wrappedFinder = WRAPPED_REGEX.exec(this.description)) !== null) {
+              if (wrappedFinder.index === WRAPPED_REGEX.lastIndex) {
+                WRAPPED_REGEX.lastIndex++
+              }
+              this.description = this.description.replace(wrappedFinder[0], wrappedFinder[1])
+            }
+          }
+        }
+      }
+      const self = this
+      function uploadImage (image) {
+        return self.$axios.post(location.origin + '/.netlify/functions/upload-image', { file: image })
+          .then((response) => {
+            RETURN_ARR.push(response.data.url)
+            self.cloudinaryImages.startingWith.push(response.data.url)
+            self.cloudinaryImages.endingWith.push(response.data.url)
+            self.description = self.description.replace(`${image}"`, `${response.data.url}" loading="lazy"`)
+          })
+          .catch(function (e) {
+            const error = {}
+            error.description = e.message
+            self.$store.commit('error', error)
+          })
+      }
+      await Promise.all(imagesToUpload.map(uploadImage))
+      return RETURN_ARR
+    },
+    async deleteOldImgs () {
+      const imagesToDelete = []
+      for (const image of this.cloudinaryImages.startingWith) {
+        if (!this.cloudinaryImages.endingWith.includes(image)) {
+          imagesToDelete.push(image)
+        }
+      }
+      const self = this
+      function deleteImage (image) {
+        return self.$axios.post(location.origin + '/.netlify/functions/delete-image', { file: image })
+          .catch(function (e) {
+            const error = {}
+            error.description = e.message
+            self.$store.commit('error', error)
+          })
+      }
+      await Promise.all(imagesToDelete.map(deleteImage))
     }
   }
 }

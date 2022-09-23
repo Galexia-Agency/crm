@@ -5,7 +5,7 @@
         <Container
           lock-axis="x"
           orientation="horizontal"
-          drag-handle-selector=".list-drag-handle"
+          drag-handle-selector=".list-container:not(.archived) .list-drag-handle"
           @drop="onListDrop"
           @drag-start="$parent.$parent.dragging = true"
           @drag-end="$parent.$parent.dragging = false"
@@ -30,7 +30,7 @@
                   group-name="list"
                   drag-class="card-ghost"
                   drop-class="card-ghost-drop"
-                  non-drag-area-selector=".icon"
+                  non-drag-area-selector=".icon, .archived"
                   :animation-duration="100"
                   @drag-start="vibrate(200), $parent.$parent.dragging = true"
                   @drag-end="vibrate(300), $parent.$parent.dragging = false"
@@ -88,6 +88,7 @@
       />
     </UiModal>
     <UiConfirm ref="confirm" />
+    <ConflictsModal ref="conflicts" />
   </div>
 </template>
 
@@ -99,6 +100,7 @@ import Card from './Card'
 import UiItemForm from './ui/UiItemForm'
 import UiItemEntry from './ui/UiItemEntry'
 import UiConfirm from './ui/UiConfirm'
+import ConflictsModal from './modals/conflictModal'
 
 export default {
   components: {
@@ -107,7 +109,8 @@ export default {
     UiItemEntry,
     UiItemForm,
     Card,
-    UiConfirm
+    UiConfirm,
+    ConflictsModal
   },
   props: {
     projectId: {
@@ -177,12 +180,12 @@ export default {
       this.$store.dispatch('addItem', { projectId: this.projectId, listId: id, title: text })
     },
 
-    onAddFullItem (item) {
+    async onAddFullItem (item) {
       this.hideModal()
       if (item.id) {
-        this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
+        return await this.$store.dispatch('updateItem', { projectId: this.projectId, itemId: item.id, ...item })
       } else {
-        this.$store.dispatch('addItem', { projectId: this.projectId, listId: this.activeListId, title: item.title, description: item.description, date: item.date, assignee: item.assignee })
+        return await this.$store.dispatch('addItem', { projectId: this.projectId, listId: this.activeListId, title: item.title, description: item.description, date: item.date, assignee: item.assignee })
       }
     },
 
@@ -191,10 +194,15 @@ export default {
     },
 
     async archiveItem (item) {
+      // Confirm the user wants to archive this item
       if (await this.$refs.confirm.show('Are you sure you want to archive this item?')) {
+        // Update item first as we may have archived it from the modal
+        await this.onAddFullItem(item)
         this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
         this.hideModal()
         this.$forceUpdate()
+      } else {
+        await this.onAddFullItem(item)
       }
     },
 

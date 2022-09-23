@@ -50,6 +50,17 @@
     display: block;
     cursor: pointer
   }
+  .netdata {
+    width: 100%;
+    iframe {
+      min-height: 200px;
+      margin: 1rem 0
+    }
+    a {
+      display: block;
+      text-align: center
+    }
+  }
   @media (max-width: 1000px) {
     h1 {
       padding: 1.5rem;
@@ -64,7 +75,7 @@
 
 <template>
   <div v-if="$parent.$parent.projects" class="home">
-    <template v-if="!$parent.$parent.$fetchState.pending">
+    <template>
       <h1>Welcome back {{ claims.name }}</h1>
       <main>
         <section v-if="overdueItems.length > 0">
@@ -85,6 +96,15 @@
             </nuxt-link>
           </section>
         </section>
+      </main>
+      <main v-if="claims.email === 'joe@galexia.agency'">
+        <div class="netdata">
+          <h2>
+            Digital Ocean Server Overview
+          </h2>
+          <iframe src="https://netdata.galexia.agency/bos-dashboard.html" width="100%" />
+          <a href="https://netdata.galexia.agency/">View full stats here</a>
+        </div>
       </main>
       <main v-if="claims.groups.includes('billing')">
         <section class="chart">
@@ -148,7 +168,7 @@
             <tbody>
               <tr>
                 <td>
-                  Completion Total:
+                  Completion Total
                 </td>
                 <td v-text="'£' + completion_total" />
               </tr>
@@ -201,34 +221,10 @@
                 <td>
                   <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
                 </td>
-                <td v-text="`£${parseFloat(client.project.completion_amount).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
+                <td v-text="`£${client.completion_amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
               </tr>
             </tbody>
           </table>
-        </section>
-      </main>
-    </template>
-    <template v-else>
-      <main>
-        <section class="list-container">
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-        </section>
-        <section class="list-container">
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
-          <div class="loading-content" />
         </section>
       </main>
     </template>
@@ -255,14 +251,14 @@ export default {
         self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
         return Promise.resolve('done')
       } else {
-        return self.$axios.post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
+        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
           .then(function (response) {
-            self.$store.commit(commit, response.data.data)
-            sessionStorage.setItem(commit, JSON.stringify(response.data.data))
+            self.$store.commit(commit, response.data)
+            sessionStorage.setItem(commit, JSON.stringify(response.data))
           })
           .catch(function (e) {
             const error = {}
-            error.description = e
+            error.description = e.message
             self.$store.commit('error', error)
           })
       }
@@ -360,18 +356,28 @@ export default {
       return c.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     clientsWithCompletion () {
-      const c = []
+      const c = {}
       for (const project in this.$store.state.projects) {
-        if (this.$store.state.projects[project].completion_amount !== null && this.$store.state.projects[project].completion_amount !== 0) {
-          const f = this.$store.state.clients.find(client => client.id === this.$store.state.projects[project].client_id)
-          f.project = this.$store.state.projects[project]
-          c.push(f)
+        if (this.$store.state.projects[project].completion_amount !== null && parseFloat(this.$store.state.projects[project].completion_amount) !== 0) {
+          const clientName = this.$store.state.clients.find(client => client.id === this.$store.state.projects[project].client_id).business_name
+          if (c[clientName]) {
+            c[clientName] += parseFloat(this.$store.state.projects[project].completion_amount)
+          } else {
+            c[clientName] = parseFloat(this.$store.state.projects[project].completion_amount)
+          }
         }
       }
-      c.sort(function (a, b) {
-        return b.project.completion_amount - a.project.completion_amount
+      const clients = []
+      Object.keys(c).map(key => [key, c[key]]).forEach((clientWithCompletion) => {
+        const object = {}
+        object.business_name = clientWithCompletion[0]
+        object.business_shortname = this.$store.state.clients.find(client => client.business_name === clientWithCompletion[0]).business_shortname
+        object.completion_amount = clientWithCompletion[1]
+        clients.push(object)
       })
-      return c
+      return clients.sort(function (a, b) {
+        return b.completion_amount - a.completion_amount
+      })
     },
     clientSource () {
       return {
@@ -579,7 +585,16 @@ export default {
       return a
     }
   },
+  mounted () {
+    this.$el.querySelector('.netdata iframe').addEventListener('onload', this.updateIframeHeight())
+    window.addEventListener('resize', this.updateIframeHeight())
+    window.addEventListener('orientationchange', this.updateIframeHeight())
+    screen.orientation.addEventListener('change', this.updateIframeHeight())
+  },
   methods: {
+    updateIframeHeight () {
+      this.$el.querySelector('.netdata iframe').style.height = this.$el.querySelector('.netdata iframe').contentWindow.document.body.offsetHeight + 'px'
+    },
     htmlDecode (input) {
       const e = document.createElement('textarea')
       e.innerHTML = input

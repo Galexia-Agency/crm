@@ -52,12 +52,10 @@ export default {
    */
   plugins: [
     '~plugins/board',
-    '~plugins/asyncComputed',
     '~plugins/mixins/dates',
     '~plugins/mixins/urls',
     '~plugins/mixins/pandle',
     '~plugins/vueInlineSVG',
-    '~plugins/okta',
     '~plugins/fontAwesome'
   ],
   /*
@@ -73,6 +71,8 @@ export default {
    ** Nuxt.js modules
    */
   modules: [
+    'nuxt-client-init-module',
+    '~modules/okta',
     '@nuxtjs/axios',
     '@nuxtjs/pwa'
   ],

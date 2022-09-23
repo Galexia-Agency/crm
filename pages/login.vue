@@ -154,6 +154,7 @@ export default {
   async beforeDestroy () {
     this.widget.remove()
     await this.$auth.isAuthenticated()
+    await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
   }
 }
 </script>

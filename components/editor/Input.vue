@@ -37,7 +37,7 @@
       class="input"
       @change="$parent.addImg(), reveal = false"
     >
-    <button v-if="inputType !== 'image'" class="button is-primary">
+    <button v-if="inputType !== 'image'" type="submit" class="button is-primary">
       Submit
     </button>
   </form>

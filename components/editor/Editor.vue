@@ -1,5 +1,4 @@
 <style lang="scss">
-
 /* Editor objects */
 .editor_object_standard {
   border: 3px solid var(--base);
@@ -44,6 +43,7 @@
 button.menu_button {
   display: inline-flex;
   border-radius: .25em;
+  border: 1px solid transparent;
   &:focus {
     box-shadow: none
   }
@@ -59,6 +59,9 @@ button.menu_button {
     border-color: var(--primaryColor);
     box-shadow: 0 0 0 .125em rgba(50, 115, 220, 25%)
   }
+}
+#wrapper--rich_editor[disabled] .control {
+  min-height: 120px
 }
 div#rich_editor {
   padding: 0;
@@ -96,7 +99,8 @@ div#rich_editor {
     ol {
       list-style: numeric
     }
-    ol, ul {
+    ol,
+    ul {
       margin-left: 1.2em
     }
     hr {
@@ -158,7 +162,8 @@ div#rich_editor {
   button svg * {
     fill: #7A7A7A
   }
-  .textarea, .textarea:hover {
+  .textarea,
+  .textarea:hover {
     color: #7A7A7A;
     border-color: #DBDBDB;
     box-shadow: none
@@ -170,9 +175,10 @@ div#rich_editor {
   <div id="wrapper--rich_editor" class="field" :disabled="disabled">
     <label v-if="label" class="label">{{ label }}</label>
     <div class="control textarea">
-      <div class="menu_bar_wrapper">
+      <div v-if="!disabled" class="menu_bar_wrapper">
         <div id="menu_bar" :class="{ editorFocused: caretInEditor }">
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('bold') }"
             title="Bold"
@@ -181,6 +187,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/bold.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('italic') }"
             title="Italic"
@@ -189,6 +196,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/italic.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('underline') }"
             title="Underline"
@@ -197,6 +205,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/underline.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('ordered_list') }"
             title="Ordered list"
@@ -205,6 +214,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/ol.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('bullet_list') }"
             title="Bullet list"
@@ -213,6 +223,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/ul.svg')" />
           </button>
           <button
+            type="button"
             class="menu_button"
             :class="{ 'is-active': editor.isActive('taskList') }"
             title="Checklist"
@@ -221,29 +232,45 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/checklist.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('horizontalRule') }"
             title="Horizontal line"
             @click="editor.chain().focus().setHorizontalRule().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/horizontal-rule.svg')" />
+            <inline-svg
+              :src="require('~/assets/svg/editor/horizontal-rule.svg')"
+            />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             :class="{ 'is-active': editor.isActive('link') }"
             title="Hyperlink"
-            @click="editor.isActive('link') ? editor.chain().focus().unsetLink().run() : setLinkUrl()"
+            @click="
+              editor.isActive('link')
+                ? editor.chain().focus().unsetLink().run()
+                : setLinkUrl()
+            "
           >
             <inline-svg :src="require('~/assets/svg/editor/link.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             title="Image"
-            @click="showAddTemplate = false, $refs.ui_editor_input.show('image', 'Select your image to upload', 'Make sure that it\'s less than 1MB')"
+            @click="
+              ;$refs.ui_editor_input.show(
+                  'image',
+                  'Select your image to upload',
+                  'Make sure that it\'s less than 5MB'
+                )
+            "
           >
             <inline-svg :src="require('~/assets/svg/editor/image.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             title="Undo"
             @click="editor.chain().focus().undo().run()"
@@ -251,6 +278,7 @@ div#rich_editor {
             <inline-svg :src="require('~/assets/svg/editor/undo.svg')" />
           </button>
           <button
+            type="button"
             class="fadeIn menu_button"
             title="Redo"
             @click="editor.chain().focus().redo().run()"
@@ -273,7 +301,7 @@ div#rich_editor {
 import Compressor from 'compressorjs'
 import { Editor, EditorContent } from '@tiptap/vue-2'
 import StarterKit from '@tiptap/starter-kit'
-import Undeline from '@tiptap/extension-underline'
+import Underline from '@tiptap/extension-underline'
 // eslint-disable-next-line import/no-named-as-default
 import Link from '@tiptap/extension-link'
 // eslint-disable-next-line import/no-named-as-default
@@ -300,7 +328,6 @@ export default {
   },
   data () {
     return {
-
       // Editor
       initialValue: null,
       editor: null,
@@ -317,20 +344,12 @@ export default {
     this.initialValue = this.value
     this.editor = new Editor({
       content: this.value,
-      extensions: [
-        StarterKit,
-        Undeline,
-        Link,
-        TaskList,
-        TaskItem,
-        LazyImage
-      ],
+      extensions: [StarterKit, Underline, Link, TaskList, TaskItem, LazyImage],
       onUpdate: ({ editor }) => {
         this.$emit('editorUpdateShim', editor)
       },
       onFocus: () => {
         this.caretInEditor = true
-        this.showAddTemplate = false
       },
       onBlur: () => {
         this.caretInEditor = false
@@ -346,7 +365,6 @@ export default {
     }
   },
   methods: {
-
     // -----------------------------
     // General
     // -----------------------------
@@ -369,21 +387,31 @@ export default {
       const FILE = document.getElementById('img_uploader').files[0]
       const READER = new FileReader()
       READER.addEventListener('load', () => {
-        this.editor.chain().focus().setImage({ src: READER.result.toString(), loading: 'lazy' }).run()
+        const base64Image = READER.result.toString()
+        this.editor
+          .chain()
+          .focus()
+          .setImage({ src: base64Image, loading: 'lazy' })
+          .run()
       }, false)
 
       if (FILE) {
-        // eslint-disable-next-line
-        new Compressor(FILE, {
-          quality: 0.6,
-          success (result) {
-            READER.readAsDataURL(result)
-          },
-          error (err) {
-            // eslint-disable-next-line no-console
-            console.error(err.message)
-          }
-        })
+        if (FILE.size < 5100000) {
+          // eslint-disable-next-line no-new
+          new Compressor(FILE, {
+            quality: 0.6,
+            success (result) {
+              READER.readAsDataURL(result)
+            },
+            error (err) {
+              // eslint-disable-next-line no-console
+              console.error(err.message)
+            }
+          })
+        } else {
+          this.$refs.ui_editor_input.show('File size is too big', 'Please compress it to 5MB or lower', true, true)
+          document.getElementById('img_uploader').value = ''
+        }
       }
     }
   }

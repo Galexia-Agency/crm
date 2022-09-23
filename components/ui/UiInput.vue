@@ -39,7 +39,7 @@
           :disabled="disabled"
           :required="required"
         />
-        <div v-if="type === 'select'" class="select-wrapper">
+        <div v-else-if="type === 'select'" class="select-wrapper">
           <select
             v-model="input"
             :name="name"
@@ -52,6 +52,13 @@
           </select>
         </div>
         <input
+          v-else-if="type === 'checkbox'"
+          v-model="input"
+          :type="type"
+          :name="name"
+          :disabled="disabled"
+        >
+        <input
           v-else
           v-model.trim="input"
           :type="type"
@@ -62,7 +69,14 @@
           :required="required"
           @keydown.enter="onEnter"
         >
-        <button v-if="type === 'date'" class="button is-primary" :disabled="disabled" @click="resetDate">
+        <button
+          v-if="type === 'date'"
+          type="button"
+          class="button is-primary"
+          :disabled="disabled"
+          style="margin-top: .5em"
+          @click="resetDate"
+        >
           X
         </button>
       </div>
