@@ -616,7 +616,7 @@ export default {
         if (project.lists) {
           project.lists.forEach((list) => {
             list.items.forEach((item) => {
-              if (item.assignee === this.claims.email || (this.claims.email === 'joe@galexia.agency' && !item.assignee)) {
+              if (item.assignee === this.claims.email || (this.claims.email === 'joe@galexia.agency' && !item.assignee) || (this.claims.email === 'joe@galexia.agency' && item.assignee !== this.claims.email)) {
                 if (item.date) {
                   if (item.dateUNIX && due(item.dateUNIX)) {
                     const newItem = { ...item }
