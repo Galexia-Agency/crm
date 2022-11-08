@@ -69,7 +69,7 @@
       </div>
     </div>
     <template v-for="project in projects">
-      <project :key="project.id" :project="project" class="project container" />
+      <project :id="encodeURIComponent(project.name.replaceAll(' ', '-').toLowerCase())" :key="project.id" :project="project" class="project container" />
     </template>
     <ui-modal
       ref="modal"
@@ -229,6 +229,11 @@ export default {
     ...mapState([
       'claims'
     ])
+  },
+  mounted () {
+    if (this.$route.hash && document.querySelector(this.$route.hash)) {
+      document.querySelector(this.$route.hash).scrollIntoView()
+    }
   },
   methods: {
     pandleFetch (url) {
