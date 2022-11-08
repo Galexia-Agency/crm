@@ -38,9 +38,9 @@ export default {
         list.lists = JSON.parse(response[0].lists)
         commit('updateProject', list)
       } catch (e) {
-        if (await e.response.status === 429 && JSON.parse(e.response.lists)) {
+        if (await e.response.status === 429 && JSON.parse(e.response.data.lists)) {
           // Data from the database
-          const sourceOfTruth = JSON.parse(e.response.lists)
+          const sourceOfTruth = JSON.parse(e.response.data.lists)
           // What we're going to force push up to the database after having merged our changes with the truth
           const whatToForcePush = sourceOfTruth
           try {
