@@ -190,7 +190,8 @@ export default {
       },
       dragging: false,
       income: 0,
-      expenses: 0
+      expenses: 0,
+      sse: null
     }
   },
   computed: {
@@ -233,6 +234,15 @@ export default {
   mounted () {
     if (this.$route.hash && document.querySelector(this.$route.hash)) {
       document.querySelector(this.$route.hash).scrollIntoView()
+    }
+    this.sse = new EventSource('http://127.0.0.1:9001/sse.php')
+    this.sse.addEventListener('message', function (event) {
+      console.log(event.data)
+    }, false)
+  },
+  beforeDestroy () {
+    if (this.sse) {
+      this.sse.close()
     }
   },
   methods: {
