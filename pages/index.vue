@@ -103,7 +103,7 @@
             Digital Ocean Server Overview
           </h2>
           <iframe src="https://netdata.galexia.agency/bos-dashboard.html" width="100%" />
-          <a href="https://netdata.galexia.agency/">View full stats here</a>
+          <a href="https://netdata.galexia.agency/" target="_blank">View full stats here</a>
         </div>
       </main>
       <main v-if="claims.groups.includes('billing')">
