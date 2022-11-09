@@ -115,6 +115,7 @@
 
 <script>
 export default {
+  name: 'Login',
   layout: 'login',
   async mounted () {
     const scopes = ['openid', 'profile', 'email', 'groups']

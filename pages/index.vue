@@ -238,6 +238,7 @@ import BarChart from '~/components/charts/BarChart'
 import Card from '~/components/Card'
 
 export default {
+  name: 'Home',
   components: {
     PieChart,
     BarChart,

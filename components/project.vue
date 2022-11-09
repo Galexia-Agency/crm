@@ -123,6 +123,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import EventSourcePolyfill from 'eventsource'
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from 'worker-loader!../workers/projectSSE.js'
 import Toggle from '~/components/ui/UiToggle.vue'
 import Board from '~/components/Board'
 import projectModal from '~/components/modals/update/projectModal'
@@ -144,7 +147,9 @@ export default {
     return {
       modal: false,
       show: true,
-      showArchived: false
+      showArchived: false,
+      sseWorker: null,
+      sse: null
     }
   },
   computed: {
@@ -152,7 +157,50 @@ export default {
       'claims'
     ])
   },
+  mounted () {
+    const id = this.project.id
+    const authToken = `Bearer ${this.$auth.getAccessToken()}`
+    const self = this
+    const url = `https://api.galexia.agency/projects/sse?id=${id}`
+    if (window.Worker) {
+      this.sseWorker = new Worker()
+      this.sseWorker.postMessage(['start', url, id, authToken])
+      this.sseWorker.onmessage = (e) => {
+        self.sse_updateProject(e.data)
+      }
+    } else {
+      this.sse = new EventSourcePolyfill(url, {
+        headers: {
+          Authorization: authToken
+        },
+        withCredentials: false
+      })
+      this.sse.addEventListener(id, function (event) {
+        self.sse_updateProject(JSON.parse(event.data)[0])
+      }, false)
+    }
+  },
+  beforeDestroy () {
+    if (window.Worker) {
+      this.sseWorker.postMessage(['stop'])
+    } else {
+      // eslint-disable-next-line no-lonely-if
+      if (this.sse) {
+        this.sse.close()
+      }
+    }
+  },
   methods: {
+    sse_updateProject (newProject) {
+      this.$nuxt.$loading.start()
+      newProject.lists = JSON.parse(newProject.lists)
+      const currentProject = this.$store.state.projects.find(project => project.id === newProject.id)
+      // If the database content is newer, then replace our version
+      if (new Date(newProject.updated_at) > new Date(currentProject.updated_at)) {
+        this.$store.commit('updateProject', newProject)
+      }
+      this.$nuxt.$loading.finish()
+    },
     changeArchived () {
       this.showArchived = !this.showArchived
     },
