@@ -82,10 +82,11 @@ export const state = () => ({
 })
 
 export const actions = {
-  async nuxtClientInit ({ commit }, { route, store, $auth, $axios }) {
+  async nuxtClientInit ({ commit }, { route, store, $auth, $axios, $api }) {
     if (await $auth.isAuthenticated()) {
       commit('okta', { authenticated: await $auth.isAuthenticated(), claims: await $auth.getUser() })
       $axios.setHeader('Authorization', `Bearer ${$auth.getAccessToken()}`)
+      $api.setHeader('Authorization', `Bearer ${$auth.getAccessToken()}`)
       await $axios.$get('https://api.galexia.agency/get',
         {
           headers: {

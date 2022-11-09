@@ -56,7 +56,8 @@ export default {
     '~plugins/mixins/urls',
     '~plugins/mixins/pandle',
     '~plugins/vueInlineSVG',
-    '~plugins/fontAwesome'
+    '~plugins/fontAwesome',
+    '~plugins/axiosConcurrency'
   ],
   /*
    ** Nuxt.js dev-modules

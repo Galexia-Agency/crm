@@ -135,8 +135,8 @@ export default {
         window.navigator.vibrate(num)
       }
     },
-    onAddList ({ text }) {
-      this.$store.dispatch('addList', { projectId: this.projectId, title: text })
+    async onAddList ({ text }) {
+      await this.$store.dispatch('addList', { projectId: this.projectId, title: text })
       this.$nextTick(() => {
         const lists = this.$refs.list
         lists[lists.length - 1]
@@ -145,39 +145,39 @@ export default {
       })
     },
 
-    editList (event, id) {
-      this.$store.dispatch('editList', { projectId: this.projectId, title: event.target.value, id })
+    async editList (event, id) {
+      await this.$store.dispatch('editList', { projectId: this.projectId, title: event.target.value, id })
     },
 
     async archiveList (listId) {
       if (await this.$refs.confirm.show('Are you sure you want to archive this list?')) {
-        this.$store.dispatch('archiveList', { projectId: this.projectId, listId })
+        await this.$store.dispatch('archiveList', { projectId: this.projectId, listId })
         this.$forceUpdate()
       }
     },
 
     async unarchiveList (listId) {
       if (await this.$refs.confirm.show('Are you sure you want to unarchive this list?')) {
-        this.$store.dispatch('unarchiveList', { projectId: this.projectId, listId })
+        await this.$store.dispatch('unarchiveList', { projectId: this.projectId, listId })
         this.$forceUpdate()
       }
     },
 
     async removeList (listId) {
       if (await this.$refs.confirm.show('Are you sure you want to delete this list?')) {
-        this.$store.dispatch('removeList', { projectId: this.projectId, listId })
+        await this.$store.dispatch('removeList', { projectId: this.projectId, listId })
         this.$forceUpdate()
       }
     },
 
-    onAddItem ({ id, text, more }) {
+    async onAddItem ({ id, text, more }) {
       if (more) {
         this.activeListId = id
         this.modal = true
         this.showModal({ title: text, description: '' })
         return
       }
-      this.$store.dispatch('addItem', { projectId: this.projectId, listId: id, title: text })
+      await this.$store.dispatch('addItem', { projectId: this.projectId, listId: id, title: text })
     },
 
     async onAddFullItem (item) {
@@ -198,7 +198,7 @@ export default {
       if (await this.$refs.confirm.show('Are you sure you want to archive this item?')) {
         // Update item first as we may have archived it from the modal
         await this.onAddFullItem(item)
-        this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
+        await this.$store.dispatch('archiveItem', { projectId: this.projectId, itemId: item.id })
         this.hideModal()
         this.$forceUpdate()
       } else {
@@ -208,29 +208,29 @@ export default {
 
     async unarchiveItem (item) {
       if (await this.$refs.confirm.show('Are you sure you want to unarchive this item?')) {
-        this.$store.dispatch('unarchiveItem', { projectId: this.projectId, itemId: item.id })
+        await this.$store.dispatch('unarchiveItem', { projectId: this.projectId, itemId: item.id })
         this.$forceUpdate()
       }
     },
 
     async removeItem (item) {
       if (await this.$refs.confirm.show('Are you sure you want to delete this item?')) {
-        this.$store.dispatch('removeItem', { projectId: this.projectId, itemId: item.id })
+        await this.$store.dispatch('removeItem', { projectId: this.projectId, itemId: item.id })
         this.$forceUpdate()
       }
     },
 
     onListDrop: makeDropHandler('onListDropComplete'),
 
-    onListDropComplete (src, trg) {
-      this.$store.dispatch('moveList', [this.projectId, src.index, trg.index])
+    async onListDropComplete (src, trg) {
+      await this.$store.dispatch('moveList', [this.projectId, src.index, trg.index])
     },
 
     onCardDrop: makeDropHandler('onCardDropComplete'),
 
-    onCardDropComplete (src, trg, element, payload) {
+    async onCardDropComplete (src, trg, element, payload) {
       this.$parent.$parent.dragging = false
-      this.$store.dispatch('moveItem', [
+      await this.$store.dispatch('moveItem', [
         this.projectId,
         src.params[1],
         src.index,
