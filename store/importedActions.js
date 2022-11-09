@@ -63,9 +63,9 @@ export default {
             newProject.updated_at = response.data[0].updated_at
             return commit('updateProject', newProject)
           } catch (e) {
-            if (await e.response && await e.response.status === 429 && JSON.parse(e.response.data.lists)) {
+            if (await e.response && await e.response.status === 429 && JSON.parse(e.response.data[0].lists)) {
               // Data from the database
-              const sourceOfTruth = JSON.parse(e.response.data.lists)
+              const sourceOfTruth = JSON.parse(e.response.data[0].lists)
               // What we're going to force push up to the database after having merged our changes with the truth
               const whatToForcePush = sourceOfTruth
               try {
@@ -158,7 +158,7 @@ export default {
                   }
                 }
                 // Force push the lists as all conflicts have been resolved
-                const response = await this.$axios.post('https://api.galexia.agency/projects/lists',
+                const response = await this.$api.post('https://api.galexia.agency/projects/lists',
                   {
                     lists: JSON.stringify(whatToForcePush),
                     id: projectId,
