@@ -158,39 +158,59 @@ export default {
     ])
   },
   mounted () {
-    const id = this.project.id
-    const authToken = `Bearer ${this.$auth.getAccessToken()}`
-    const self = this
-    const url = `https://api.galexia.agency/projects/sse?id=${id}`
-    if (window.Worker) {
-      this.sseWorker = new Worker()
-      this.sseWorker.postMessage(['start', url, id, authToken])
-      this.sseWorker.onmessage = (e) => {
-        self.sse_updateProject(e.data)
+    this.sse_start()
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.sse_start()
+      } else {
+        this.sse_end()
       }
-    } else {
-      this.sse = new EventSourcePolyfill(url, {
-        headers: {
-          Authorization: authToken
-        },
-        withCredentials: false
-      })
-      this.sse.addEventListener(id, function (event) {
-        self.sse_updateProject(JSON.parse(event.data)[0])
-      }, false)
-    }
+    })
   },
   beforeDestroy () {
-    if (window.Worker) {
-      this.sseWorker.postMessage(['stop'])
-    } else {
-      // eslint-disable-next-line no-lonely-if
-      if (this.sse) {
-        this.sse.close()
-      }
-    }
+    this.sse_end()
   },
   methods: {
+    sse_start () {
+      const id = this.project.id
+      const authToken = `Bearer ${this.$auth.getAccessToken()}`
+      const self = this
+      const url = `https://api.galexia.agency/projects/sse?id=${id}`
+      if (window.Worker) {
+        if (!this.sseWorker) {
+          this.sseWorker = new Worker()
+          this.sseWorker.postMessage(['start', url, id, authToken])
+          this.sseWorker.onmessage = (e) => {
+            self.sse_updateProject(e.data)
+          }
+        }
+      } else {
+        // eslint-disable-next-line no-lonely-if
+        if (!this.sse) {
+          this.sse = new EventSourcePolyfill(url, {
+            headers: {
+              Authorization: authToken
+            },
+            withCredentials: false
+          })
+          this.sse.addEventListener(id, function (event) {
+            self.sse_updateProject(JSON.parse(event.data)[0])
+          }, false)
+        }
+      }
+    },
+    sse_end () {
+      if (window.Worker) {
+        if (this.sseWorker) {
+          this.sseWorker.postMessage(['stop'])
+        }
+      } else {
+        // eslint-disable-next-line no-lonely-if
+        if (this.sse) {
+          this.sse.close()
+        }
+      }
+    },
     sse_updateProject (newProject) {
       this.$nuxt.$loading.start()
       newProject.lists = JSON.parse(newProject.lists)
