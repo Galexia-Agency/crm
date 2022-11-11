@@ -33,7 +33,7 @@ export default {
   updateProjectList ({ commit, state, dispatch }, projectId) {
     // Add the projectId to the queue
     LIST_REQUESTS.push(projectId)
-    // Wait 2 seconds before executing
+    // Wait 1 second before executing
     window.setTimeout(async () => {
       // If there is a pending request for this projectId, then proceed
       if (LIST_REQUESTS.includes(projectId)) {
@@ -198,7 +198,7 @@ export default {
           commit('error', { error })
         }
       }
-    }, 2000)
+    }, 1000)
   },
   async addProject ({ commit }, data) {
     const response = await this.$axios.$put('https://api.galexia.agency/projects',
