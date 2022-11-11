@@ -335,8 +335,11 @@ export default {
     async editClient (data) {
       this.hideClientModal()
       try {
+        const location = data.business_shortname.toLowerCase()
         await this.$store.dispatch('updateClient', data)
-        window.location = '/client/' + data.business_shortname.toLowerCase()
+        if (location !== data.business_shortname.toLowerCase()) {
+          window.location = '/client/' + data.business_shortname.toLowerCase()
+        }
       } catch (e) {
         const error = {}
         error.description = e
