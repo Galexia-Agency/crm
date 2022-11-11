@@ -226,6 +226,21 @@
             </tbody>
           </table>
         </section>
+        <section v-if="projectsPHP.length > 0">
+          <h2>
+            Project PHP Versions
+          </h2>
+          <table>
+            <tbody>
+              <tr v-for="project, index in projectsPHP" :key="index">
+                <td>
+                  <nuxt-link :to="`/client/${project.link}`" style="color: black" v-text="project.name" />
+                </td>
+                <td v-text="project.php" />
+              </tr>
+            </tbody>
+          </table>
+        </section>
       </main>
     </template>
   </div>
@@ -401,6 +416,21 @@ export default {
           }
         ]
       }
+    },
+    projectsPHP () {
+      const projects = []
+      for (const projectId in this.$store.state.projects) {
+        const projectToPush = {}
+        const project = this.$store.state.projects[projectId]
+        const client = this.$store.state.clients.find(client => client.id === project.client_id)
+        if (project.php) {
+          projectToPush.php = project.php
+          projectToPush.name = client.business_name + ' - ' + project.name
+          projectToPush.link = client.business_shortname.toLowerCase() + '#' + project.name
+          projects.push(projectToPush)
+        }
+      }
+      return projects
     },
     bankAccountData () {
       return {

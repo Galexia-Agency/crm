@@ -63,6 +63,13 @@
         type="text"
       />
       <ui-input
+        v-model="php"
+        name="php"
+        label="PHP Version"
+        type="select"
+        :options="['7.3', '7.4', '8.0', '8.1']"
+      />
+      <ui-input
         v-model="github_url"
         name="github_url"
         label="GitHub Link"
@@ -155,6 +162,7 @@ function data () {
     name: '',
     status: '',
     hosting: '',
+    php: '',
     github_url: '',
     drive_url: '',
     project_url: '',

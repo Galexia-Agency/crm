@@ -207,6 +207,7 @@ export default {
         name: data.name,
         status: data.status,
         hosting: data.hosting,
+        php: data.php,
         github_url: data.github_url,
         drive_url: data.drive_url,
         project_url: data.project_url,
@@ -245,6 +246,7 @@ export default {
           name: data.name,
           status: data.status,
           hosting: data.hosting,
+          php: data.php,
           github_url: data.github_url,
           drive_url: data.drive_url,
           project_url: data.project_url,
@@ -326,6 +328,16 @@ export default {
               type: 'text',
               before: whatToForcePush.hosting,
               after: data.hosting
+            })
+          }
+          // If the php state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.php !== data.php) {
+            whatToForcePush.php = await dispatch('conflicts', {
+              title: 'PHP Version',
+              type: 'select',
+              before: whatToForcePush.php,
+              after: data.php,
+              options: ['7.3', '7.4', '8.0', '8.1']
             })
           }
           // If the github_url state doesn't match, open the conflict resolution modal
@@ -440,6 +452,7 @@ export default {
               name: whatToForcePush.name,
               status: whatToForcePush.status,
               hosting: whatToForcePush.hosting,
+              php: whatToForcePush.php,
               github_url: whatToForcePush.github_url,
               drive_url: whatToForcePush.drive_url,
               project_url: whatToForcePush.project_url,

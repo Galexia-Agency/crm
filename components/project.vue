@@ -94,6 +94,10 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
         <span v-text="project.hosting" />
       </span>
+      <div v-if="project.php" class="list-container">
+        <font-awesome-icon :icon="['fa-brands', 'fa-php']" />
+        <span v-text="project.php" />
+      </div>
       <div class="list-container">
         <font-awesome-icon :icon="['fa-solid', 'fa-tasks']" />
         <span v-text="project.status" />
