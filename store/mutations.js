@@ -159,16 +159,16 @@ const mutations = {
   },
 
   updateContact (state, data) {
-    const item = state.contacts.find(contact => contact.id === data[0].id)
+    const item = state.contacts.find(contact => contact.id === data.id)
     if (item) {
-      Object.assign(item, data[0])
+      Object.assign(item, data)
     }
   },
 
   updateClient (state, data) {
-    const item = state.clients.find(client => client.id === data[0].id)
+    const item = state.clients.find(client => client.id === data.id)
     if (item) {
-      Object.assign(item, data[0])
+      Object.assign(item, data)
     }
   }
 }

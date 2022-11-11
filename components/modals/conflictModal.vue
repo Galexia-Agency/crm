@@ -78,7 +78,7 @@
           Resolve
         </ui-button>
         <p style="font-size: .8em; font-weight: 700; margin-top: .5rem">
-          Please note, once you click confirm, all previous data will be lost
+          Please note, once you click resolve, all previous data will be lost
         </p>
       </form>
     </div>

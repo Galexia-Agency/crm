@@ -115,7 +115,9 @@ function data () {
     id: null,
     pandle_id: null,
     billing_email: null,
-    existing_shortname: null
+    existing_shortname: null,
+    updated_at: null,
+    created_at: null
   }
 }
 export default {
