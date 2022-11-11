@@ -116,6 +116,24 @@
         label="Before Business Expenses"
         type="number"
       />
+      <ui-input
+        v-model="enquiry_date"
+        name="enquiry_date"
+        label="Date of Enquiry"
+        type="date"
+      />
+      <ui-input
+        v-model="start_date"
+        name="start_date"
+        label="Date of Project Start"
+        type="date"
+      />
+      <ui-input
+        v-model="completion_date"
+        name="completion_date"
+        label="Date of Project Completion"
+        type="date"
+      />
       <div class="field is-grouped">
         <ui-button type="submit" style-type="primary" :disabled="name === '' || status === '' || completion_amount === '' || bb_revenue === '' || bb_expenses === ''">
           {{ id ? 'Update' : 'Add' }}
@@ -149,7 +167,10 @@ function data () {
     contributor: '',
     admin: 'joe@galexia.agency',
     updated_at: null,
-    created_at: null
+    created_at: null,
+    enquiry_date: '',
+    start_date: '',
+    completion_date: ''
   }
 }
 export default {

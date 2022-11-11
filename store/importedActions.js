@@ -217,7 +217,10 @@ export default {
         bb_expenses: data.bb_expenses,
         viewer: data.viewer,
         contributor: data.contributor,
-        admin: data.admin
+        admin: data.admin,
+        enquiry_date: data.enquiry_date,
+        start_date: data.start_date,
+        completion_date: data.completion_date
       },
       {
         headers: {
@@ -253,7 +256,10 @@ export default {
           viewer: data.viewer,
           contributor: data.contributor,
           admin: data.admin,
-          updated_at: data.updated_at
+          updated_at: data.updated_at,
+          enquiry_date: data.enquiry_date,
+          start_date: data.start_date,
+          completion_date: data.completion_date
         },
         {
           headers: {
@@ -400,6 +406,33 @@ export default {
               after: data.bb_expenses
             })
           }
+          // If the enquiry_date state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.enquiry_date !== data.enquiry_date) {
+            whatToForcePush.enquiry_date = await dispatch('conflicts', {
+              title: 'Date of Enquiry',
+              type: 'date',
+              before: whatToForcePush.enquiry_date,
+              after: data.enquiry_date
+            })
+          }
+          // If the start_date state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.start_date !== data.start_date) {
+            whatToForcePush.start_date = await dispatch('conflicts', {
+              title: 'Date of Project Start',
+              type: 'date',
+              before: whatToForcePush.start_date,
+              after: data.start_date
+            })
+          }
+          // If the completion_date state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.completion_date !== data.completion_date) {
+            whatToForcePush.completion_date = await dispatch('conflicts', {
+              title: 'Date of Project Completion',
+              type: 'date',
+              before: whatToForcePush.completion_date,
+              after: data.completion_date
+            })
+          }
           // Force push the contact
           const response = await this.$axios.$post('https://api.galexia.agency/projects',
             {
@@ -419,6 +452,9 @@ export default {
               contributor: whatToForcePush.contributor,
               admin: whatToForcePush.admin,
               updated_at: whatToForcePush.updated_at,
+              enquiry_date: data.enquiry_date,
+              start_date: data.start_date,
+              completion_date: data.completion_date,
               force: true
             },
             {

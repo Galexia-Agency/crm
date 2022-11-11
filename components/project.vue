@@ -98,6 +98,10 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-tasks']" />
         <span v-text="project.status" />
       </div>
+      <div v-if="project.start_date" class="list-container">
+        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        <span v-text="daysToComplete" />
+      </div>
       <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle(project)">
         <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
@@ -155,7 +159,23 @@ export default {
   computed: {
     ...mapState([
       'claims'
-    ])
+    ]),
+    daysToComplete () {
+      if (this.project.completion_date) {
+        const diffTime = Math.abs(new Date(this.project.completion_date) - new Date(this.project.start_date))
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        if (diffDays === 1) {
+          return `Project took ${diffDays} day to complete`
+        }
+        return `Project took ${diffDays} days to complete`
+      }
+      const diffTime = Math.abs(new Date() - new Date(this.project.start_date))
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      if (diffDays === 1) {
+        return `Project has taken ${diffDays} day`
+      }
+      return `Project has taken ${diffDays} days`
+    }
   },
   mounted () {
     this.sse_start()

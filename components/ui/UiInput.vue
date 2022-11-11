@@ -82,7 +82,7 @@
           class="button is-primary"
           :disabled="disabled"
           style="margin-top: .5em"
-          @click="resetDate"
+          @click="input = ''"
         >
           X
         </button>
@@ -143,9 +143,6 @@ export default {
     onEnter ($event) {
       this.noSpacesFunction()
       this.$emit('enter', $event)
-    },
-    resetDate ($event) {
-      this.$emit('resetDate', $event)
     },
     noSpacesFunction () {
       if (this.noSpaces) {

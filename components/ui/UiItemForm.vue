@@ -31,7 +31,6 @@
         type="date"
         label="Date"
         :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
-        @resetDate="resetDate"
       />
       <ui-input
         v-model="assignee"
@@ -114,9 +113,6 @@ export default {
       const FOUND_IMGS = await this.imgFinder(this.description)
       this.cloudinaryImages.startingWith = FOUND_IMGS
       this.cloudinaryImages.endingWith = FOUND_IMGS
-    },
-    resetDate () {
-      this.date = null
     },
     async submit () {
       this.cloudinaryImages.endingWith = await this.imgFinder(this.description)
