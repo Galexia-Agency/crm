@@ -147,7 +147,9 @@ function data () {
     bb_expenses: 0,
     viewer: '',
     contributor: '',
-    admin: 'joe@galexia.agency'
+    admin: 'joe@galexia.agency',
+    updated_at: null,
+    created_at: null
   }
 }
 export default {

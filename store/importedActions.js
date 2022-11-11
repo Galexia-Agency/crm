@@ -234,34 +234,218 @@ export default {
     commit('projects', response)
     return response
   },
-  async updateProject ({ commit }, data) {
-    const response = await this.$axios.$post('https://api.galexia.agency/projects',
-      {
-        id: data.id,
-        name: data.name,
-        status: data.status,
-        hosting: data.hosting,
-        github_url: data.github_url,
-        drive_url: data.drive_url,
-        project_url: data.project_url,
-        project_login_url: data.project_login_url,
-        pandle_id: data.pandle_id,
-        completion_amount: data.completion_amount,
-        bb_revenue: data.bb_revenue,
-        bb_expenses: data.bb_expenses,
-        viewer: data.viewer,
-        contributor: data.contributor,
-        admin: data.admin
-      },
-      {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
+  async updateProject ({ commit, dispatch }, data) {
+    try {
+      const response = await this.$axios.$post('https://api.galexia.agency/projects',
+        {
+          id: data.id,
+          name: data.name,
+          status: data.status,
+          hosting: data.hosting,
+          github_url: data.github_url,
+          drive_url: data.drive_url,
+          project_url: data.project_url,
+          project_login_url: data.project_login_url,
+          pandle_id: data.pandle_id,
+          completion_amount: data.completion_amount,
+          bb_revenue: data.bb_revenue,
+          bb_expenses: data.bb_expenses,
+          viewer: data.viewer,
+          contributor: data.contributor,
+          admin: data.admin,
+          updated_at: data.updated_at
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          }
         }
+      )
+      // Don't update lists
+      delete response[0].lists
+      return await commit('updateProject', response[0])
+    } catch (e) {
+      if (await e.response && await e.response.status === 429) {
+        // Data from the database
+        const sourceOfTruth = e.response.data[0]
+        // Don't update lists
+        delete sourceOfTruth.lists
+        // What we're going to force push up to the database after having merged our changes with the truth
+        const whatToForcePush = sourceOfTruth
+        try {
+          // If the name state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.name !== data.name) {
+            whatToForcePush.name = await dispatch('conflicts', {
+              title: 'Name',
+              type: 'text',
+              before: whatToForcePush.name,
+              after: data.name,
+              required: true
+            })
+          }
+          // If the status state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.status !== data.status) {
+            whatToForcePush.status = await dispatch('conflicts', {
+              title: 'Status',
+              type: 'select',
+              before: whatToForcePush.status,
+              after: data.status,
+              options: ['Hot Lead', 'Cold Lead', 'Development', 'Paused', 'In House', 'On-Going', 'Closed Lead', 'Completed', 'Cancelled'],
+              required: true
+            })
+          }
+          // If the project_url state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.project_url !== data.project_url) {
+            whatToForcePush.project_url = await dispatch('conflicts', {
+              title: 'Project URL',
+              type: 'url',
+              before: whatToForcePush.project_url,
+              after: data.project_url
+            })
+          }
+          // If the project_login_url state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.project_login_url !== data.project_login_url) {
+            whatToForcePush.project_login_url = await dispatch('conflicts', {
+              title: 'Project Login URL',
+              type: 'url',
+              before: whatToForcePush.project_login_url,
+              after: data.project_login_url
+            })
+          }
+          // If the hosting state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.hosting !== data.hosting) {
+            whatToForcePush.hosting = await dispatch('conflicts', {
+              title: 'Hosting',
+              type: 'text',
+              before: whatToForcePush.hosting,
+              after: data.hosting
+            })
+          }
+          // If the github_url state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.github_url !== data.github_url) {
+            whatToForcePush.github_url = await dispatch('conflicts', {
+              title: 'GitHub Link',
+              type: 'url',
+              before: whatToForcePush.github_url,
+              after: data.github_url
+            })
+          }
+          // If the drive_url state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.drive_url !== data.drive_url) {
+            whatToForcePush.drive_url = await dispatch('conflicts', {
+              title: 'Google Drive Link',
+              type: 'url',
+              before: whatToForcePush.drive_url,
+              after: data.drive_url
+            })
+          }
+          // If the viewer state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.viewer !== data.viewer) {
+            whatToForcePush.viewer = await dispatch('conflicts', {
+              title: 'Project Viewers',
+              type: 'text',
+              before: whatToForcePush.viewer,
+              after: data.viewer,
+              noSpaces: true,
+              pattern: '[^s]+'
+            })
+          }
+          // If the contributor state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.contributor !== data.contributor) {
+            whatToForcePush.contributor = await dispatch('conflicts', {
+              title: 'Project Contributors',
+              type: 'text',
+              before: whatToForcePush.contributor,
+              after: data.contributor,
+              noSpaces: true,
+              pattern: '[^s]+'
+            })
+          }
+          // If the admin state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.admin !== data.admin) {
+            whatToForcePush.admin = await dispatch('conflicts', {
+              title: 'Project Admins',
+              type: 'text',
+              before: whatToForcePush.admin,
+              after: data.admin,
+              noSpaces: true,
+              pattern: '[^s]+'
+            })
+          }
+          // If the completion_amount state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.completion_amount !== data.completion_amount) {
+            whatToForcePush.completion_amount = await dispatch('conflicts', {
+              title: 'Completion Total',
+              type: 'number',
+              before: whatToForcePush.completion_amount,
+              after: data.completion_amount
+            })
+          }
+          // If the bb_revenue state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.bb_revenue !== data.bb_revenue) {
+            whatToForcePush.bb_revenue = await dispatch('conflicts', {
+              title: 'Before Business Revenue',
+              type: 'number',
+              before: whatToForcePush.bb_revenue,
+              after: data.bb_revenue
+            })
+          }
+          // If the bb_expenses state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.bb_expenses !== data.bb_expenses) {
+            whatToForcePush.bb_expenses = await dispatch('conflicts', {
+              title: 'Before Business Expenses',
+              type: 'number',
+              before: whatToForcePush.bb_expenses,
+              after: data.bb_expenses
+            })
+          }
+          // Force push the contact
+          const response = await this.$axios.$post('https://api.galexia.agency/projects',
+            {
+              id: whatToForcePush.id,
+              name: whatToForcePush.name,
+              status: whatToForcePush.status,
+              hosting: whatToForcePush.hosting,
+              github_url: whatToForcePush.github_url,
+              drive_url: whatToForcePush.drive_url,
+              project_url: whatToForcePush.project_url,
+              project_login_url: whatToForcePush.project_login_url,
+              pandle_id: whatToForcePush.pandle_id,
+              completion_amount: whatToForcePush.completion_amount,
+              bb_revenue: whatToForcePush.bb_revenue,
+              bb_expenses: whatToForcePush.bb_expenses,
+              viewer: whatToForcePush.viewer,
+              contributor: whatToForcePush.contributor,
+              admin: whatToForcePush.admin,
+              updated_at: whatToForcePush.updated_at,
+              force: true
+            },
+            {
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          // Don't update lists
+          delete response[0].lists
+          return await commit('updateProject', response[0])
+        } catch (e) {
+          const error = {}
+          error.active = true
+          error.description = e.message
+          error.data = data
+          return commit('error', { error })
+        }
+      } else {
+        const error = {}
+        error.active = true
+        error.description = e.message
+        error.data = data
+        return commit('error', { error })
       }
-    )
-    commit('updateProject', data)
-    return response
+    }
   },
   async addList ({ commit, dispatch }, { projectId, title }) {
     await commit('addList', { projectId, title })
