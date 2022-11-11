@@ -80,7 +80,7 @@
         label="Project Viewers"
         type="text"
         pattern="[^\s]+"
-        @input="noSpaces()"
+        :no-spaces="true"
       />
       <ui-input
         v-model="contributor"
@@ -88,7 +88,7 @@
         label="Project Contributors"
         type="text"
         pattern="[^\s]+"
-        @input="noSpaces()"
+        :no-spaces="true"
       />
       <ui-input
         v-model="admin"
@@ -96,7 +96,7 @@
         label="Project Admins"
         type="text"
         pattern="[^\s]+"
-        @input="noSpaces()"
+        :no-spaces="true"
       />
       <ui-input
         v-model="completion_amount"
@@ -178,17 +178,6 @@ export default {
     },
     reset () {
       Object.assign(this, data())
-    },
-    noSpaces () {
-      if (this.$data.viewer) {
-        this.$data.viewer = this.$data.viewer.replaceAll(' ', '')
-      }
-      if (this.$data.contributor) {
-        this.$data.contributor = this.$data.contributor.replaceAll(' ', '')
-      }
-      if (this.$data.admin) {
-        this.$data.admin = this.$data.admin.replaceAll(' ', '')
-      }
     }
   }
 }

@@ -45,9 +45,33 @@
         </template>
         <template v-else>
           <div class="before-after">
-            <ui-input v-model="before" :type="conflicts.type" name="before" label="Content from the database" :disabled="true" />
-            <ui-input v-model="after" :type="conflicts.type" name="after" label="Your content" :disabled="true" />
-            <ui-input v-model="updated" name="updated" label="Your updated content" :type="conflicts.type" :autofocus="true" />
+            <ui-input
+              v-model="before"
+              :type="conflicts.type"
+              :options="conflicts.options"
+              name="before"
+              label="Content from the database"
+              :disabled="true"
+            />
+            <ui-input
+              v-model="after"
+              :type="conflicts.type"
+              :options="conflicts.options"
+              name="after"
+              label="Your content"
+              :disabled="true"
+            />
+            <ui-input
+              v-model="updated"
+              name="updated"
+              label="Your updated content"
+              :type="conflicts.type"
+              :options="conflicts.options"
+              :autofocus="true"
+              :required="conflicts.required"
+              :pattern="conflicts.pattern"
+              :no-spaces="conflicts.noSpaces"
+            />
           </div>
         </template>
         <ui-button style-type="primary" type="submit" style="margin-top: 1rem">
@@ -87,11 +111,7 @@ export default {
         if (this.conflicts.reveal === true && this.conflicts.resolvePromise === null) {
           this.before = this.conflicts.before
           this.after = this.conflicts.after
-          if (this.conflicts.type === 'checkbox') {
-            this.updated = this.conflicts.after
-          } else {
-            this.updated = this.conflicts.before + '\n' + this.conflicts.after
-          }
+          this.updated = this.conflicts.after
           let resolvePromise
           this.$parent.$parent.$parent.dragging = true
           // eslint-disable-next-line

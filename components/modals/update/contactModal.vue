@@ -38,7 +38,7 @@
         label="Telephone"
         type="text"
         pattern="[^\s]+"
-        @input="noSpaces()"
+        :no-spaces="true"
       />
       <ui-input
         v-model="email"
@@ -47,7 +47,7 @@
         type="text"
         :required="true"
         pattern="[^\s]+"
-        @input="noSpaces()"
+        :no-spaces="true"
       />
       <ui-input
         v-model="role"
@@ -87,8 +87,7 @@ function data () {
     tel: null,
     created_at: null,
     updated_at: null,
-    google_contact_id: null,
-    org: null
+    google_contact_id: null
   }
 }
 export default {
@@ -117,14 +116,6 @@ export default {
     },
     reset () {
       Object.assign(this, data())
-    },
-    noSpaces () {
-      if (this.$data.tel) {
-        this.$data.tel = this.$data.tel.replaceAll(' ', '')
-      }
-      if (this.$data.email) {
-        this.$data.email = this.$data.email.replaceAll(' ', '')
-      }
     }
   }
 }

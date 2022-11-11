@@ -48,6 +48,11 @@
             :disabled="disabled"
             :required="required"
           >
+            <template v-if="options.length > 0">
+              <template v-for="option in options">
+                <option :key="option" :value="option" v-text="option" />
+              </template>
+            </template>
             <slot />
           </select>
         </div>
@@ -67,7 +72,9 @@
           v-bind="$attrs"
           :disabled="disabled"
           :required="required"
+          :pattern="pattern ? pattern : null"
           @keydown.enter="onEnter"
+          @keyup="noSpacesFunction()"
         >
         <button
           v-if="type === 'date'"
@@ -96,11 +103,25 @@ export default {
       type: [String, Number],
       default: 'text'
     },
+    options: {
+      type: [Array],
+      default () {
+        return []
+      }
+    },
     autofocus: {
       type: Boolean,
       default: false
     },
     disabled: {
+      type: Boolean,
+      default: false
+    },
+    pattern: {
+      type: String,
+      default: ''
+    },
+    noSpaces: {
       type: Boolean,
       default: false
     },
@@ -120,10 +141,18 @@ export default {
   },
   methods: {
     onEnter ($event) {
+      this.noSpacesFunction()
       this.$emit('enter', $event)
     },
     resetDate ($event) {
       this.$emit('resetDate', $event)
+    },
+    noSpacesFunction () {
+      if (this.noSpaces) {
+        if (this.input) {
+          this.input = this.input.replaceAll(' ', '')
+        }
+      }
     }
   }
 }

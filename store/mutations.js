@@ -40,6 +40,15 @@ const mutations = {
     if (data.type) {
       state.conflicts.type = data.type
     }
+    if (data.options) {
+      state.conflicts.options = data.options
+    }
+    if (data.pattern) {
+      state.conflicts.pattern = data.pattern
+    }
+    if (data.noSpaces) {
+      state.conflicts.noSpaces = data.noSpaces
+    }
   },
   clients (state, data) {
     state.clients = data
