@@ -182,6 +182,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.project.id)
     this.sse_start()
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
@@ -192,6 +193,7 @@ export default {
     })
   },
   beforeDestroy () {
+    console.log('destroy')
     this.sse_end()
   },
   methods: {
@@ -219,6 +221,7 @@ export default {
           })
           this.sse.addEventListener(id, function (event) {
             self.sse_updateProject(JSON.parse(event.data)[0])
+            console.log(JSON.parse(event.data)[0])
           }, false)
         }
       }
