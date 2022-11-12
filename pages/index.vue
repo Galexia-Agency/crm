@@ -423,14 +423,19 @@ export default {
         const projectToPush = {}
         const project = this.$store.state.projects[projectId]
         const client = this.$store.state.clients.find(client => client.id === project.client_id)
-        if (project.php) {
+        if (project.php && project.status !== 'Completed' && project.status !== 'Cancelled') {
           projectToPush.php = project.php
+          projectToPush.client_name = client.business_name
           projectToPush.name = client.business_name + ' - ' + project.name
           projectToPush.link = client.business_shortname.toLowerCase() + '#' + project.name
           projects.push(projectToPush)
         }
       }
-      return projects
+      return projects.sort(function (a, b) {
+        const textA = a.client_name.toUpperCase()
+        const textB = b.client_name.toUpperCase()
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+      })
     },
     bankAccountData () {
       return {
