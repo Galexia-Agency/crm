@@ -445,7 +445,7 @@
         </button>
       </nav>
     </template>
-    <nuxt keep-alive />
+    <nuxt />
     <ui-modal
       ref="modal"
       :active="modal.client"
