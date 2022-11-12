@@ -221,7 +221,6 @@ export default {
           })
           this.sse.addEventListener(id, function (event) {
             self.sse_updateProject(JSON.parse(event.data)[0])
-            console.log(JSON.parse(event.data)[0])
           }, false)
         }
       }
@@ -240,6 +239,7 @@ export default {
       }
     },
     sse_updateProject (newProject) {
+      console.log(newProject)
       this.$nuxt.$loading.start()
       newProject.lists = JSON.parse(newProject.lists)
       const currentProject = this.$store.state.projects.find(project => project.id === newProject.id)
