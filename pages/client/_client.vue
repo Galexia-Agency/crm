@@ -139,45 +139,53 @@ export default {
     await this.pandleBootstrap()
 
     // Income
-    const IncomeURLs = []
-    if (this.claims.groups.includes('billing')) {
-      for (const project in this.projects) {
-        if (this.projects[project].bb_revenue) {
-          this.income = this.income + parseFloat(this.projects[project].bb_revenue)
+    if (window.sessionStorage.getItem(this.client.id + '_income')) {
+      this.income = Number(window.sessionStorage.getItem(this.client.id + '_income'))
+    } else {
+      const IncomeURLs = []
+      if (this.claims.groups.includes('billing')) {
+        for (const project in this.projects) {
+          if (this.projects[project].bb_revenue) {
+            this.income = this.income + parseFloat(this.projects[project].bb_revenue)
+          }
+          if (this.projects[project].pandle_id) {
+            IncomeURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`)
+          }
         }
-        if (this.projects[project].pandle_id) {
-          IncomeURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`)
+        if (this.client) {
+          if (this.client.pandle_id) {
+            IncomeURLs.push(`/companies/46972/customers/${this.client.pandle_id}/account`)
+          }
         }
       }
-      if (this.client) {
-        if (this.client.pandle_id) {
-          IncomeURLs.push(`/companies/46972/customers/${this.client.pandle_id}/account`)
+      if (IncomeURLs) {
+        for (const value of await Promise.all(IncomeURLs.map(this.pandleFetch))) {
+          this.income = this.income + value
         }
+        window.sessionStorage.setItem(this.client.id + '_income', this.income)
       }
     }
 
     // Expenses
-    const ExpensesURLs = []
-    if (this.claims.groups.includes('billing')) {
-      for (const project in this.projects) {
-        if (this.projects[project].bb_expenses) {
-          this.expenses = this.expenses + parseFloat(this.projects[project].bb_expenses)
-        }
-        if (this.projects[project].pandle_id) {
-          ExpensesURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`)
+    if (window.sessionStorage.getItem(this.client.id + '_expenses')) {
+      this.expenses = Number(window.sessionStorage.getItem(this.client.id + '_expenses'))
+    } else {
+      const ExpensesURLs = []
+      if (this.claims.groups.includes('billing')) {
+        for (const project in this.projects) {
+          if (this.projects[project].bb_expenses) {
+            this.expenses = this.expenses + parseFloat(this.projects[project].bb_expenses)
+          }
+          if (this.projects[project].pandle_id) {
+            ExpensesURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`)
+          }
         }
       }
-    }
-
-    // Pandle Fetch
-    if (IncomeURLs) {
-      for (const value of await Promise.all(IncomeURLs.map(this.pandleFetch))) {
-        this.income = this.income + value
-      }
-    }
-    if (ExpensesURLs) {
-      for (const value of await Promise.all(ExpensesURLs.map(this.pandleFetch))) {
-        this.expenses = this.expenses + value
+      if (ExpensesURLs) {
+        for (const value of await Promise.all(ExpensesURLs.map(this.pandleFetch))) {
+          this.expenses = this.expenses + value
+        }
+        window.sessionStorage.setItem(this.client.id + '_expenses', this.expenses)
       }
     }
   },
