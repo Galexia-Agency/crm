@@ -184,19 +184,21 @@ export default {
   mounted () {
     console.log(this.project.id)
     this.sse_start()
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener('visibilitychange', this.visibileChange)
+  },
+  beforeDestroy () {
+    document.removeEventListener('visibilitychange', this.visibileChange)
+    console.log('destroy')
+    this.sse_end()
+  },
+  methods: {
+    visibleChange () {
       if (document.visibilityState === 'visible') {
         this.sse_start()
       } else {
         this.sse_end()
       }
-    })
-  },
-  beforeDestroy () {
-    console.log('destroy')
-    this.sse_end()
-  },
-  methods: {
+    },
     sse_start () {
       const id = this.project.id
       const authToken = `Bearer ${this.$auth.getAccessToken()}`
