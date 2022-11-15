@@ -11,7 +11,9 @@ const headers = {
   'Content-Security-Policy': 'default-src "self"'
 }
 
-let response
+let response = {
+  statusCode: 500
+}
 
 exports.handler = async function handler (event, context, callback) {
   if (event.headers.authorization) {
@@ -52,7 +54,7 @@ exports.handler = async function handler (event, context, callback) {
           })
         } catch (e) {
           return callback(null, {
-            statusCode: 500,
+            statusCode: response.statusCode,
             headers,
             body: JSON.stringify(e, response)
           })
@@ -67,7 +69,7 @@ exports.handler = async function handler (event, context, callback) {
           })
         } catch (e) {
           return callback(null, {
-            statusCode: 500,
+            statusCode: response.statusCode,
             headers,
             body: JSON.stringify(e, response)
           })
@@ -82,7 +84,7 @@ exports.handler = async function handler (event, context, callback) {
           })
         } catch (e) {
           return callback(null, {
-            statusCode: 500,
+            statusCode: response.statusCode,
             headers,
             body: JSON.stringify(e, response)
           })
