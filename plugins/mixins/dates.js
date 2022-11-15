@@ -15,6 +15,15 @@ Vue.mixin({
       } else {
         return Math.abs(days) + ' days overdue'
       }
+    },
+    diffDays (startDate, endDate) {
+      if (!endDate) {
+        endDate = new Date()
+      } else {
+        endDate = new Date(endDate)
+      }
+      const diffTime = Math.abs(new Date(startDate) - new Date(endDate))
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     }
   }
 })

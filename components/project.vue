@@ -166,19 +166,17 @@ export default {
     ]),
     daysToComplete () {
       if (this.project.completion_date) {
-        const diffTime = Math.abs(new Date(this.project.completion_date) - new Date(this.project.start_date))
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-        if (diffDays === 1) {
-          return `Project took ${diffDays} day to complete`
+        const days = this.diffDays(this.project.completion_date, this.project.start_date)
+        if (days === 1) {
+          return `Project took ${days} day to complete`
         }
-        return `Project took ${diffDays} days to complete`
+        return `Project took ${days} days to complete`
       }
-      const diffTime = Math.abs(new Date() - new Date(this.project.start_date))
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-      if (diffDays === 1) {
-        return `Project has taken ${diffDays} day`
+      const days = this.diffDays(this.project.start_date, null)
+      if (days === 1) {
+        return `Project has taken ${days} day`
       }
-      return `Project has taken ${diffDays} days`
+      return `Project has taken ${days} days`
     }
   },
   mounted () {

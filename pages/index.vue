@@ -36,14 +36,21 @@
     // stylelint-disable-next-line declaration-no-important
     cursor: pointer!important
   }
-  table td:first-child {
-    font-weight: bold
-  }
-  table td {
-    padding: .5em
-  }
-  table tr:nth-of-type(odd) {
-    background-color: var(--scrollbarBG)
+  table {
+    thead {
+      border-bottom: 1px solid black
+    }
+    th, td {
+      padding: .5em
+    }
+    tbody {
+      tr:nth-of-type(odd) {
+        background-color: var(--scrollbarBG)
+      }
+      td:first-child {
+        font-weight: bold
+      }
+    }
   }
   .home-card-container {
     margin-bottom: 1rem;
@@ -241,6 +248,35 @@
             </tbody>
           </table>
         </section>
+        <section v-if="projectsTimelines.length > 0" style="max-width: calc(900px + 2rem)">
+          <h2>
+            Project Timelines
+          </h2>
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  Project
+                </th>
+                <th>
+                  Days from date of enquiry to project kick-off
+                </th>
+                <th>
+                  Days from project kick-off to publication
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="project, index in projectsTimelines" :key="index">
+                <td>
+                  <nuxt-link :to="`/client/${project.link}`" style="color: black" v-text="project.name" />
+                </td>
+                <td v-text="project.daysToStart" />
+                <td v-text="project.daysToComplete" />
+              </tr>
+            </tbody>
+          </table>
+        </section>
       </main>
     </template>
   </div>
@@ -425,6 +461,33 @@ export default {
         const client = this.$store.state.clients.find(client => client.id === project.client_id)
         if (project.php && project.status !== 'Completed' && project.status !== 'Cancelled') {
           projectToPush.php = project.php
+          projectToPush.client_name = client.business_name
+          projectToPush.name = client.business_name + ' - ' + project.name
+          projectToPush.link = client.business_shortname.toLowerCase() + '#' + project.name
+          projects.push(projectToPush)
+        }
+      }
+      return projects.sort(function (a, b) {
+        const textA = a.client_name.toUpperCase()
+        const textB = b.client_name.toUpperCase()
+        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+      })
+    },
+    projectsTimelines () {
+      const projects = []
+      for (const projectId in this.$store.state.projects) {
+        const projectToPush = {}
+        const project = this.$store.state.projects[projectId]
+        const client = this.$store.state.clients.find(client => client.id === project.client_id)
+        if (project.start_date && (project.enquiry_date || project.completion_date)) {
+          if (project.enquiry_date) {
+            projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
+          }
+          if (project.completion_date) {
+            projectToPush.daysToComplete = this.diffDays(project.start_date, project.completion_date)
+          } else {
+            projectToPush.daysToComplete = this.diffDays(project.start_date, null) + '+'
+          }
           projectToPush.client_name = client.business_name
           projectToPush.name = client.business_name + ' - ' + project.name
           projectToPush.link = client.business_shortname.toLowerCase() + '#' + project.name
