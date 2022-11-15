@@ -182,13 +182,11 @@ export default {
     }
   },
   mounted () {
-    console.log(this.project.id)
     this.sse_start()
-    document.addEventListener('visibilitychange', this.visibileChange)
+    document.addEventListener('visibilitychange', this.visibleChange)
   },
   beforeDestroy () {
-    document.removeEventListener('visibilitychange', this.visibileChange)
-    console.log('destroy')
+    document.removeEventListener('visibilitychange', this.visibleChange)
     this.sse_end()
   },
   methods: {
@@ -230,7 +228,7 @@ export default {
     sse_end () {
       if (window.Worker) {
         if (this.sseWorker) {
-          this.sseWorker.postMessage('stop')
+          this.sseWorker.postMessage(['stop'])
           this.sseWorker = null
         }
       } else {
@@ -241,7 +239,6 @@ export default {
       }
     },
     sse_updateProject (newProject) {
-      console.log(newProject)
       this.$nuxt.$loading.start()
       newProject.lists = JSON.parse(newProject.lists)
       const currentProject = this.$store.state.projects.find(project => project.id === newProject.id)

@@ -1,7 +1,8 @@
 import EventSourcePolyfill from 'eventsource'
 
+let sse
+
 onmessage = (e) => {
-  let sse
   const type = e.data[0].toLowerCase()
   if (type === 'start') {
     const url = e.data[1]
@@ -17,7 +18,7 @@ onmessage = (e) => {
       postMessage(JSON.parse(event.data)[0])
     }, false)
   } else if (type === 'stop') {
-    sse.stop()
-    self.stop()
+    sse.close()
+    self.close()
   }
 }
