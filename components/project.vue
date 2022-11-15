@@ -207,7 +207,7 @@ export default {
       if (window.Worker) {
         if (!this.sseWorker) {
           this.sseWorker = new Worker()
-          this.sseWorker.postMessage([url, id, authToken])
+          this.sseWorker.postMessage(['start', url, id, authToken])
           this.sseWorker.onmessage = (e) => {
             self.sse_updateProject(e.data)
           }
@@ -230,7 +230,7 @@ export default {
     sse_end () {
       if (window.Worker) {
         if (this.sseWorker) {
-          this.sseWorker.terminate()
+          this.sseWorker.postMessage('stop')
           this.sseWorker = null
         }
       } else {

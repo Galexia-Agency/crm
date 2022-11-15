@@ -1,16 +1,23 @@
 import EventSourcePolyfill from 'eventsource'
 
 onmessage = (e) => {
-  const url = e.data[0]
-  const id = e.data[1]
-  const authToken = e.data[2]
-  const sse = new EventSourcePolyfill(url, {
-    headers: {
-      Authorization: authToken
-    },
-    withCredentials: false
-  })
-  sse.addEventListener(id, function (event) {
-    postMessage(JSON.parse(event.data)[0])
-  }, false)
+  let sse
+  const type = e.data[0].toLowerCase()
+  if (type === 'start') {
+    const url = e.data[1]
+    const id = e.data[2]
+    const authToken = e.data[3]
+    sse = new EventSourcePolyfill(url, {
+      headers: {
+        Authorization: authToken
+      },
+      withCredentials: false
+    })
+    sse.addEventListener(id, function (event) {
+      postMessage(JSON.parse(event.data)[0])
+    }, false)
+  } else if (type === 'stop') {
+    sse.stop()
+    self.stop()
+  }
 }
