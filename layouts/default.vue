@@ -212,7 +212,7 @@
       background-color: #F3F3F3;
       padding-bottom: 10px;
       position: sticky;
-      bottom: 0
+      bottom: -1px
     }
   }
   .lists-container {
