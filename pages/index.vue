@@ -479,8 +479,8 @@ export default {
         const projectToPush = {}
         const project = this.$store.state.projects[projectId]
         const client = this.$store.state.clients.find(client => client.id === project.client_id)
-        if (project.start_date && (project.enquiry_date || project.completion_date)) {
-          if (project.enquiry_date) {
+        if (project.enquiry_date) {
+          if (project.start_date) {
             projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
           }
           if (project.completion_date) {
