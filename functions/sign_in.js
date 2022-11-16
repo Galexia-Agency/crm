@@ -11,7 +11,9 @@ const headers = {
   'Content-Security-Policy': 'default-src "self"'
 }
 
-let response
+let response = {
+  statusCode: 500
+}
 
 exports.handler = async function handler (event, context, callback) {
   if (event.headers.authorization) {
@@ -35,15 +37,23 @@ exports.handler = async function handler (event, context, callback) {
         body: ''
       })
     } else if (response.data.active === true) {
-      const res = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
-        {
-          email: process.env.PANDLE_USERNAME,
-          password: process.env.PANDLE_PASSWORD
+      try {
+        const res = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
+          {
+            email: process.env.PANDLE_USERNAME,
+            password: process.env.PANDLE_PASSWORD
+          }
+        )
+        return {
+          statusCode: 200,
+          body: JSON.stringify(res.headers)
         }
-      )
-      return {
-        statusCode: 200,
-        body: JSON.stringify(res.headers)
+      } catch (e) {
+        return callback(null, {
+          statusCode: response.statusCode,
+          headers,
+          body: JSON.stringify(e, response)
+        })
       }
     } else {
       return callback(null, {

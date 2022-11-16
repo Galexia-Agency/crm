@@ -233,18 +233,23 @@ export default {
         // eslint-disable-next-line no-lonely-if
         if (this.sse) {
           this.sse.close()
+          this.sse = null
         }
       }
     },
     sse_updateProject (newProject) {
-      this.$nuxt.$loading.start()
-      newProject.lists = JSON.parse(newProject.lists)
-      const currentProject = this.$store.state.projects.find(project => project.id === newProject.id)
-      // If the database content is newer, then replace our version
-      if (new Date(newProject.updated_at) > new Date(currentProject.updated_at)) {
-        this.$store.commit('updateProject', newProject)
+      try {
+        this.$nuxt.$loading.start()
+        newProject.lists = JSON.parse(newProject.lists)
+        const currentProject = this.$store.state.projects.find(project => project.id === newProject.id)
+        // If the database content is newer, then replace our version
+        if (new Date(newProject.updated_at) > new Date(currentProject.updated_at)) {
+          this.$store.commit('updateProject', newProject)
+        }
+        this.$nuxt.$loading.finish()
+      } catch (e) {
+        this.sse_end()
       }
-      this.$nuxt.$loading.finish()
     },
     changeArchived () {
       this.showArchived = !this.showArchived
