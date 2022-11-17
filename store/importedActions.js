@@ -221,6 +221,7 @@ export default {
         admin: data.admin,
         enquiry_date: data.enquiry_date,
         start_date: data.start_date,
+        ongoing: data.ongoing,
         completion_date: data.completion_date
       },
       {
@@ -261,6 +262,7 @@ export default {
           updated_at: data.updated_at,
           enquiry_date: data.enquiry_date,
           start_date: data.start_date,
+          ongoing: data.ongoing,
           completion_date: data.completion_date
         },
         {
@@ -436,6 +438,15 @@ export default {
               after: data.start_date
             })
           }
+          // If the ongoing state doesn't match, open the conflict resolution modal
+          if (whatToForcePush.ongoing !== data.ongoing) {
+            whatToForcePush.ongoing = await dispatch('conflicts', {
+              title: new Date(whatToForcePush.start_date) > new Date() ? 'Is' : 'Was' + 'this an ongoing project?',
+              type: 'checkbox',
+              before: whatToForcePush.ongoing,
+              after: data.ongoing
+            })
+          }
           // If the completion_date state doesn't match, open the conflict resolution modal
           if (whatToForcePush.completion_date !== data.completion_date) {
             whatToForcePush.completion_date = await dispatch('conflicts', {
@@ -467,6 +478,7 @@ export default {
               updated_at: whatToForcePush.updated_at,
               enquiry_date: data.enquiry_date,
               start_date: data.start_date,
+              ongoing: data.ongoing,
               completion_date: data.completion_date,
               force: true
             },

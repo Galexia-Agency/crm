@@ -100,6 +100,9 @@ export const actions = {
             if (project.lists) {
               response[3][index].lists = JSON.parse(project.lists)
             }
+            if (project.ongoing) {
+              response[3][index].ongoing = Boolean(project.ongoing)
+            }
           })
           const clients = response[0].sort(function (a, b) {
             const textA = a.business_shortname.toUpperCase()

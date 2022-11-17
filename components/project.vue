@@ -102,7 +102,7 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-tasks']" />
         <span v-text="project.status" />
       </div>
-      <div v-if="project.start_date" class="list-container">
+      <div v-if="project.start_date && !project.ongoing" class="list-container">
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToComplete" />
       </div>
@@ -165,6 +165,9 @@ export default {
       'claims'
     ]),
     daysToComplete () {
+      if (this.project.ongoing) {
+        return null
+      }
       if (this.project.completion_date) {
         const days = this.diffDays(this.project.completion_date, this.project.start_date)
         if (days === 1) {

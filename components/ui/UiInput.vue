@@ -4,10 +4,23 @@
     display: block;
     font-weight: 400
   }
+  input {
+    accent-color: var(--primaryColor)
+  }
   .label {
     .textarea,
     .input {
       margin-top: .5em
+    }
+    &:has(input[type='checkbox']) {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: .5rem;
+      .control {
+        grid-row: 1;
+        grid-column: 1
+      }
     }
   }
   .select-wrapper {

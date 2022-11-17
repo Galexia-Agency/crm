@@ -483,10 +483,12 @@ export default {
           if (project.start_date) {
             projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
           }
-          if (project.completion_date) {
-            projectToPush.daysToComplete = this.diffDays(project.start_date, project.completion_date)
-          } else {
-            projectToPush.daysToComplete = this.diffDays(project.start_date, null) + '+'
+          if (!project.ongoing) {
+            if (project.completion_date) {
+              projectToPush.daysToComplete = this.diffDays(project.start_date, project.completion_date)
+            } else {
+              projectToPush.daysToComplete = this.diffDays(project.start_date, null) + '+'
+            }
           }
           projectToPush.client_name = client.business_name
           projectToPush.name = client.business_name + ' - ' + project.name

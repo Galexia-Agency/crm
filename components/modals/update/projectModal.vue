@@ -136,10 +136,17 @@
         type="date"
       />
       <ui-input
+        v-model="ongoing"
+        name="ongoing"
+        :label="new Date(start_date) > new Date() ? 'Is ' : 'Was ' + 'this an ongoing project?'"
+        type="checkbox"
+      />
+      <ui-input
         v-model="completion_date"
         name="completion_date"
         label="Date of Project Completion"
         type="date"
+        :disabled="ongoing"
       />
       <div class="field is-grouped">
         <ui-button type="submit" style-type="primary" :disabled="name === '' || status === '' || completion_amount === '' || bb_revenue === '' || bb_expenses === ''">
@@ -178,6 +185,7 @@ function data () {
     created_at: null,
     enquiry_date: '',
     start_date: '',
+    ongoing: false,
     completion_date: ''
   }
 }
@@ -200,6 +208,7 @@ export default {
       if (this.claims.email !== 'joe@galexia.agency') {
         this.admin = 'joe@galexia.agency,' + this.claims.email
       }
+      this.ongoing = Boolean(this.ongoing)
     },
     submit () {
       this.$emit('submit', this.values)
