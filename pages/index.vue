@@ -255,19 +255,72 @@
           <table>
             <thead>
               <tr>
-                <th>
+                <th
+                  style="cursor: pointer"
+                  @click="
+                    projectsTimelinesValue = projectsTimelinesNamesReverse
+                      ?
+                        projectsTimelines.sort(function (a, b) {
+                          const textA = a.client_name.toUpperCase()
+                          const textB = b.client_name.toUpperCase()
+                          return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+                        })
+                      :
+                        projectsTimelines.sort(function (a, b) {
+                          const textA = a.client_name.toUpperCase()
+                          const textB = b.client_name.toUpperCase()
+                          return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+                        }).reverse()
+                    projectsTimelinesNamesReverse = !projectsTimelinesNamesReverse"
+                >
                   Project
                 </th>
-                <th>
+                <th
+                  style="cursor: pointer"
+                  @click="
+                    projectsTimelinesValue = daysToStartReverse
+                      ?
+                        projectsTimelines.sort((a, b) => b.daysToStart - a.daysToStart).reverse()
+                      :
+                        projectsTimelines.sort((a, b) => b.daysToStart - a.daysToStart)
+                    daysToStartReverse = !daysToStartReverse
+                  "
+                >
                   Days from date of enquiry to project kick-off
                 </th>
-                <th>
+                <th
+                  style="cursor: pointer"
+                  @click="
+                    projectsTimelinesValue = daysToCompleteReverse
+                      ?
+                        projectsTimelines.sort(function (a, b) {
+                          if (parseInt(a.daysToComplete) === parseInt(b.daysToComplete)) {
+                            return 0
+                          }
+                          if (!parseInt(a.daysToComplete) || !parseInt(b.daysToComplete)) {
+                            return -1
+                          }
+                          return parseInt(b.daysToComplete) > parseInt(a.daysToComplete) ? 1 : -1
+                        }).reverse()
+                      :
+                        projectsTimelines.sort(function (a, b) {
+                          if (parseInt(a.daysToComplete) === parseInt(b.daysToComplete)) {
+                            return 0
+                          }
+                          if (!parseInt(a.daysToComplete) || !parseInt(b.daysToComplete)) {
+                            return -1
+                          }
+                          return parseInt(b.daysToComplete) > parseInt(a.daysToComplete) ? 1 : -1
+                        })
+                    daysToCompleteReverse = !daysToCompleteReverse
+                  "
+                >
                   Days from project kick-off to publication
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="project, index in projectsTimelines" :key="index">
+              <tr v-for="project, index in projectsTimelinesValue ? projectsTimelinesValue : projectsTimelines" :key="index">
                 <td>
                   <nuxt-link :to="`/client/${project.link}`" style="color: black" v-text="project.name" />
                 </td>
@@ -346,6 +399,14 @@ export default {
       Promise.all(pandleURLs.map(async (URL) => {
         await pandleFetch(URL)
       }))
+    }
+  },
+  data () {
+    return {
+      projectsTimelinesValue: this.projectsTimelines,
+      projectsTimelinesNamesReverse: false,
+      daysToStartReverse: false,
+      daysToCompleteReverse: false
     }
   },
   computed: {
@@ -479,10 +540,9 @@ export default {
         const projectToPush = {}
         const project = this.$store.state.projects[projectId]
         const client = this.$store.state.clients.find(client => client.id === project.client_id)
-        if (project.enquiry_date) {
-          if (project.start_date) {
-            projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
-          }
+        if (project.enquiry_date && project.start_date) {
+          projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
+          projectToPush.enquiry_date = project.enquiry_date
           if (!project.ongoing) {
             if (project.completion_date) {
               projectToPush.daysToComplete = this.diffDays(project.start_date, project.completion_date)
