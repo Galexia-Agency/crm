@@ -293,25 +293,9 @@
                   @click="
                     projectsTimelinesValue = daysToCompleteReverse
                       ?
-                        projectsTimelines.sort(function (a, b) {
-                          if (parseInt(a.daysToComplete) === parseInt(b.daysToComplete)) {
-                            return 0
-                          }
-                          if (!parseInt(a.daysToComplete) || !parseInt(b.daysToComplete)) {
-                            return -1
-                          }
-                          return parseInt(b.daysToComplete) > parseInt(a.daysToComplete) ? 1 : -1
-                        }).reverse()
+                        projectsTimelines.sort((a, b) => parseInt(b.daysToComplete) - parseInt(a.daysToComplete)).reverse()
                       :
-                        projectsTimelines.sort(function (a, b) {
-                          if (parseInt(a.daysToComplete) === parseInt(b.daysToComplete)) {
-                            return 0
-                          }
-                          if (!parseInt(a.daysToComplete) || !parseInt(b.daysToComplete)) {
-                            return -1
-                          }
-                          return parseInt(b.daysToComplete) > parseInt(a.daysToComplete) ? 1 : -1
-                        })
+                        projectsTimelines.sort((a, b) => parseInt(b.daysToComplete) - parseInt(a.daysToComplete))
                     daysToCompleteReverse = !daysToCompleteReverse
                   "
                 >
@@ -325,7 +309,10 @@
                   <nuxt-link :to="`/client/${project.link}`" style="color: black" v-text="project.name" />
                 </td>
                 <td v-text="project.daysToStart" />
-                <td v-text="project.daysToComplete" />
+                <td v-if="project.daysToComplete" v-text="project.daysToComplete" />
+                <td v-else>
+                  -
+                </td>
               </tr>
             </tbody>
           </table>
@@ -543,6 +530,7 @@ export default {
         if (project.enquiry_date && project.start_date) {
           projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
           projectToPush.enquiry_date = project.enquiry_date
+          projectToPush.daysToComplete = 0
           if (!project.ongoing) {
             if (project.completion_date) {
               projectToPush.daysToComplete = this.diffDays(project.start_date, project.completion_date)
