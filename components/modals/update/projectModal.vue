@@ -138,7 +138,7 @@
       <ui-input
         v-model="ongoing"
         name="ongoing"
-        :label="new Date(start_date) > new Date() ? 'Is ' : 'Was ' + 'this an ongoing project?'"
+        :label="(new Date(start_date) > new Date() ? 'Is ' : 'Was ') + 'this an ongoing project?'"
         type="checkbox"
       />
       <ui-input
