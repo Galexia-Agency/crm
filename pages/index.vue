@@ -88,7 +88,7 @@
         <section v-if="overdueItems.length > 0">
           <h2>Overdue</h2>
           <section class="list-container">
-            <nuxt-link v-for="(item, index) in overdueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${encodeURIComponent(item.projectName.replaceAll(' ', '-').toLowerCase())}`" class="home-card-container">
+            <nuxt-link v-for="(item, index) in overdueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${safeURL(item.projectName)}`" class="home-card-container">
               <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName || overdueItems[index - 1].projectName !== item.projectName" v-text="`${item.clientName} - ${item.projectName}`" />
               <Card :item="item" :icons="false" />
             </nuxt-link>
@@ -97,7 +97,7 @@
         <section v-if="dueItems.length > 0">
           <h2>To Do</h2>
           <section class="list-container">
-            <nuxt-link v-for="(item, index) in dueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${encodeURIComponent(item.projectName.replaceAll(' ', '-').toLowerCase())}`" class="home-card-container">
+            <nuxt-link v-for="(item, index) in dueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${safeURL(item.projectName)}`" class="home-card-container">
               <h6 v-if="index === 0 || dueItems[index - 1].clientName !== item.clientName || dueItems[index - 1].projectName !== item.projectName" v-text="`${item.clientName} - ${item.projectName}`" />
               <Card :item="item" :icons="false" />
             </nuxt-link>
@@ -241,7 +241,7 @@
             <tbody>
               <tr v-for="project, index in projectsPHP" :key="index">
                 <td>
-                  <nuxt-link :to="`/client/${project.link}`" style="color: black" v-text="project.name" />
+                  <nuxt-link :to="project.link" style="color: black" v-text="project.name" />
                 </td>
                 <td v-text="project.php" />
               </tr>
@@ -278,6 +278,19 @@
                 <th
                   style="cursor: pointer"
                   @click="
+                    projectsTimelinesValue = dateOfEnquiryReverse
+                      ?
+                        projectsTimelines.sort((a, b) => new Date(b.enquiry_date) - new Date(a.enquiry_date)).reverse()
+                      :
+                        projectsTimelines.sort((a, b) => new Date(b.enquiry_date) - new Date(a.enquiry_date))
+                    dateOfEnquiryReverse = !dateOfEnquiryReverse
+                  "
+                >
+                  Date of project enquiry
+                </th>
+                <th
+                  style="cursor: pointer"
+                  @click="
                     projectsTimelinesValue = daysToStartReverse
                       ?
                         projectsTimelines.sort((a, b) => b.daysToStart - a.daysToStart).reverse()
@@ -306,8 +319,9 @@
             <tbody>
               <tr v-for="project, index in projectsTimelinesValue ? projectsTimelinesValue : projectsTimelines" :key="index">
                 <td>
-                  <nuxt-link :to="`/client/${project.link}`" style="color: black" v-text="project.name" />
+                  <nuxt-link :to="project.link" style="color: black" v-text="project.name" />
                 </td>
+                <td v-text="humanReadableDate(project.enquiry_date)" />
                 <td v-text="project.daysToStart" />
                 <td v-if="project.daysToComplete" v-text="project.daysToComplete" />
                 <td v-else>
@@ -393,7 +407,8 @@ export default {
       projectsTimelinesValue: this.projectsTimelines,
       projectsTimelinesNamesReverse: false,
       daysToStartReverse: false,
-      daysToCompleteReverse: false
+      daysToCompleteReverse: false,
+      dateOfEnquiryReverse: false
     }
   },
   computed: {
@@ -511,7 +526,7 @@ export default {
           projectToPush.php = project.php
           projectToPush.client_name = client.business_name
           projectToPush.name = client.business_name + ' - ' + project.name
-          projectToPush.link = client.business_shortname.toLowerCase() + '#' + project.name
+          projectToPush.link = '/client/' + client.business_shortname.toLowerCase() + '#' + this.safeURL(project.name)
           projects.push(projectToPush)
         }
       }
@@ -540,7 +555,7 @@ export default {
           }
           projectToPush.client_name = client.business_name
           projectToPush.name = client.business_name + ' - ' + project.name
-          projectToPush.link = client.business_shortname.toLowerCase() + '#' + project.name
+          projectToPush.link = '/client/' + client.business_shortname.toLowerCase() + '#' + this.safeURL(project.name)
           projects.push(projectToPush)
         }
       }

@@ -69,7 +69,7 @@
       </div>
     </div>
     <template v-for="project in projects">
-      <project :id="encodeURIComponent(project.name.replaceAll(' ', '-').toLowerCase())" :key="project.id" :project="project" class="project container" />
+      <project :id="safeURL(project.name)" :key="project.id" :project="project" class="project container" />
     </template>
     <ui-modal
       ref="modal"

@@ -198,7 +198,7 @@ export default {
     },
     businessShortnameCreator ($event) {
       if (!this.existing_shortname) {
-        this.business_shortname = encodeURIComponent($event.replaceAll(' ', '-').toLowerCase())
+        this.business_shortname = this.safeURL($event)
       }
     }
   }

@@ -13,6 +13,9 @@ Vue.mixin({
       } catch (e) {
         return str
       }
+    },
+    safeURL (str) {
+      return encodeURIComponent(str.replaceAll(' ', '-').toLowerCase())
     }
   }
 })

@@ -24,6 +24,10 @@ Vue.mixin({
       }
       const diffTime = Math.abs(new Date(startDate) - new Date(endDate))
       return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    },
+    humanReadableDate (date) {
+      const options = { year: 'numeric', month: 'short', day: 'numeric' }
+      return new Date(date).toLocaleDateString(undefined, options)
     }
   }
 })

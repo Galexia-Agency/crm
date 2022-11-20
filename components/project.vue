@@ -104,6 +104,10 @@
       </div>
       <div v-if="project.start_date && !project.ongoing" class="list-container">
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        <span v-text="daysToStart" />
+      </div>
+      <div v-if="project.start_date && !project.ongoing" class="list-container">
+        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToComplete" />
       </div>
       <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle(project)">
@@ -164,6 +168,23 @@ export default {
     ...mapState([
       'claims'
     ]),
+    daysToStart () {
+      if (!this.project.enquiry_date) {
+        return null
+      }
+      if (this.project.start_date) {
+        const days = this.diffDays(this.project.enquiry_date, this.project.start_date)
+        if (days === 1) {
+          return `Project took ${days} day to start`
+        }
+        return `Project took ${days} days to start`
+      }
+      const days = this.diffDays(this.project.enquiry_date, null)
+      if (days === 1) {
+        return `Project has been a lead for ${days} day`
+      }
+      return `Project has been a lead for ${days} days`
+    },
     daysToComplete () {
       if (this.project.ongoing) {
         return null
