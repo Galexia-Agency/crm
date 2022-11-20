@@ -11,32 +11,40 @@ const headers = {
   'Content-Security-Policy': 'default-src "self"'
 }
 
-let response = {
-  statusCode: 500
-}
-
 exports.handler = async function handler (event, context, callback) {
+  if (event.httpMethod === 'OPTIONS') {
+    return callback(null, {
+      statusCode: 200,
+      headers,
+      body: ''
+    })
+  }
   if (event.headers.authorization) {
     const accessToken = event.headers.authorization.split(' ')
-    response = await axios.post(`${process.env.OKTA_ISSUER}/oauth2/default/v1/introspect?client_id=${process.env.OKTA_CLIENT_ID}`,
-      new URLSearchParams({
-        token: accessToken[1],
-        token_type_hint: 'access_token'
-      }).toString(),
-      {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
+    let oktaResponse = {
+      statusCode: 500
+    }
+    try {
+      oktaResponse = await axios.post(`${process.env.OKTA_ISSUER}/oauth2/default/v1/introspect?client_id=${process.env.OKTA_CLIENT_ID}`,
+        new URLSearchParams({
+          token: accessToken[1],
+          token_type_hint: 'access_token'
+        }).toString(),
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      }
-    )
-    if (event.httpMethod === 'OPTIONS') {
+      )
+    } catch (e) {
       return callback(null, {
-        statusCode: 200,
+        statusCode: oktaResponse.statusCode,
         headers,
-        body: ''
+        body: JSON.stringify(e, oktaResponse)
       })
-    } else if (event.body && response.data.active === true) {
+    }
+    if (event.body && oktaResponse.data.active === true) {
       axios.interceptors.request.use(function (config) {
         config.headers['access-token'] = event.headers['access-token']
         config.headers.client = event.headers.client
@@ -44,70 +52,44 @@ exports.handler = async function handler (event, context, callback) {
         return config
       })
       const data = JSON.parse(event.body)
-      if (data.type === 'POST') {
-        try {
+      let response = {
+        statusCode: 500
+      }
+      try {
+        if (data.type === 'POST') {
           response = await axios.post('https://my.pandle.com/api/v1' + data.url, data.body)
           return callback(null, {
             statusCode: 200,
             headers,
             body: JSON.stringify(response.data)
           })
-        } catch (e) {
-          return callback(null, {
-            statusCode: response.statusCode,
-            headers,
-            body: JSON.stringify(e, response)
-          })
-        }
-      } else if (data.type === 'GET') {
-        try {
+        } else if (data.type === 'GET') {
           response = await axios.get('https://my.pandle.com/api/v1' + data.url)
           return callback(null, {
             statusCode: 200,
             headers,
             body: JSON.stringify(response.data)
           })
-        } catch (e) {
-          return callback(null, {
-            statusCode: response.statusCode,
-            headers,
-            body: JSON.stringify(e, response)
-          })
-        }
-      } else if (data.type === 'PATCH') {
-        try {
+        } else if (data.type === 'PATCH') {
           response = await axios.patch('https://my.pandle.com/api/v1' + data.url, data.body)
           return callback(null, {
             statusCode: 200,
             headers,
             body: JSON.stringify(response.data)
           })
-        } catch (e) {
-          return callback(null, {
-            statusCode: response.statusCode,
-            headers,
-            body: JSON.stringify(e, response)
-          })
         }
-      } else {
+      } catch (e) {
         return callback(null, {
-          statusCode: 401,
+          statusCode: response.statusCode,
           headers,
-          body: ''
+          body: JSON.stringify(e, response)
         })
       }
-    } else {
-      return callback(null, {
-        statusCode: 401,
-        headers,
-        body: ''
-      })
     }
-  } else {
-    return callback(null, {
-      statusCode: 401,
-      headers,
-      body: '401 - Unauthorized'
-    })
   }
+  return callback(null, {
+    statusCode: 401,
+    headers,
+    body: '401 - Unauthorized'
+  })
 }
