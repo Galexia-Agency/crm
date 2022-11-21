@@ -29,9 +29,7 @@ exports.handler = async function handler (event, context, callback) {
   }
   if (event.headers.authorization) {
     const accessToken = event.headers.authorization.split(' ')
-    let oktaResponse = {
-      statusCode: 500
-    }
+    let oktaResponse
     try {
       oktaResponse = await axios.post(`${process.env.OKTA_ISSUER}/oauth2/default/v1/introspect?client_id=${process.env.OKTA_CLIENT_ID}`,
         new URLSearchParams({
@@ -46,19 +44,23 @@ exports.handler = async function handler (event, context, callback) {
         }
       )
     } catch (e) {
+      if (e.response && e.response.status) {
+        return callback(null, {
+          statusCode: e.response.status,
+          headers,
+          body: JSON.stringify(e)
+        })
+      }
       return callback(null, {
-        statusCode: oktaResponse.statusCode,
+        statusCode: 500,
         headers,
-        body: JSON.stringify(e, oktaResponse)
+        body: JSON.stringify(e)
       })
     }
     if (oktaResponse.data.active === true) {
-      let response = {
-        statusCode: 500
-      }
       try {
         const { file } = await JSON.parse(event.body)
-        response = await cloudinary.uploader.upload(file, { folder: 'BOS' })
+        const response = await cloudinary.uploader.upload(file, { folder: 'BOS' })
         return callback(null, {
           statusCode: 200,
           headers,
@@ -66,9 +68,9 @@ exports.handler = async function handler (event, context, callback) {
         })
       } catch (e) {
         return callback(null, {
-          statusCode: response.statusCode,
+          statusCode: 500,
           headers,
-          body: JSON.stringify(e, response)
+          body: JSON.stringify(e)
         })
       }
     }

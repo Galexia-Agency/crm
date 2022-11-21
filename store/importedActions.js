@@ -1033,7 +1033,7 @@ export default {
       url: '/companies/46972/projects',
       body: {
         project: {
-          name: data.client_name + '-' + data.name,
+          name: data.client_name + '-' + encodeURIComponent(data.name.replaceAll(' ', '-').toLowerCase()),
           status: 'Open',
           date_started: day + '/' + month + '/' + year
         }
