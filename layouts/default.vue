@@ -378,6 +378,33 @@
       background-position: 100rem 0
     }
   }
+
+  /* Tables */
+  table {
+    thead {
+      border-bottom: 1px solid black
+    }
+    th, td {
+      padding: .5em
+    }
+    tbody {
+      tr:nth-of-type(odd) {
+        background-color: var(--scrollbarBG)
+      }
+      td:first-child {
+        font-weight: bold
+      }
+    }
+  }
+
+  /* Buttons */
+  .field.is-grouped {
+    flex-direction: row-reverse;
+    gap: .75rem
+  }
+  .field.is-grouped > .control:not(:last-child) {
+    margin-right: 0
+  }
 </style>
 
 <template>
@@ -453,6 +480,7 @@
     >
       <clientModal ref="newClient" @add="newClient" @cancel="hideClientModal" />
     </ui-modal>
+    <ConflictsModal v-if="conflicts.reveal" ref="conflicts" />
   </div>
 </template>
 
@@ -461,12 +489,14 @@ import { mapState } from 'vuex'
 import Hamburger from 'vue-hamburger/hamburger.vue'
 import projectNavLink from '~/components/projectNavLink'
 import clientModal from '~/components/modals/update/clientModal'
+import ConflictsModal from '~/components/modals/conflictModal'
 
 export default {
   components: {
     projectNavLink,
     Hamburger,
-    clientModal
+    clientModal,
+    ConflictsModal
   },
   data () {
     return {
@@ -486,7 +516,8 @@ export default {
       'projects',
       'clients',
       'authenticated',
-      'claims'
+      'claims',
+      'conflicts'
     ]),
     filteredProjects () {
       const hotLeads = []

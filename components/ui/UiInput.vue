@@ -37,12 +37,33 @@
       transform: rotate(45deg)
     }
   }
+  .control.withPrefix {
+    position: relative;
+    &:before {
+      content: var(--prefix);
+      line-height: 1;
+      height: calc(100% - .5em);
+      width: 2rem;
+      text-align: center;
+      display: inline-flex;
+      place-content: center;
+      place-items: center;
+      position: absolute;
+      left: 0;
+      top: .5em;
+      z-index: 1;
+      color: #363636
+    }
+    input {
+      padding-left: 2rem
+    }
+  }
 </style>
 
 <template>
   <div class="field">
     <label v-if="label" class="label">{{ label }}<span v-if="help" class="help-text">({{ help }})</span>
-      <div class="control">
+      <div class="control" :class="{ withPrefix: prefix }" :style="prefix ? `--prefix: '${prefix}'`: ''">
         <textarea
           v-if="type === 'textarea'"
           v-model.trim="input"
@@ -143,6 +164,10 @@ export default {
       default: false
     },
     help: {
+      type: String,
+      default: null
+    },
+    prefix: {
       type: String,
       default: null
     }

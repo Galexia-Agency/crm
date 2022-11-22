@@ -16,39 +16,7 @@ const mutations = {
     state.error.data = data.data
   },
   conflicts (state, data) {
-    if (data.reveal || data.reveal === false) {
-      state.conflicts.reveal = data.reveal
-    }
-    if (data.promise || data.promise === null) {
-      state.conflicts.promise = data.promise
-    }
-    if (data.resolvePromise || data.resolvePromise === null) {
-      state.conflicts.resolvePromise = data.resolvePromise
-    }
-    if (data.before || data.before === '') {
-      state.conflicts.before = data.before
-    }
-    if (data.after || data.after === '') {
-      state.conflicts.after = data.after
-    }
-    if (data.updated || data.updated === '') {
-      state.conflicts.updated = data.updated
-    }
-    if (data.title || data.title === '') {
-      state.conflicts.title = data.title
-    }
-    if (data.type) {
-      state.conflicts.type = data.type
-    }
-    if (data.options) {
-      state.conflicts.options = data.options
-    }
-    if (data.pattern) {
-      state.conflicts.pattern = data.pattern
-    }
-    if (data.noSpaces) {
-      state.conflicts.noSpaces = data.noSpaces
-    }
+    Object.assign(state.conflicts, data)
   },
   clients (state, data) {
     state.clients = data
@@ -170,6 +138,13 @@ const mutations = {
 
   updateClient (state, data) {
     const item = state.clients.find(client => client.id === data.id)
+    if (item) {
+      Object.assign(item, data)
+    }
+  },
+
+  updateProduct (state, data) {
+    const item = state.products.find(product => product.id === data.id)
     if (item) {
       Object.assign(item, data)
     }

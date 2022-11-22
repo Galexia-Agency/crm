@@ -36,22 +36,6 @@
     // stylelint-disable-next-line declaration-no-important
     cursor: pointer!important
   }
-  table {
-    thead {
-      border-bottom: 1px solid black
-    }
-    th, td {
-      padding: .5em
-    }
-    tbody {
-      tr:nth-of-type(odd) {
-        background-color: var(--scrollbarBG)
-      }
-      td:first-child {
-        font-weight: bold
-      }
-    }
-  }
   .home-card-container {
     margin-bottom: 1rem;
     display: block;

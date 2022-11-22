@@ -109,18 +109,21 @@
         v-model="completion_amount"
         name="completion_amount"
         label="Completion Total"
+        prefix="£"
         type="number"
       />
       <ui-input
         v-model="bb_revenue"
         name="bb_revenue"
         label="Before Business Revenue"
+        prefix="£"
         type="number"
       />
       <ui-input
         v-model="bb_expenses"
         name="bb_expenses"
         label="Before Business Expenses"
+        prefix="£"
         type="number"
       />
       <ui-input

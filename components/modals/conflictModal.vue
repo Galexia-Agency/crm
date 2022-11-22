@@ -105,22 +105,10 @@ export default {
       'conflicts'
     ])
   },
-  watch: {
-    conflicts: {
-      handler () {
-        if (this.conflicts.reveal === true && this.conflicts.resolvePromise === null) {
-          this.before = this.conflicts.before
-          this.after = this.conflicts.after
-          this.updated = this.conflicts.after
-          let resolvePromise
-          this.$parent.$parent.$parent.dragging = true
-          // eslint-disable-next-line
-          const promise = new Promise((resolve) => { resolvePromise = resolve })
-          this.$store.commit('conflicts', { resolvePromise, promise, reveal: true })
-        }
-      },
-      deep: true
-    }
+  beforeMount () {
+    this.before = this.conflicts.before
+    this.after = this.conflicts.after
+    this.updated = this.conflicts.after
   },
   methods: {
     submit () {
