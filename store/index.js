@@ -1,12 +1,13 @@
-import importedActions from './importedActions'
+import importedActions from './actions'
 
 export const state = () => ({
   authenticated: false,
   claims: [],
+  clients: [],
   contacts: [],
   domains: [],
   projects: [],
-  clients: [],
+  products: [],
   error: {
     active: false
   },
@@ -113,6 +114,7 @@ export const actions = {
           commit('contacts', response[1])
           commit('domains', response[2])
           commit('projects', response[3])
+          commit('products', response[4])
           if (route && route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })

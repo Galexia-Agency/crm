@@ -62,6 +62,9 @@ const mutations = {
   projects (state, data) {
     state.projects = data
   },
+  products (state, data) {
+    state.products = data
+  },
   pandleBankAccountChart (state, data) {
     state.pandle.dashboard.bankAccountChart = data
   },
