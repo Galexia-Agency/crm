@@ -44,10 +44,10 @@
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
       <div v-if="claims.groups.includes('billing')" class="monies">
-        <h2 v-text="'Total Income: £' + income.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Expenses: £' + expenses.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Profit: £' + profit.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Completion Total: £' + completion_total.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Income: £' + income.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Expenses: £' + expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Profit: £' + profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Completion Total: £' + completion_total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
       <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
         Add to Pandle

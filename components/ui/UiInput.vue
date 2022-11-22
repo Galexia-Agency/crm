@@ -98,6 +98,20 @@
           :disabled="disabled"
         >
         <input
+          v-else-if="type === 'number'"
+          v-model.trim="input"
+          :type="type"
+          step="0.01"
+          :name="name"
+          class="input"
+          v-bind="$attrs"
+          :disabled="disabled"
+          :required="required"
+          :pattern="pattern ? pattern : null"
+          @keydown.enter="onEnter"
+          @keyup="noSpacesFunction()"
+        >
+        <input
           v-else
           v-model.trim="input"
           :type="type"

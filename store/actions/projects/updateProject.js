@@ -1,5 +1,8 @@
 export default {
   async updateProject ({ commit, dispatch }, data) {
+    data.completion_amount = parseFloat(data.completion_amount).toFixed(2)
+    data.bb_revenue = parseFloat(data.bb_revenue).toFixed(2)
+    data.bb_expenses = parseFloat(data.bb_expenses).toFixed(2)
     try {
       const response = await this.$axios.$post('https://api.galexia.agency/projects',
         {
@@ -196,6 +199,9 @@ export default {
               after: data.completion_date
             })
           }
+          whatToForcePush.completion_amount = parseFloat(whatToForcePush.completion_amount).toFixed(2)
+          whatToForcePush.bb_revenue = parseFloat(whatToForcePush.bb_revenue).toFixed(2)
+          whatToForcePush.bb_expenses = parseFloat(whatToForcePush.bb_expenses).toFixed(2)
           // Force push the contact
           const response = await this.$axios.$post('https://api.galexia.agency/projects',
             {

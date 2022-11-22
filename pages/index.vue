@@ -188,31 +188,31 @@
                 <td>
                   Profit for the Period
                 </td>
-                <td v-text="'£' + parseFloat(TaxDividend['profit-for-period']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + parseFloat(TaxDividend['profit-for-period']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Reserves Brought Forward
                 </td>
-                <td v-text="'£' + parseFloat(TaxDividend['profit-carried-forward']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + parseFloat(TaxDividend['profit-carried-forward']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Corporation Tax Estimate
                 </td>
-                <td v-text="'£' + parseFloat(TaxDividend['estimated-corp-tax-to-pay']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + parseFloat(TaxDividend['estimated-corp-tax-to-pay']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Dividends Taken
                 </td>
-                <td v-text="'£' + parseFloat(TaxDividend['dividends-paid']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + parseFloat(TaxDividend['dividends-paid']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   Available for Dividends
                 </td>
-                <td v-text="'£' + parseFloat(TaxDividend['available-amount']).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + parseFloat(TaxDividend['available-amount']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
             </tbody>
           </table>
@@ -227,7 +227,7 @@
                 <td>
                   <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
                 </td>
-                <td v-text="`£${client.completion_amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
+                <td v-text="`£${client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
               </tr>
             </tbody>
           </table>
@@ -411,7 +411,7 @@ export default {
           a = a + parseFloat(this.$store.state.projects[project].bb_revenue)
         }
       }
-      return a.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return a.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     TaxDividend () {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']
@@ -454,7 +454,7 @@ export default {
           c = c + parseFloat(this.$store.state.projects[project].completion_amount)
         }
       }
-      return c.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return c.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     clientsWithCompletion () {
       const c = {}

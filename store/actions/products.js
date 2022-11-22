@@ -1,5 +1,6 @@
 export default {
   async addProduct ({ commit }, data) {
+    data.price = parseFloat(data.price).toFixed(2)
     const response = await this.$axios.$put('https://api.galexia.agency/products',
       {
         ...data
@@ -14,6 +15,7 @@ export default {
     return await commit('products', response)
   },
   async updateProduct ({ commit, dispatch }, data) {
+    data.price = parseFloat(data.price).toFixed(2)
     try {
       const response = await this.$axios.$post('https://api.galexia.agency/products',
         {
@@ -66,6 +68,7 @@ export default {
               after: data.price
             })
           }
+          whatToForcePush.price = parseFloat(whatToForcePush.price).toFixed(2)
           // Force push the contact
           const response = await this.$axios.$post('https://api.galexia.agency/products',
             {

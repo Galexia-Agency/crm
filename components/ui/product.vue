@@ -2,7 +2,7 @@
   <tr v-if="product.id">
     <td v-text="product.name" />
     <td v-text="product.type" />
-    <td v-text="`£${parseFloat(product.price).toFixed(2)}`" />
+    <td v-text="`£${product.price}`" />
     <td>
       <a href="javascript:void(0)" @click="$emit('updateProduct', product)">
         <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
