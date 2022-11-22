@@ -103,6 +103,21 @@
             </nuxt-link>
           </section>
         </section>
+        <section v-if="projectsPHP.length > 0">
+          <h2>
+            Project PHP Versions
+          </h2>
+          <table>
+            <tbody>
+              <tr v-for="project, index in projectsPHP" :key="index">
+                <td>
+                  <nuxt-link :to="project.link" style="color: black" v-text="project.name" />
+                </td>
+                <td v-text="project.php" />
+              </tr>
+            </tbody>
+          </table>
+        </section>
       </main>
       <main v-if="claims.email === 'joe@galexia.agency'">
         <div class="netdata">
@@ -233,21 +248,8 @@
             </tbody>
           </table>
         </section>
-        <section v-if="projectsPHP.length > 0">
-          <h2>
-            Project PHP Versions
-          </h2>
-          <table>
-            <tbody>
-              <tr v-for="project, index in projectsPHP" :key="index">
-                <td>
-                  <nuxt-link :to="project.link" style="color: black" v-text="project.name" />
-                </td>
-                <td v-text="project.php" />
-              </tr>
-            </tbody>
-          </table>
-        </section>
+      </main>
+      <main>
         <section v-if="projectsTimelines.length > 0" style="max-width: calc(900px + 2rem)">
           <h2>
             Project Timelines
