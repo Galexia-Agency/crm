@@ -3,27 +3,7 @@ export default {
     try {
       const response = await this.$axios.$post('https://api.galexia.agency/projects',
         {
-          id: data.id,
-          name: data.name,
-          status: data.status,
-          hosting: data.hosting,
-          php: data.php,
-          github_url: data.github_url,
-          drive_url: data.drive_url,
-          project_url: data.project_url,
-          project_login_url: data.project_login_url,
-          pandle_id: data.pandle_id,
-          completion_amount: data.completion_amount,
-          bb_revenue: data.bb_revenue,
-          bb_expenses: data.bb_expenses,
-          viewer: data.viewer,
-          contributor: data.contributor,
-          admin: data.admin,
-          updated_at: data.updated_at,
-          enquiry_date: data.enquiry_date,
-          start_date: data.start_date,
-          ongoing: data.ongoing,
-          completion_date: data.completion_date
+          ...data
         },
         {
           headers: {
@@ -219,27 +199,7 @@ export default {
           // Force push the contact
           const response = await this.$axios.$post('https://api.galexia.agency/projects',
             {
-              id: whatToForcePush.id,
-              name: whatToForcePush.name,
-              status: whatToForcePush.status,
-              hosting: whatToForcePush.hosting,
-              php: whatToForcePush.php,
-              github_url: whatToForcePush.github_url,
-              drive_url: whatToForcePush.drive_url,
-              project_url: whatToForcePush.project_url,
-              project_login_url: whatToForcePush.project_login_url,
-              pandle_id: whatToForcePush.pandle_id,
-              completion_amount: whatToForcePush.completion_amount,
-              bb_revenue: whatToForcePush.bb_revenue,
-              bb_expenses: whatToForcePush.bb_expenses,
-              viewer: whatToForcePush.viewer,
-              contributor: whatToForcePush.contributor,
-              admin: whatToForcePush.admin,
-              updated_at: whatToForcePush.updated_at,
-              enquiry_date: data.enquiry_date,
-              start_date: data.start_date,
-              ongoing: data.ongoing,
-              completion_date: data.completion_date,
+              ...whatToForcePush,
               force: true
             },
             {

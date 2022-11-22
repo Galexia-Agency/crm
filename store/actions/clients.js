@@ -1,14 +1,10 @@
 export default {
   async addClient ({ commit }, data) {
+    data.business_shortname = encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase())
+    data.address = JSON.stringify(data.address)
     const response = await this.$axios.$put('https://api.galexia.agency/clients',
       {
-        business_name: data.business_name,
-        business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
-        about: data.about,
-        address: JSON.stringify(data.address),
-        source: data.source,
-        pandle_id: data.pandle_id,
-        billing_email: data.billing_email
+        ...data
       },
       {
         headers: {
@@ -61,17 +57,11 @@ export default {
       }
     }
     try {
+      data.business_shortname = encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase())
       const response = await this.$axios.$post('https://api.galexia.agency/clients',
         {
-          business_name: data.business_name,
-          business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
-          about: data.about,
-          address: adr,
-          source: data.source,
-          id: data.id,
-          pandle_id: data.pandle_id,
-          billing_email: data.billing_email,
-          updated_at: data.updated_at
+          ...data,
+          address: adr
         },
         {
           headers: {
@@ -201,17 +191,10 @@ export default {
               after: data.source
             })
           }
+          whatToForcePush.business_shortname = encodeURIComponent(whatToForcePush.business_shortname.replaceAll(' ', '-').toLowerCase())
           const response = await this.$axios.$post('https://api.galexia.agency/clients',
             {
-              business_name: data.business_name,
-              business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
-              about: data.about,
-              address: adr,
-              source: data.source,
-              id: data.id,
-              pandle_id: data.pandle_id,
-              billing_email: data.billing_email,
-              updated_at: data.updated_at,
+              ...whatToForcePush,
               force: true
             },
             {

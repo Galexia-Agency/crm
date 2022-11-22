@@ -1,16 +1,9 @@
 export default {
   async addContact ({ commit }, data) {
+    data.email = data.email.toLowerCase()
     const response = await this.$axios.$put('https://api.galexia.agency/contacts',
       {
-        client_id: data.client_id,
-        f_name: data.f_name,
-        l_name: data.l_name,
-        tel: data.tel,
-        email: data.email.toLowerCase(),
-        role: data.role,
-        facebook: data.facebook,
-        org: data.org,
-        title: data.title
+        ...data
       },
       {
         headers: {
@@ -23,18 +16,10 @@ export default {
   },
   async updateContact ({ commit, dispatch }, data) {
     try {
+      data.email = data.email.toLowerCase()
       const response = await this.$axios.$post('https://api.galexia.agency/contacts',
         {
-          title: data.title,
-          f_name: data.f_name,
-          l_name: data.l_name,
-          tel: data.tel,
-          email: data.email.toLowerCase(),
-          role: data.role,
-          facebook: data.facebook,
-          id: data.id,
-          google_contact_id: data.google_contact_id,
-          updated_at: data.updated_at
+          ...data
         },
         {
           headers: {
@@ -102,7 +87,7 @@ export default {
               pattern: '[^s]+',
               noSpaces: true,
               required: true
-            })
+            }).toLowerCase()
           }
           // If the role state doesn't match, open the conflict resolution modal
           if (whatToForcePush.role !== data.role) {
@@ -125,16 +110,7 @@ export default {
           // Force push the contact
           const response = await this.$axios.$post('https://api.galexia.agency/contacts',
             {
-              title: whatToForcePush.title,
-              f_name: whatToForcePush.f_name,
-              l_name: whatToForcePush.l_name,
-              tel: whatToForcePush.tel,
-              email: whatToForcePush.email.toLowerCase(),
-              role: whatToForcePush.role,
-              facebook: whatToForcePush.facebook,
-              id: whatToForcePush.id,
-              google_contact_id: whatToForcePush.google_contact_id,
-              updated_at: whatToForcePush.updated_at,
+              ...whatToForcePush,
               force: true
             },
             {
