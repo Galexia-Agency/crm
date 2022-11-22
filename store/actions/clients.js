@@ -3,7 +3,7 @@ export default {
     const response = await this.$axios.$put('https://api.galexia.agency/clients',
       {
         business_name: data.business_name,
-        business_shortname: this.safeURL(data.business_shortname),
+        business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
         about: data.about,
         address: JSON.stringify(data.address),
         source: data.source,
@@ -204,7 +204,7 @@ export default {
           const response = await this.$axios.$post('https://api.galexia.agency/clients',
             {
               business_name: data.business_name,
-              business_shortname: this.safeURL(data.business_shortname),
+              business_shortname: encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase()),
               about: data.about,
               address: adr,
               source: data.source,
