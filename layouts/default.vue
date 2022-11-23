@@ -436,7 +436,7 @@
         <nuxt-link to="/">
           <h2>Home</h2>
         </nuxt-link>
-        <nuxt-link to="/products">
+        <nuxt-link v-if="claims.groups.includes('billing')" to="/products">
           <h3>Products</h3>
         </nuxt-link>
         <input
