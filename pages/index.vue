@@ -171,6 +171,12 @@
                   </td>
                   <td v-text="'£' + year.netProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
                 </tr>
+                <tr :key="index + '_netProfitMargin'">
+                  <td>
+                    {{ index }} Net Profit Margin
+                  </td>
+                  <td v-text="year.netProfitMargin.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '%'" />
+                </tr>
               </template>
               <tr class="divider" />
               <tr>
@@ -190,6 +196,12 @@
                   All Time Net Profit
                 </td>
                 <td v-text="'£' + allTimeNetProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+              </tr>
+              <tr>
+                <td>
+                  All Time Net Profit Margin
+                </td>
+                <td v-text="allTimeNetProfitMargin.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '%'" />
               </tr>
             </tbody>
           </table>
@@ -397,6 +409,9 @@ export default {
     allTimeNetProfit () {
       return this.allTimeRevenue - this.allTimeExpenses
     },
+    allTimeNetProfitMargin () {
+      return (this.allTimeNetProfit / this.allTimeRevenue) * 100
+    },
     yearlyMoneyBreakdown () {
       const a = {}
       this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
@@ -410,12 +425,14 @@ export default {
           a[date] = {
             revenue: 0,
             expenses: 0,
-            netProfit: 0
+            netProfit: 0,
+            netProfitMargin: 0
           }
         }
         a[date].revenue += parseFloat(month.sales)
         a[date].expenses += parseFloat(month.expenses)
         a[date].netProfit = a[date].revenue - a[date].expenses
+        a[date].netProfitMargin = (a[date].netProfit / a[date].revenue) * 100
       })
       return a
     },
