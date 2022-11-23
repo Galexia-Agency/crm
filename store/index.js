@@ -23,22 +23,7 @@ export const state = () => ({
   },
   pandle: {
     dashboard: {
-      monthlyCharts: [],
-      bankAccountChart: {
-        attributes: {
-          'chart-values': [
-            {
-              name: '',
-              balance: 0
-            }
-          ]
-        }
-      },
-      TaxDividendChart: {
-        attributes: {
-          'chart-values': []
-        }
-      }
+      monthlyCharts: []
     }
   }
 })

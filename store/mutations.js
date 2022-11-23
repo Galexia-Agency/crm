@@ -33,12 +33,6 @@ const mutations = {
   products (state, data) {
     state.products = data
   },
-  pandleBankAccountChart (state, data) {
-    state.pandle.dashboard.bankAccountChart = data
-  },
-  pandleTaxDividendChart (state, data) {
-    state.pandle.dashboard.TaxDividendChart = data
-  },
   pandleDashboard (state, data) {
     Object.assign(state.pandle.dashboard.monthlyCharts, data)
   },

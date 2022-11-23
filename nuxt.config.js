@@ -82,7 +82,8 @@ export default {
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
     OKTA_ISSUER: process.env.OKTA_ISSUER,
     PANDLE_COMPANY_ID: process.env.PANDLE_COMPANY_ID,
-    PANDLE_COMPANY_INCORPORATION: process.env.PANDLE_COMPANY_INCORPORATION
+    COMPANY_INCORPORATION: process.env.COMPANY_INCORPORATION,
+    TAX_YEAR_MONTH: process.env.TAX_YEAR_MONTH
   },
   pwa: {
     workbox: {

@@ -125,12 +125,6 @@
         </div>
       </main>
       <main>
-        <section v-if="claims.groups.includes('billing')" class="chart">
-          <h2>
-            Bank Account Balance
-          </h2>
-          <bar-chart :chart-data="bankAccountData" />
-        </section>
         <section class="chart">
           <h2>Projects Status</h2>
           <pie-chart :chart-data="projects" />
@@ -155,63 +149,47 @@
                 <td>
                   Date of Incorportation
                 </td>
-                <td v-text="humanReadableDate(this.$config.PANDLE_COMPANY_INCORPORATION)" />
+                <td v-text="humanReadableDate(this.$config.COMPANY_INCORPORATION)" />
               </tr>
-              <tr class="divider" />
-              <tr>
-                <td>
-                  Completion Total
-                </td>
-                <td v-text="'£' + completion_total" />
-              </tr>
-              <tr>
-                <td>
-                  Last Year Cash in bank
-                </td>
-                <td v-text="'£' + parseFloat(TaxDividend['profit-carried-forward']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-              </tr>
-              <tr>
-                <td>
-                  This Year Net Profit
-                </td>
-                <td v-text="'£' + parseFloat(TaxDividend['profit-for-period']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-              </tr>
-              <tr>
-                <td>
-                  This Year Corporation Tax Estimate
-                </td>
-                <td v-text="'£' + parseFloat(TaxDividend['estimated-corp-tax-to-pay']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-              </tr>
-              <tr>
-                <td>
-                  This Year Dividends Taken
-                </td>
-                <td v-text="'£' + parseFloat(TaxDividend['dividends-paid']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-              </tr>
-              <tr>
-                <td>
-                  This Year Available for Dividends
-                </td>
-                <td v-text="'£' + parseFloat(TaxDividend['available-amount']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-              </tr>
+              <template v-for="year, index in yearlyMoneyBreakdown">
+                <tr :key="index + '_divider'" class="divider" />
+                <tr :key="index + '_revenue'">
+                  <td>
+                    {{ index }} Revenue
+                  </td>
+                  <td v-text="'£' + year.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                </tr>
+                <tr :key="index + '_expenses'">
+                  <td>
+                    {{ index }} Expenses
+                  </td>
+                  <td v-text="'-£' + year.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                </tr>
+                <tr :key="index + '_netProfit'">
+                  <td>
+                    {{ index }} Net Profit
+                  </td>
+                  <td v-text="'£' + year.netProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                </tr>
+              </template>
               <tr class="divider" />
               <tr>
                 <td>
                   All Time Revenue
                 </td>
-                <td v-text="'£' + revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + allTimeRevenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   All Time Expenses
                 </td>
-                <td v-text="'-£' + expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'-£' + allTimeExpenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   All Time Net Profit
                 </td>
-                <td v-text="'£' + netProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+                <td v-text="'£' + allTimeNetProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
             </tbody>
           </table>
@@ -222,6 +200,13 @@
           </h2>
           <table>
             <tbody>
+              <tr>
+                <td>
+                  Completion Total
+                </td>
+                <td v-text="'£' + completion_total" />
+              </tr>
+              <tr class="divider" />
               <tr v-for="client, index in clientsWithCompletion" :key="index">
                 <td>
                   <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
@@ -364,43 +349,6 @@ export default {
     BarChart,
     Card
   },
-  async fetch () {
-    await this.pandleBootstrap()
-    const self = this
-    function pandleFetch ({ commit, url }) {
-      if (sessionStorage.getItem(commit)) {
-        self.$store.commit(commit, JSON.parse(sessionStorage.getItem(commit)))
-        return Promise.resolve('done')
-      } else {
-        return self.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
-          .then(function (response) {
-            self.$store.commit(commit, response.data)
-            sessionStorage.setItem(commit, JSON.stringify(response.data))
-          })
-          .catch(function (e) {
-            const error = {}
-            error.description = e.message
-            self.$store.commit('error', error)
-          })
-      }
-    }
-
-    if (this.claims.groups.includes('billing')) {
-      const pandleURLs = [
-        {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/bank_account_chart`,
-          commit: 'pandleBankAccountChart'
-        },
-        {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/tax_and_dividend?page=1&size=24`,
-          commit: 'pandleTaxDividendChart'
-        }
-      ]
-      Promise.all(pandleURLs.map(async (URL) => {
-        await pandleFetch(URL)
-      }))
-    }
-  },
   data () {
     return {
       projectsTimelinesValue: this.projectsTimelines,
@@ -432,22 +380,44 @@ export default {
       }
       return a
     },
-    revenue () {
+    allTimeRevenue () {
       let a = this.bb_projectsRevenue
       this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
         a += parseFloat(month.sales)
       })
       return a
     },
-    expenses () {
+    allTimeExpenses () {
       let a = this.bb_projectExpenses
       this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
         a += parseFloat(month.expenses)
       })
       return a
     },
-    netProfit () {
-      return this.revenue - this.expenses
+    allTimeNetProfit () {
+      return this.allTimeRevenue - this.allTimeExpenses
+    },
+    yearlyMoneyBreakdown () {
+      const a = {}
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        let date = new Date(month.month)
+        date.setMonth(date.getMonth() - (this.$config.TAX_YEAR_MONTH - 1))
+        date = date.getFullYear()
+        if (date === new Date().getFullYear()) {
+          date = 'YTD'
+        }
+        if (!a[date]) {
+          a[date] = {
+            revenue: 0,
+            expenses: 0,
+            netProfit: 0
+          }
+        }
+        a[date].revenue += parseFloat(month.sales)
+        a[date].expenses += parseFloat(month.expenses)
+        a[date].netProfit = a[date].revenue - a[date].expenses
+      })
+      return a
     },
     TaxDividend () {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']
@@ -586,31 +556,6 @@ export default {
         const textB = b.client_name.toUpperCase()
         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
       })
-    },
-    bankAccountData () {
-      return {
-        labels: this.bankAccountNames,
-        datasets: [
-          {
-            backgroundColor: '#edc240',
-            data: this.bankAccountValues
-          }
-        ]
-      }
-    },
-    bankAccountValues () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.bankAccountChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.bankAccountChart.attributes['chart-values'][elem].balance)
-      }
-      return a
-    },
-    bankAccountNames () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.bankAccountChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.bankAccountChart.attributes['chart-values'][elem].name)
-      }
-      return a
     },
     months () {
       const a = []
