@@ -7,7 +7,9 @@ export default (ctx, inject) => {
     issuer: ctx.app.$config.OKTA_ISSUER + '/oauth2/default',
     clientId: ctx.app.$config.OKTA_CLIENT_ID,
     redirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback',
-    scopes: ['openid', 'profile', 'email', 'groups'],
+    scopes: ['openid', 'profile', 'email', 'groups', 'offline_access'],
+    pkce: true,
+    autoRenew: true,
     async onSessionExpired () {
       await ctx.app.$auth.logout({ postLogoutRedirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host : 'https://' + window.location.host })
     }

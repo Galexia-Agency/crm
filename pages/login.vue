@@ -118,7 +118,7 @@ export default {
   name: 'Login',
   layout: 'login',
   async mounted () {
-    const scopes = ['openid', 'profile', 'email', 'groups']
+    const scopes = ['openid', 'profile', 'email', 'groups', 'offline_access']
     let OktaSignIn
     await import(/* webpackChunkName: "okta.signin", webpackPreload: true  */ '@okta/okta-signin-widget/dist/js/okta-sign-in.no-polyfill.min.js').then((module) => {
       OktaSignIn = module.default
@@ -128,7 +128,17 @@ export default {
         baseUrl: this.$config.OKTA_ISSUER,
         issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
         clientId: this.$config.OKTA_CLIENT_ID,
-        redirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback'
+        redirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback',
+        authParams: {
+          pkce: true,
+          display: 'page',
+          issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
+          scopes,
+          tokenManager: {
+            autoRenew: true,
+            expireEarlySeconds: 120
+          }
+        }
       })
       this.widget.showSignInToGetTokens({
         el: '#okta-signin-container',
