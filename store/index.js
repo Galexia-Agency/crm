@@ -22,58 +22,14 @@ export const state = () => ({
     reveal: false
   },
   pandle: {
-    SalesTotal: 0,
-    GrossProfit: 0,
-    DirectCostsTotal: 0,
-    ExpensesTotal: 0,
-    NetProfit: 0,
     dashboard: {
+      monthlyCharts: [],
       bankAccountChart: {
         attributes: {
           'chart-values': [
             {
               name: '',
               balance: 0
-            }
-          ]
-        }
-      },
-      CashFlowChart: {
-        attributes: {
-          'chart-values': [
-            {
-              amount: 0,
-              month: ''
-            }
-          ]
-        }
-      },
-      ExpenseChart: {
-        attributes: {
-          'chart-values': [
-            {
-              name: '',
-              amount: 0
-            }
-          ]
-        }
-      },
-      ProfitLossChart: {
-        attributes: {
-          'chart-values': [
-            {
-              amount: 0,
-              month: ''
-            }
-          ]
-        }
-      },
-      SalesChart: {
-        attributes: {
-          'chart-values': [
-            {
-              amount: 0,
-              month: ''
             }
           ]
         }
@@ -120,6 +76,7 @@ export const actions = {
           commit('domains', response[2])
           commit('projects', response[3])
           commit('products', response[4])
+          commit('pandleDashboard', response[5])
           if (route && route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })

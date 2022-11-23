@@ -42,8 +42,9 @@ Vue.mixin({
               type: 'GET'
             }
           )
-        } catch {
+        } catch (e) {
           await pandleSignin()
+          pandleSetUp()
         }
       }
     }

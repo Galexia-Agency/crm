@@ -4,9 +4,9 @@ const { reactiveProp } = mixins
 export default {
   extends: Bar,
   mixins: [reactiveProp],
-  props: ['options'],
   mounted () {
     this.renderChart(this.chartData, {
+      maintainAspectRatio: false,
       scales: {
         yAxes: [{
           ticks: {

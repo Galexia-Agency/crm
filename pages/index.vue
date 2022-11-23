@@ -24,6 +24,18 @@
     table {
       width: 100%
     }
+    &.span-2 {
+      max-width: calc(900px + 2rem);
+      >div:has(canvas) {
+        height: 400px
+      }
+    }
+    &.span-3 {
+      max-width: 100%;
+      >div:has(canvas) {
+        height: 400px
+      }
+    }
   }
   .home {
     overflow-y: auto;
@@ -112,7 +124,13 @@
           <a href="https://netdata.galexia.agency/" target="_blank">View full stats here</a>
         </div>
       </main>
-      <main v-if="claims.groups.includes('billing')">
+      <main>
+        <section v-if="claims.groups.includes('billing')" class="chart">
+          <h2>
+            Bank Account Balance
+          </h2>
+          <bar-chart :chart-data="bankAccountData" />
+        </section>
         <section class="chart">
           <h2>Projects Status</h2>
           <pie-chart :chart-data="projects" />
@@ -125,47 +143,8 @@
           <h2>Hosting Locations</h2>
           <pie-chart :chart-data="projectHosting" />
         </section>
-        <section class="chart">
-          <h2>
-            Expenses Report
-          </h2>
-          <pie-chart
-            :chart-data="expenseData"
-            :options="{
-              tooltips: {
-                callbacks: {
-                  label: function(tooltipItem, data) {
-                    return data.labels[tooltipItem.index] + ': £' + data.datasets[0].data[tooltipItem.index].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                  }
-                }
-              }
-            }"
-          />
-        </section>
-        <section class="chart">
-          <h2>
-            Bank Account Balance
-          </h2>
-          <bar-chart :chart-data="bankAccountData" />
-        </section>
-        <section class="chart">
-          <h2>
-            Sales Performance
-          </h2>
-          <bar-chart :chart-data="salesData" />
-        </section>
-        <section class="chart">
-          <h2>
-            Profit &amp; Loss Performance
-          </h2>
-          <bar-chart :chart-data="profitLossData" />
-        </section>
-        <section class="chart">
-          <h2>
-            Cash Flow
-          </h2>
-          <bar-chart :chart-data="cashFlowData" />
-        </section>
+      </main>
+      <main v-if="claims.groups.includes('billing')">
         <section>
           <h2>
             Money Breakdown
@@ -220,19 +199,19 @@
                 <td>
                   All Time Revenue
                 </td>
-                <td v-text="'£' + revenue" />
+                <td v-text="'£' + revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   All Time Expenses
                 </td>
-                <td v-text="'-£' + expenses" />
+                <td v-text="'-£' + expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
                   All Time Net Profit
                 </td>
-                <td v-text="'£' + netProfit" />
+                <td v-text="'£' + netProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
             </tbody>
           </table>
@@ -253,8 +232,38 @@
           </table>
         </section>
       </main>
+      <main v-if="claims.groups.includes('billing')">
+        <section>
+          <p><a href="javascript:void(0)" @click="refreshMonthlyCharts(false)">Refresh Monthly Charts (last 4 months)</a></p>
+          <p><a href="javascript:void(0)" @click="refreshMonthlyCharts(true)">Refresh Monthly Charts (all time)</a></p>
+        </section>
+        <section class="span-3">
+          <h2>
+            Sales Performance
+          </h2>
+          <bar-chart :chart-data="salesData" />
+        </section>
+        <section class="span-3">
+          <h2>
+            Expenses Performance
+          </h2>
+          <bar-chart :chart-data="expensesData" />
+        </section>
+        <section class="span-3">
+          <h2>
+            Profit &amp; Loss Performance
+          </h2>
+          <bar-chart :chart-data="profitLossData" />
+        </section>
+        <section class="span-3">
+          <h2>
+            Cash Flow
+          </h2>
+          <bar-chart :chart-data="cashFlowData" />
+        </section>
+      </main>
       <main>
-        <section v-if="projectsTimelines.length > 0" style="max-width: calc(900px + 2rem)">
+        <section v-if="projectsTimelines.length > 0" class="span-2">
           <h2>
             Project Timelines
           </h2>
@@ -383,28 +392,8 @@ export default {
           commit: 'pandleBankAccountChart'
         },
         {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/cash_flow_chart?page=2&size=24`,
-          commit: 'pandleCashFlowChart'
-        },
-        {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/expense_chart?page=1&size=24`,
-          commit: 'pandleExpenseChart'
-        },
-        {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/profit_and_loss_chart?page=1&size=24`,
-          commit: 'pandleProfitLossChart'
-        },
-        {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/sales_chart?page=1&size=24`,
-          commit: 'pandleSalesChart'
-        },
-        {
           url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/tax_and_dividend?page=1&size=24`,
           commit: 'pandleTaxDividendChart'
-        },
-        {
-          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/reports/profit_and_loss?date_start=${this.$config.PANDLE_COMPANY_INCORPORATION}&date_end=${new Date().toISOString().split('T')[0].replace('-', '/')}`,
-          commit: 'pandleTotalProfitLoss'
         }
       ]
       Promise.all(pandleURLs.map(async (URL) => {
@@ -429,7 +418,7 @@ export default {
       let a = 0
       for (const project in this.$store.state.projects) {
         if (this.$store.state.projects[project].bb_revenue) {
-          a = a + parseFloat(this.$store.state.projects[project].bb_revenue)
+          a += parseFloat(this.$store.state.projects[project].bb_revenue)
         }
       }
       return a
@@ -438,19 +427,27 @@ export default {
       let a = 0
       for (const project in this.$store.state.projects) {
         if (this.$store.state.projects[project].bb_expenses) {
-          a = a + parseFloat(this.$store.state.projects[project].bb_expenses)
+          a += parseFloat(this.$store.state.projects[project].bb_expenses)
         }
       }
       return a
     },
     revenue () {
-      return (this.$store.state.pandle.SalesTotal + this.bb_projectsRevenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      let a = this.bb_projectsRevenue
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a += parseFloat(month.sales)
+      })
+      return a
     },
     expenses () {
-      return (this.$store.state.pandle.ExpensesTotal + this.bb_projectExpenses).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      let a = this.bb_projectExpenses
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a += parseFloat(month.expenses)
+      })
+      return a
     },
     netProfit () {
-      return (this.$store.state.pandle.NetProfit + this.bb_projectsRevenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return this.revenue - this.expenses
     },
     TaxDividend () {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']
@@ -615,9 +612,16 @@ export default {
       }
       return a
     },
+    months () {
+      const a = []
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a.push(new Date(month.month).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }))
+      })
+      return a
+    },
     salesData () {
       return {
-        labels: this.salesMonths,
+        labels: this.months,
         datasets: [
           {
             backgroundColor: '#2196f3',
@@ -628,21 +632,32 @@ export default {
     },
     salesValues () {
       const a = []
-      for (const elem in this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values']) {
-        a.push(parseFloat(this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values'][elem].amount).toFixed(2))
-      }
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a.push(parseFloat(month.sales).toFixed(2))
+      })
       return a
     },
-    salesMonths () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values'][elem].month)
+    expensesData () {
+      return {
+        labels: this.months,
+        datasets: [
+          {
+            backgroundColor: '#edc240',
+            data: this.expensesValues
+          }
+        ]
       }
+    },
+    expensesValues () {
+      const a = []
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a.push(parseFloat(month.expenses).toFixed(2))
+      })
       return a
     },
     profitLossData () {
       return {
-        labels: this.profitLossMonths,
+        labels: this.months,
         datasets: [
           {
             backgroundColor: '#009688',
@@ -653,21 +668,14 @@ export default {
     },
     profitLossValues () {
       const a = []
-      for (const elem in this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values']) {
-        a.push(parseFloat(this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values'][elem].amount).toFixed(2))
-      }
-      return a
-    },
-    profitLossMonths () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.ProfitLossChart.attributes['chart-values'][elem].month)
-      }
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a.push(parseFloat(month.profit_loss).toFixed(2))
+      })
       return a
     },
     cashFlowData () {
       return {
-        labels: this.cashFlowMonths,
+        labels: this.months,
         datasets: [
           {
             backgroundColor: '#9c27b0',
@@ -678,41 +686,9 @@ export default {
     },
     cashFlowValues () {
       const a = []
-      for (const elem in this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values']) {
-        a.push(parseFloat(this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values'][elem].amount).toFixed(2))
-      }
-      return a
-    },
-    cashFlowMonths () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values']) {
-        a.push(this.$store.state.pandle.dashboard.CashFlowChart.attributes['chart-values'][elem].month)
-      }
-      return a
-    },
-    expenseData () {
-      return {
-        labels: this.expenseTypes,
-        datasets: [
-          {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#FFC0CB', '#FFA500', '#edc240', '#C8A2C8', '#00ffff'],
-            data: this.expenseValues
-          }
-        ]
-      }
-    },
-    expenseValues () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values']) {
-        a.push(parseFloat(this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values'][elem].amount).toFixed(2))
-      }
-      return a
-    },
-    expenseTypes () {
-      const a = []
-      for (const elem in this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values']) {
-        a.push(this.htmlDecode(this.$store.state.pandle.dashboard.ExpenseChart.attributes['chart-values'][elem].name))
-      }
+      this.$store.state.pandle.dashboard.monthlyCharts.forEach((month) => {
+        a.push(parseFloat(month.cash_flow).toFixed(2))
+      })
       return a
     },
     dueItems () {
@@ -819,6 +795,15 @@ export default {
         }
       })
       return toDos.sort((a, b) => b.dateUNIX - a.dateUNIX).reverse()
+    },
+    async refreshMonthlyCharts (force) {
+      let response
+      if (force) {
+        response = await this.$axios.$get('https://api.galexia.agency/monthly_stats?force=true')
+      } else {
+        response = await this.$axios.$get('https://api.galexia.agency/monthly_stats')
+      }
+      this.$store.commit('pandleDashboard', response)
     }
   }
 }
