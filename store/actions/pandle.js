@@ -2,7 +2,7 @@ export default {
   async addClientPandle ({ dispatch }, data) {
     const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/request', {
       type: 'POST',
-      url: '/companies/46972/customers',
+      url: `/companies/${this.$config.PANDLE_COMPANY_ID}/customers`,
       body: {
         customer: {
           address_attributes: {
@@ -39,7 +39,7 @@ export default {
 
     const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/request', {
       type: 'POST',
-      url: '/companies/46972/projects',
+      url: `/companies/${this.$config.PANDLE_COMPANY_ID}`,
       body: {
         project: {
           name: data.client_name + '-' + encodeURIComponent(data.name.replaceAll(' ', '-').toLowerCase()),

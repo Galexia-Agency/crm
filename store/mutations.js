@@ -51,6 +51,13 @@ const mutations = {
   pandleTaxDividendChart (state, data) {
     state.pandle.dashboard.TaxDividendChart = data
   },
+  pandleTotalProfitLoss (state, data) {
+    state.pandle.SalesTotal = parseFloat(data.attributes['sales-total'])
+    state.pandle.GrossProfit = parseFloat(data.attributes['gross-profit'])
+    state.pandle.DirectCostsTotal = parseFloat(data.attributes['direct-costs-total'])
+    state.pandle.ExpensesTotal = parseFloat(data.attributes['expenses-total'])
+    state.pandle.NetProfit = parseFloat(data.attributes['net-profit'])
+  },
 
   addList (state, { projectId, title }) {
     if (!Array.isArray(state.projects.find(project => project.id === projectId).lists)) {

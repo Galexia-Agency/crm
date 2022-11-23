@@ -22,6 +22,11 @@ export const state = () => ({
     reveal: false
   },
   pandle: {
+    SalesTotal: 0,
+    GrossProfit: 0,
+    DirectCostsTotal: 0,
+    ExpensesTotal: 0,
+    NetProfit: 0,
     dashboard: {
       bankAccountChart: {
         attributes: {

@@ -394,6 +394,9 @@
       td:first-child {
         font-weight: bold
       }
+      tr.divider {
+        border-bottom: 2px solid
+      }
     }
   }
 

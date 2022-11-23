@@ -30,7 +30,7 @@ export default {
         try {
           await this.$axios.$patch(window.location.origin + '/.netlify/functions/request', {
             type: 'PATCH',
-            url: `/companies/46972/customers/${data.pandle_id}`,
+            url: `/companies/${this.$config.PANDLE_COMPANY_ID}/customers/${data.pandle_id}`,
             body: {
               customer: {
                 address_attributes: {

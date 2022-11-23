@@ -44,9 +44,9 @@
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
       <div v-if="claims.groups.includes('billing')" class="monies">
-        <h2 v-text="'Total Income: £' + income.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Revenue: £' + income.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
         <h2 v-text="'Total Expenses: £' + expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Profit: £' + profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Net Profit: £' + profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
         <h2 v-text="'Completion Total: £' + completion_total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
       <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
@@ -149,12 +149,12 @@ export default {
             this.income = this.income + parseFloat(this.projects[project].bb_revenue)
           }
           if (this.projects[project].pandle_id) {
-            IncomeURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/income_transactions`)
+            IncomeURLs.push(`/companies/${this.$config.PANDLE_COMPANY_ID}/projects/${this.projects[project].pandle_id}/income_transactions`)
           }
         }
         if (this.client) {
           if (this.client.pandle_id) {
-            IncomeURLs.push(`/companies/46972/customers/${this.client.pandle_id}/account`)
+            IncomeURLs.push(`/companies/${this.$config.PANDLE_COMPANY_ID}/customers/${this.client.pandle_id}/account`)
           }
         }
       }
@@ -177,7 +177,7 @@ export default {
             this.expenses = this.expenses + parseFloat(this.projects[project].bb_expenses)
           }
           if (this.projects[project].pandle_id) {
-            ExpensesURLs.push(`/companies/46972/projects/${this.projects[project].pandle_id}/expense_transactions`)
+            ExpensesURLs.push(`/companies/${this.$config.PANDLE_COMPANY_ID}/projects/${this.projects[project].pandle_id}/expense_transactions`)
           }
         }
       }

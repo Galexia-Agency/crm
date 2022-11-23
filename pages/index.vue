@@ -174,45 +174,65 @@
             <tbody>
               <tr>
                 <td>
+                  Date of Incorportation
+                </td>
+                <td v-text="humanReadableDate(this.$config.PANDLE_COMPANY_INCORPORATION)" />
+              </tr>
+              <tr class="divider" />
+              <tr>
+                <td>
                   Completion Total
                 </td>
                 <td v-text="'£' + completion_total" />
               </tr>
               <tr>
                 <td>
-                  Total Revenue
-                </td>
-                <td v-text="'£' + revenue" />
-              </tr>
-              <tr>
-                <td>
-                  Profit for the Period
-                </td>
-                <td v-text="'£' + parseFloat(TaxDividend['profit-for-period']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-              </tr>
-              <tr>
-                <td>
-                  Reserves Brought Forward
+                  Last Year Cash in bank
                 </td>
                 <td v-text="'£' + parseFloat(TaxDividend['profit-carried-forward']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
-                  Corporation Tax Estimate
+                  This Year Net Profit
+                </td>
+                <td v-text="'£' + parseFloat(TaxDividend['profit-for-period']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+              </tr>
+              <tr>
+                <td>
+                  This Year Corporation Tax Estimate
                 </td>
                 <td v-text="'£' + parseFloat(TaxDividend['estimated-corp-tax-to-pay']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
-                  Dividends Taken
+                  This Year Dividends Taken
                 </td>
                 <td v-text="'£' + parseFloat(TaxDividend['dividends-paid']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
               </tr>
               <tr>
                 <td>
-                  Available for Dividends
+                  This Year Available for Dividends
                 </td>
                 <td v-text="'£' + parseFloat(TaxDividend['available-amount']).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+              </tr>
+              <tr class="divider" />
+              <tr>
+                <td>
+                  All Time Revenue
+                </td>
+                <td v-text="'£' + revenue" />
+              </tr>
+              <tr>
+                <td>
+                  All Time Expenses
+                </td>
+                <td v-text="'-£' + expenses" />
+              </tr>
+              <tr>
+                <td>
+                  All Time Net Profit
+                </td>
+                <td v-text="'£' + netProfit" />
               </tr>
             </tbody>
           </table>
@@ -359,28 +379,32 @@ export default {
     if (this.claims.groups.includes('billing')) {
       const pandleURLs = [
         {
-          url: '/companies/46972/dashboard/bank_account_chart',
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/bank_account_chart`,
           commit: 'pandleBankAccountChart'
         },
         {
-          url: '/companies/46972/dashboard/cash_flow_chart?page=2&size=24',
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/cash_flow_chart?page=2&size=24`,
           commit: 'pandleCashFlowChart'
         },
         {
-          url: '/companies/46972/dashboard/expense_chart?page=1&size=24',
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/expense_chart?page=1&size=24`,
           commit: 'pandleExpenseChart'
         },
         {
-          url: '/companies/46972/dashboard/profit_and_loss_chart?page=1&size=24',
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/profit_and_loss_chart?page=1&size=24`,
           commit: 'pandleProfitLossChart'
         },
         {
-          url: '/companies/46972/dashboard/sales_chart?page=1&size=24',
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/sales_chart?page=1&size=24`,
           commit: 'pandleSalesChart'
         },
         {
-          url: '/companies/46972/dashboard/tax_and_dividend?page=1&size=24',
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/dashboard/tax_and_dividend?page=1&size=24`,
           commit: 'pandleTaxDividendChart'
+        },
+        {
+          url: `/companies/${this.$config.PANDLE_COMPANY_ID}/reports/profit_and_loss?date_start=${this.$config.PANDLE_COMPANY_INCORPORATION}&date_end=${new Date().toISOString().split('T')[0].replace('-', '/')}`,
+          commit: 'pandleTotalProfitLoss'
         }
       ]
       Promise.all(pandleURLs.map(async (URL) => {
@@ -401,17 +425,32 @@ export default {
     ...mapState([
       'claims'
     ]),
-    revenue () {
+    bb_projectsRevenue () {
       let a = 0
-      for (const sale in this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values']) {
-        a = a + parseFloat(this.$store.state.pandle.dashboard.SalesChart.attributes['chart-values'][sale].amount)
-      }
       for (const project in this.$store.state.projects) {
         if (this.$store.state.projects[project].bb_revenue) {
           a = a + parseFloat(this.$store.state.projects[project].bb_revenue)
         }
       }
-      return a.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return a
+    },
+    bb_projectExpenses () {
+      let a = 0
+      for (const project in this.$store.state.projects) {
+        if (this.$store.state.projects[project].bb_expenses) {
+          a = a + parseFloat(this.$store.state.projects[project].bb_expenses)
+        }
+      }
+      return a
+    },
+    revenue () {
+      return (this.$store.state.pandle.SalesTotal + this.bb_projectsRevenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    },
+    expenses () {
+      return (this.$store.state.pandle.ExpensesTotal + this.bb_projectExpenses).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    },
+    netProfit () {
+      return (this.$store.state.pandle.NetProfit + this.bb_projectsRevenue).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     },
     TaxDividend () {
       return this.$store.state.pandle.dashboard.TaxDividendChart.attributes['chart-values']

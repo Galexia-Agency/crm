@@ -80,7 +80,9 @@ export default {
    */
   publicRuntimeConfig: {
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
-    OKTA_ISSUER: process.env.OKTA_ISSUER
+    OKTA_ISSUER: process.env.OKTA_ISSUER,
+    PANDLE_COMPANY_ID: process.env.PANDLE_COMPANY_ID,
+    PANDLE_COMPANY_INCORPORATION: process.env.PANDLE_COMPANY_INCORPORATION
   },
   pwa: {
     workbox: {
