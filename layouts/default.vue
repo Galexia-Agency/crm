@@ -433,12 +433,15 @@
         <nuxt-link to="/">
           <h2>Home</h2>
         </nuxt-link>
+        <nuxt-link to="/products">
+          <h3>Products</h3>
+        </nuxt-link>
         <input
           v-model="search"
           type="search"
           rel="search"
-          placeholder="Search..."
-          aria-label="Search..."
+          placeholder="Search clients..."
+          aria-label="Search clients..."
           class="search"
         >
         <project-nav-link v-if="filteredProjects.hotLeads.length > 0" type="Hot Leads" :clients="clients" :filtered-projects="filteredProjects.hotLeads" :search="search" />

@@ -15,19 +15,65 @@
     <table>
       <thead>
         <tr>
-          <th>
+          <th
+            style="cursor: pointer"
+            @click="
+              productsValue = productsNameReverse
+                ?
+                  productsValue.sort(function (a, b) {
+                    const textA = a.name.toUpperCase()
+                    const textB = b.name.toUpperCase()
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+                  }).reverse()
+                :
+                  productsValue.sort(function (a, b) {
+                    const textA = a.name.toUpperCase()
+                    const textB = b.name.toUpperCase()
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+                  })
+              productsNameReverse = !productsNameReverse
+            "
+          >
             Name
           </th>
-          <th>
+          <th
+            style="cursor: pointer"
+            @click="
+              productsValue = productsTypeReverse
+                ?
+                  productsValue.sort(function (a, b) {
+                    const textA = a.type.toUpperCase()
+                    const textB = b.type.toUpperCase()
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+                  }).reverse()
+                :
+                  productsValue.sort(function (a, b) {
+                    const textA = a.type.toUpperCase()
+                    const textB = b.type.toUpperCase()
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+                  })
+              productsTypeReverse = !productsTypeReverse
+            "
+          >
             Type
           </th>
-          <th>
+          <th
+            style="cursor: pointer"
+            @click="
+              productsValue = productsPriceReverse
+                ?
+                  productsValue.sort((a, b) => b.price - a.price).reverse()
+                :
+                  productsValue.sort((a, b) => b.price - a.price)
+              productsPriceReverse = !productsPriceReverse
+            "
+          >
             Price
           </th>
         </tr>
       </thead>
       <tbody>
-        <template v-for="(product, index) in products">
+        <template v-for="(product, index) in productsValue">
           <Product :key="index" :product="product" @updateProduct="showModal" />
         </template>
       </tbody>
@@ -65,7 +111,11 @@ export default {
   },
   data () {
     return {
-      modal: false
+      modal: false,
+      productsValue: [],
+      productsNameReverse: false,
+      productsTypeReverse: false,
+      productsPriceReverse: false
     }
   },
   computed: {
@@ -73,6 +123,14 @@ export default {
       'claims',
       'products'
     ])
+  },
+  watch: {
+    products () {
+      this.productsValue = [...this.products]
+    }
+  },
+  mounted () {
+    this.productsValue = [...this.products]
   },
   methods: {
     async submitProduct (product) {
