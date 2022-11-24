@@ -49,17 +49,43 @@ exports.handler = async function handler (event, context, callback) {
         body: JSON.stringify(e)
       })
     }
-    if (oktaResponse.data.active === true) {
+    if (event.body && oktaResponse.data.active === true) {
+      let response = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
+        {
+          email: process.env.PANDLE_USERNAME,
+          password: process.env.PANDLE_PASSWORD
+        }
+      )
+      response = JSON.stringify(response.headers)
+      axios.interceptors.request.use(function (config) {
+        config.headers['access-token'] = response['access-token']
+        config.headers.client = response.client
+        config.headers.uid = response.uid
+        return config
+      })
+      const data = JSON.parse(event.body)
       try {
-        const response = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
-          {
-            email: process.env.PANDLE_USERNAME,
-            password: process.env.PANDLE_PASSWORD
-          }
-        )
-        return {
-          statusCode: 200,
-          body: JSON.stringify(response.headers)
+        if (data.type === 'POST') {
+          const response = await axios.post('https://my.pandle.com/api/v1' + data.url, data.body)
+          return callback(null, {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(response.data)
+          })
+        } else if (data.type === 'GET') {
+          const response = await axios.get('https://my.pandle.com/api/v1' + data.url)
+          return callback(null, {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(response.data)
+          })
+        } else if (data.type === 'PATCH') {
+          const response = await axios.patch('https://my.pandle.com/api/v1' + data.url, data.body)
+          return callback(null, {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(response.data)
+          })
         }
       } catch (e) {
         if (e.response && e.response.status) {

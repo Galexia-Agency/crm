@@ -1,6 +1,6 @@
 export default {
   async addClientPandle ({ dispatch }, data) {
-    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/request', {
+    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/pandle_request', {
       type: 'POST',
       url: `/companies/${this.$config.PANDLE_COMPANY_ID}/customers`,
       body: {
@@ -37,7 +37,7 @@ export default {
     const day = dateObj.getUTCDate()
     const year = dateObj.getUTCFullYear()
 
-    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/request', {
+    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/pandle_request', {
       type: 'POST',
       url: `/companies/${this.$config.PANDLE_COMPANY_ID}`,
       body: {

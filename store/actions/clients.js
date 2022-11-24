@@ -28,7 +28,7 @@ export default {
     async function updatePandle () {
       if (data.pandle_id) {
         try {
-          await this.$axios.$patch(window.location.origin + '/.netlify/functions/request', {
+          await this.$axios.$patch(window.location.origin + '/.netlify/functions/pandle_request', {
             type: 'PATCH',
             url: `/companies/${this.$config.PANDLE_COMPANY_ID}/customers/${data.pandle_id}`,
             body: {

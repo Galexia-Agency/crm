@@ -134,61 +134,6 @@ export default {
   directives: {
     dragscroll
   },
-  async fetch () {
-    // Set Up Pandle
-    await this.pandleBootstrap()
-
-    // Income
-    if (window.sessionStorage.getItem(this.client.id + '_income')) {
-      this.income = Number(window.sessionStorage.getItem(this.client.id + '_income'))
-    } else {
-      const IncomeURLs = []
-      if (this.claims.groups.includes('billing')) {
-        for (const project in this.projects) {
-          if (this.projects[project].bb_revenue) {
-            this.income = this.income + parseFloat(this.projects[project].bb_revenue)
-          }
-          if (this.projects[project].pandle_id) {
-            IncomeURLs.push(`/companies/${this.$config.PANDLE_COMPANY_ID}/projects/${this.projects[project].pandle_id}/income_transactions`)
-          }
-        }
-        if (this.client) {
-          if (this.client.pandle_id) {
-            IncomeURLs.push(`/companies/${this.$config.PANDLE_COMPANY_ID}/customers/${this.client.pandle_id}/account`)
-          }
-        }
-      }
-      if (IncomeURLs) {
-        for (const value of await Promise.all(IncomeURLs.map(this.pandleFetch))) {
-          this.income = this.income + value
-        }
-        window.sessionStorage.setItem(this.client.id + '_income', this.income)
-      }
-    }
-
-    // Expenses
-    if (window.sessionStorage.getItem(this.client.id + '_expenses')) {
-      this.expenses = Number(window.sessionStorage.getItem(this.client.id + '_expenses'))
-    } else {
-      const ExpensesURLs = []
-      if (this.claims.groups.includes('billing')) {
-        for (const project in this.projects) {
-          if (this.projects[project].bb_expenses) {
-            this.expenses = this.expenses + parseFloat(this.projects[project].bb_expenses)
-          }
-          if (this.projects[project].pandle_id) {
-            ExpensesURLs.push(`/companies/${this.$config.PANDLE_COMPANY_ID}/projects/${this.projects[project].pandle_id}/expense_transactions`)
-          }
-        }
-      }
-      if (ExpensesURLs) {
-        for (const value of await Promise.all(ExpensesURLs.map(this.pandleFetch))) {
-          this.expenses = this.expenses + value
-        }
-        window.sessionStorage.setItem(this.client.id + '_expenses', this.expenses)
-      }
-    }
-  },
   data () {
     return {
       modal: {
@@ -197,9 +142,7 @@ export default {
         editContact: false,
         client: false
       },
-      dragging: false,
-      income: 0,
-      expenses: 0
+      dragging: false
     }
   },
   computed: {
@@ -214,6 +157,30 @@ export default {
     },
     hover () {
       return window.matchMedia('(hover: none)').matches
+    },
+    expenses () {
+      let a = 0
+      for (const project in this.projects) {
+        if (this.projects[project].bb_revenue) {
+          a += parseFloat(this.projects[project].bb_revenue)
+        }
+        if (this.projects[project].pandle_expenses) {
+          a += parseFloat(this.projects[project].pandle_expenses)
+        }
+      }
+      return a
+    },
+    income () {
+      let a = 0
+      for (const project in this.projects) {
+        if (this.projects[project].bb_expenses) {
+          a += parseFloat(this.projects[project].bb_expenses)
+        }
+        if (this.projects[project].pandle_income) {
+          a += parseFloat(this.projects[project].pandle_income)
+        }
+      }
+      return a
     },
     profit () {
       return this.income - this.expenses
@@ -245,23 +212,6 @@ export default {
     }
   },
   methods: {
-    pandleFetch (url) {
-      let value = 0
-      return this.$axios.$post(location.origin + '/.netlify/functions/request', { url, type: 'GET' })
-        .then(function (response) {
-          for (const a in response.data) {
-            if (response.data[a].attributes['total-amount']) {
-              value = value + parseFloat(response.data[a].attributes['total-amount'])
-            }
-          }
-          return value
-        })
-        .catch(function (e) {
-          const error = {}
-          error.description = e.message
-          this.$store.commit('error', error)
-        })
-    },
     showContactModal (data) {
       this.dragging = true
       this.modal.contact = true
