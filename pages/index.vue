@@ -230,10 +230,6 @@
         </section>
       </main>
       <main v-if="claims.groups.includes('billing')">
-        <section>
-          <p><a href="javascript:void(0)" @click="refreshMonthlyCharts(false)">Refresh Monthly Charts (last 4 months)</a></p>
-          <p><a href="javascript:void(0)" @click="refreshMonthlyCharts(true)">Refresh Monthly Charts (all time)</a></p>
-        </section>
         <section class="span-3">
           <h2>
             Sales Performance
@@ -343,6 +339,26 @@
             </tbody>
           </table>
         </section>
+        <section class="span-3">
+          <h2>
+            Refresh Data
+          </h2>
+          <p style="margin-bottom: 1rem">
+            This will take a while
+          </p>
+          <p v-if="loading" style="margin-bottom: 1rem" v-text="loadingText" />
+          <div class="field is-grouped" style="flex-direction: row">
+            <button class="button" @click="refreshMonthlyCharts(false)">
+              Refresh Monthly Charts (last 4 months)
+            </button>
+            <button class="button" @click="refreshMonthlyCharts(true)">
+              Refresh Monthly Charts (all time)
+            </button>
+            <button class="button" @click="refreshClientProfitLoss()">
+              Refresh Client Profit/Loss accounts
+            </button>
+          </div>
+        </section>
       </main>
     </template>
   </div>
@@ -367,7 +383,9 @@ export default {
       projectsTimelinesNamesReverse: false,
       daysToStartReverse: false,
       daysToCompleteReverse: false,
-      dateOfEnquiryReverse: false
+      dateOfEnquiryReverse: false,
+      loading: false,
+      loadingText: 'Loading'
     }
   },
   computed: {
@@ -712,6 +730,19 @@ export default {
       return a
     }
   },
+  watch: {
+    loading () {
+      let timeout
+      if (this.loading === true) {
+        timeout = window.setInterval(() => {
+          this.loadingText += '.'
+        }, 1000)
+      } else {
+        window.clearInterval(timeout)
+        this.loadingText = 'Loading'
+      }
+    }
+  },
   mounted () {
     if (this.claims.email === 'joe@galexia.agency') {
       this.$el.querySelector('.netdata iframe').addEventListener('onload', this.updateIframeHeight())
@@ -759,6 +790,7 @@ export default {
       return toDos.sort((a, b) => b.dateUNIX - a.dateUNIX).reverse()
     },
     async refreshMonthlyCharts (force) {
+      this.loading = true
       let response
       if (force) {
         response = await this.$axios.$get('https://api.galexia.agency/monthly_stats?force=true')
@@ -766,6 +798,13 @@ export default {
         response = await this.$axios.$get('https://api.galexia.agency/monthly_stats')
       }
       this.$store.commit('pandleDashboard', response)
+      this.loading = false
+    },
+    async refreshClientProfitLoss () {
+      this.loading = true
+      await this.$axios.$get('https://api.galexia.agency/project_profit_loss')
+      await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
+      this.loading = false
     }
   }
 }
