@@ -161,8 +161,8 @@ export default {
     expenses () {
       let a = 0
       for (const project in this.projects) {
-        if (this.projects[project].bb_revenue) {
-          a += parseFloat(this.projects[project].bb_revenue)
+        if (this.projects[project].bb_expenses) {
+          a += parseFloat(this.projects[project].bb_expenses)
         }
         if (this.projects[project].pandle_expenses) {
           a += parseFloat(this.projects[project].pandle_expenses)
@@ -173,8 +173,8 @@ export default {
     income () {
       let a = 0
       for (const project in this.projects) {
-        if (this.projects[project].bb_expenses) {
-          a += parseFloat(this.projects[project].bb_expenses)
+        if (this.projects[project].bb_revenue) {
+          a += parseFloat(this.projects[project].bb_revenue)
         }
         if (this.projects[project].pandle_income) {
           a += parseFloat(this.projects[project].pandle_income)
