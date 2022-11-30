@@ -44,16 +44,16 @@
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
       <div v-if="claims.groups.includes('billing')" class="monies">
-        <h2 v-text="'Total Revenue: £' + income.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Expenses: £' + expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Net Profit: £' + profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Completion Total: £' + completion_total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Revenue: £' + client.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Expenses: £' + client.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Total Net Profit: £' + client.profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="'Completion Total: £' + client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
       <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
         Add to Pandle
       </button>
       <div v-if="claims.groups.includes('admin')" class="contact container">
-        <template v-for="contact in contacts">
+        <template v-for="contact in contactsForClient">
           <span :key="contact.id + 'i'" style="display: none">
             {{ contact.org = client.business_name }}
           </span>
@@ -68,7 +68,7 @@
         </button>
       </div>
     </div>
-    <template v-for="project in projects">
+    <template v-for="project in projectsForClient">
       <project :id="safeURL(project.name)" :key="project.id" :project="project" class="project container" />
     </template>
     <ui-modal
@@ -146,65 +146,32 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'claims',
+      'clients',
+      'contacts',
+      'projects'
+    ]),
     client () {
-      return this.$store.state.clients.find(client => client.business_shortname.toLowerCase() === this.$route.params.client)
+      return this.clients.find(client => client.business_shortname.toLowerCase() === this.$route.params.client)
     },
-    contacts () {
-      return this.client ? this.$store.state.contacts.filter(contact => contact.client_id === this.client.id) : null
+    contactsForClient () {
+      return this.client ? this.contacts.filter(contact => contact.client_id === this.client.id) : null
     },
-    projects () {
-      return this.client ? this.$store.state.projects.filter(project => project.client_id === this.client.id) : null
+    projectsForClient () {
+      return this.client ? this.projects.filter(project => project.client_id === this.client.id) : null
     },
     hover () {
       return window.matchMedia('(hover: none)').matches
     },
-    expenses () {
-      let a = 0
-      for (const project in this.projects) {
-        if (this.projects[project].bb_expenses) {
-          a += parseFloat(this.projects[project].bb_expenses)
-        }
-        if (this.projects[project].pandle_expenses) {
-          a += parseFloat(this.projects[project].pandle_expenses)
-        }
-      }
-      return a
-    },
-    income () {
-      let a = 0
-      for (const project in this.projects) {
-        if (this.projects[project].bb_revenue) {
-          a += parseFloat(this.projects[project].bb_revenue)
-        }
-        if (this.projects[project].pandle_income) {
-          a += parseFloat(this.projects[project].pandle_income)
-        }
-      }
-      return a
-    },
-    profit () {
-      return this.income - this.expenses
-    },
-    completion_total () {
-      let c = 0
-      for (const project in this.projects) {
-        if (this.projects[project].completion_amount !== null) {
-          c = c + parseFloat(this.projects[project].completion_amount)
-        }
-      }
-      return c
-    },
     blossomTreePhoto () {
-      for (const project in this.projects) {
-        if (this.projects[project].admin.includes('chelsea@galexia.agency')) {
+      for (const project in this.projectsForClient) {
+        if (this.projectsForClient[project].admin.includes('chelsea@galexia.agency')) {
           return true
         }
       }
       return false
-    },
-    ...mapState([
-      'claims'
-    ])
+    }
   },
   mounted () {
     if (this.$route.hash && document.querySelector(this.$route.hash)) {

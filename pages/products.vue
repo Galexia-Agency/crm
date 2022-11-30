@@ -74,7 +74,7 @@
       </thead>
       <tbody>
         <template v-for="(product, index) in productsValue">
-          <Product :key="index" :product="product" @updateProduct="showModal" />
+          <Product :key="`product_${index}`" :product="product" @updateProduct="showModal" />
         </template>
       </tbody>
     </table>

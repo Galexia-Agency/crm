@@ -17,7 +17,9 @@ export default {
       )
       // Don't update lists
       delete response[0].lists
-      return await commit('updateProject', response[0])
+      await commit('updateProject', response[0])
+      await commit('filteredProjectsHelper')
+      return await commit('updatePandleDataHelper', null)
     } catch (e) {
       if (await e.response && await e.response.status === 429) {
         // Data from the database
@@ -217,7 +219,9 @@ export default {
           )
           // Don't update lists
           delete response[0].lists
-          return await commit('updateProject', response[0])
+          await commit('updateProject', response[0])
+          await commit('filteredProjectsHelper')
+          return await commit('updatePandleDataHelper', null)
         } catch (e) {
           const error = {}
           error.active = true

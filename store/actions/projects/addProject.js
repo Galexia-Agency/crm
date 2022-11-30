@@ -19,7 +19,8 @@ export default {
         response[index].lists = JSON.parse(project.lists)
       }
     })
-    commit('projects', response)
+    await commit('projects', response)
+    await commit('filteredProjectsHelper')
     return response
   }
 }

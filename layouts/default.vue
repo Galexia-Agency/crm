@@ -463,7 +463,7 @@
           <template v-for="(project, index) in filteredProjects.other">
             <nuxt-link
               v-show="((!search) || ((project.business_name).toLowerCase()).startsWith(search.toLowerCase()))"
-              :key="index + project.business_name"
+              :key="`${index}_${project.business_name}`"
               :to="`/client/${project.business_shortname.toLowerCase()}`"
               class="navLink other"
               v-text="project.business_name"
@@ -520,78 +520,12 @@ export default {
       'contacts',
       'domains',
       'projects',
+      'filteredProjects',
       'clients',
       'authenticated',
       'claims',
       'conflicts'
-    ]),
-    filteredProjects () {
-      const hotLeads = []
-      const coldLeads = []
-      const development = []
-      const paused = []
-      const inHouse = []
-      const onGoing = []
-      const closedLead = []
-      const completed = []
-      const cancelled = []
-      const other = []
-      this.clients.forEach((client) => {
-        this.projects.forEach((project) => {
-          if (project.client_id === client.id) {
-            if (project.status === 'Lead') {
-              hotLeads.push(project)
-            } else if (project.status === 'Hot Lead') {
-              hotLeads.push(project)
-            } else if (project.status === 'Cold Lead') {
-              coldLeads.push(project)
-            } else if (project.status === 'Development') {
-              development.push(project)
-            } else if (project.status === 'Paused') {
-              paused.push(project)
-            } else if (project.status === 'In House') {
-              inHouse.push(project)
-            } else if (project.status === 'On-Going') {
-              onGoing.push(project)
-            } else if (project.status === 'Closed Lead') {
-              closedLead.push(project)
-            } else if (project.status === 'Completed') {
-              completed.push(project)
-            } else if (project.status === 'Cancelled') {
-              cancelled.push(project)
-            } else if (this.claims.groups.includes('admin')) {
-              other.push(project)
-            }
-          }
-        })
-        if (
-          hotLeads.find(e => e.client_id === client.id) === undefined &&
-          coldLeads.find(e => e.client_id === client.id) === undefined &&
-          development.find(e => e.client_id === client.id) === undefined &&
-          paused.find(e => e.client_id === client.id) === undefined &&
-          inHouse.find(e => e.client_id === client.id) === undefined &&
-          onGoing.find(e => e.client_id === client.id) === undefined &&
-          closedLead.find(e => e.client_id === client.id) === undefined &&
-          completed.find(e => e.client_id === client.id) === undefined &&
-          cancelled.find(e => e.client_id === client.id) === undefined &&
-          this.claims.groups.includes('admin')
-        ) {
-          other.push(client)
-        }
-      })
-      return {
-        hotLeads,
-        coldLeads,
-        development,
-        paused,
-        inHouse,
-        onGoing,
-        closedLead,
-        completed,
-        cancelled,
-        other
-      }
-    }
+    ])
   },
   methods: {
     async logout () {

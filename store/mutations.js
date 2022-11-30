@@ -30,11 +30,119 @@ const mutations = {
   projects (state, data) {
     state.projects = data
   },
+  filteredProjectsHelper (state) {
+    const hotLeads = []
+    const coldLeads = []
+    const development = []
+    const paused = []
+    const inHouse = []
+    const onGoing = []
+    const closedLead = []
+    const completed = []
+    const cancelled = []
+    const other = []
+    state.clients.forEach((client) => {
+      state.projects.forEach((project) => {
+        if (project.client_id === client.id) {
+          if (project.status === 'Lead') {
+            hotLeads.push(project)
+          } else if (project.status === 'Hot Lead') {
+            hotLeads.push(project)
+          } else if (project.status === 'Cold Lead') {
+            coldLeads.push(project)
+          } else if (project.status === 'Development') {
+            development.push(project)
+          } else if (project.status === 'Paused') {
+            paused.push(project)
+          } else if (project.status === 'In House') {
+            inHouse.push(project)
+          } else if (project.status === 'On-Going') {
+            onGoing.push(project)
+          } else if (project.status === 'Closed Lead') {
+            closedLead.push(project)
+          } else if (project.status === 'Completed') {
+            completed.push(project)
+          } else if (project.status === 'Cancelled') {
+            cancelled.push(project)
+          } else if (this.claims.groups.includes('admin')) {
+            other.push(project)
+          }
+        }
+      })
+      if (
+        hotLeads.find(e => e.client_id === client.id) === undefined &&
+        coldLeads.find(e => e.client_id === client.id) === undefined &&
+        development.find(e => e.client_id === client.id) === undefined &&
+        paused.find(e => e.client_id === client.id) === undefined &&
+        inHouse.find(e => e.client_id === client.id) === undefined &&
+        onGoing.find(e => e.client_id === client.id) === undefined &&
+        closedLead.find(e => e.client_id === client.id) === undefined &&
+        completed.find(e => e.client_id === client.id) === undefined &&
+        cancelled.find(e => e.client_id === client.id) === undefined &&
+        state.claims.groups.includes('admin')
+      ) {
+        other.push(client)
+      }
+    })
+    state.filteredProjects = {
+      hotLeads,
+      coldLeads,
+      development,
+      paused,
+      inHouse,
+      onGoing,
+      closedLead,
+      completed,
+      cancelled,
+      other
+    }
+  },
   products (state, data) {
     state.products = data
   },
   pandleDashboard (state, data) {
     Object.assign(state.pandle.dashboard.monthlyCharts, data)
+  },
+  updatePandleDataHelper (state) {
+    for (const client in state.clients) {
+      // Set default values
+      state.clients[client].expenses = 0
+      state.clients[client].revenue = 0
+      state.clients[client].profit = 0
+      state.clients[client].completion_amount = 0
+      const projects = state.projects.filter(project => project.client_id === state.clients[client].id)
+      if (projects.length > 0) {
+        for (const project in projects) {
+          // Set client expenses
+          if (projects[project].bb_expenses) {
+            state.clients[client].expenses += parseFloat(projects[project].bb_expenses)
+          }
+          if (projects[project].pandle_expenses) {
+            state.clients[client].expenses += Math.abs(parseFloat(projects[project].pandle_expenses))
+          }
+          // Set client revenue
+          if (projects[project].bb_revenue) {
+            state.clients[client].revenue += parseFloat(projects[project].bb_revenue)
+          }
+          if (projects[project].pandle_income) {
+            state.clients[client].revenue += parseFloat(projects[project].pandle_income)
+          }
+          // Set client completion amount
+          if (projects[project].completion_amount !== null) {
+            state.clients[client].completion_amount += parseFloat(projects[project].completion_amount)
+          }
+        }
+      }
+      // Set client profit
+      if (state.clients[client].revenue !== undefined && state.clients[client].expenses !== undefined) {
+        state.clients[client].profit = parseFloat(state.clients[client].revenue) - parseFloat(state.clients[client].expenses)
+        if (state.clients[client].profit > 0) {
+          state.clients[client].profit_margin = (state.clients[client].profit / state.clients[client].revenue) * 100
+        } else {
+          state.clients[client].profit_margin = 0
+        }
+      }
+    }
   },
   addList (state, { projectId, title }) {
     if (!Array.isArray(state.projects.find(project => project.id === projectId).lists)) {

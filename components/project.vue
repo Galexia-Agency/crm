@@ -293,6 +293,7 @@ export default {
       this.hideProjectModal()
       try {
         await this.$store.dispatch('updateProject', data)
+        this.$parent.$forceUpdate()
       } catch (e) {
         const error = {}
         error.description = e

@@ -51,17 +51,18 @@ export const actions = {
               response[3][index].ongoing = Boolean(project.ongoing)
             }
           })
-          const clients = response[0].sort(function (a, b) {
+          commit('clients', response[0].sort(function (a, b) {
             const textA = a.business_shortname.toUpperCase()
             const textB = b.business_shortname.toUpperCase()
             return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-          })
-          commit('clients', clients)
+          }))
           commit('contacts', response[1])
           commit('domains', response[2])
           commit('projects', response[3])
           commit('products', response[4])
           commit('pandleDashboard', response[5])
+          commit('updatePandleDataHelper', null)
+          commit('filteredProjectsHelper')
           if (route && route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })
