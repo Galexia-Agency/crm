@@ -110,6 +110,10 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToComplete" />
       </div>
+      <div v-if="project.daysWithUs" class="list-container">
+        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        <span v-text="daysWithUs" />
+      </div>
       <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle(project)">
         <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
@@ -173,34 +177,39 @@ export default {
         return null
       }
       if (this.project.start_date) {
-        const days = this.diffDays(this.project.enquiry_date, this.project.start_date)
-        if (days === 1) {
-          return `Project took ${days} day to start`
+        if (this.project.daysToStart === 1) {
+          return `Project took ${this.project.daysToStart} day to start`
         }
-        return `Project took ${days} days to start`
+        return `Project took ${this.project.daysToStart} days to start`
       }
-      const days = this.diffDays(this.project.enquiry_date, null)
-      if (days === 1) {
-        return `Project has been a lead for ${days} day`
+      if (this.project.daysToStart === 1) {
+        return `Project has been a lead for ${this.project.daysToStart} day`
       }
-      return `Project has been a lead for ${days} days`
+      return `Project has been a lead for ${this.project.daysToStart} days`
     },
     daysToComplete () {
       if (this.project.ongoing) {
         return null
       }
       if (this.project.completion_date) {
-        const days = this.diffDays(this.project.completion_date, this.project.start_date)
-        if (days === 1) {
-          return `Project took ${days} day to complete`
+        if (this.project.daysToComplete === 1) {
+          return `Project took ${this.project.daysToComplete} day to complete`
         }
-        return `Project took ${days} days to complete`
+        return `Project took ${this.project.daysToComplete} days to complete`
       }
-      const days = this.diffDays(this.project.start_date, null)
-      if (days === 1) {
-        return `Project has taken ${days} day`
+      if (this.project.daysToComplete === 1) {
+        return `Project has taken ${this.project.daysToComplete} day`
       }
-      return `Project has taken ${days} days`
+      return `Project has taken ${this.project.daysToComplete} days`
+    },
+    daysWithUs () {
+      if (!this.project.daysWithUs) {
+        return null
+      }
+      if (this.project.daysWithUs === 1) {
+        return `Project has been with us for ${this.project.daysWithUs} day`
+      }
+      return `Project has been with us for ${this.project.daysWithUs} days`
     }
   },
   mounted () {
