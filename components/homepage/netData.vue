@@ -27,16 +27,11 @@
 export default {
   name: 'NetData',
   mounted () {
-    this.$el.querySelector('.netdata iframe').addEventListener('DOMContentLoaded', this.updateIframeHeight)
-    window.addEventListener('resize', this.updateIframeHeight)
-    window.addEventListener('orientationchange', this.updateIframeHeight)
-    screen.orientation.addEventListener('change', this.updateIframeHeight)
-  },
-  methods: {
-    updateIframeHeight () {
-      // NEED TO DEBOUNCE
-      this.$el.querySelector('.netdata iframe').style.height = this.$el.querySelector('.netdata iframe').contentWindow.document.body.offsetHeight + 'px'
-    }
+    window.addEventListener('message', (event) => {
+      if (event.origin === 'https://netdata.galexia.agency') {
+        this.$el.querySelector('.netdata iframe').style.height = `${event.data}px`
+      }
+    }, false)
   }
 }
 </script>
