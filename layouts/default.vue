@@ -532,6 +532,12 @@ export default {
       'conflicts'
     ])
   },
+  mounted () {
+    document.addEventListener('visibilitychange', this.refreshOkta)
+  },
+  beforeDestroy () {
+    document.removeEventListener('visibilitychange', this.refreshOkta)
+  },
   methods: {
     async logout () {
       this.$nuxt.$loading.start()
@@ -547,6 +553,13 @@ export default {
         document.cookie = NAME + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
       }
       this.$nuxt.$loading.finish()
+    },
+    async refreshOkta () {
+      if (document.visibilityState === 'visible' && await this.$auth.isAuthenticated()) {
+        await this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
+        this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
+        this.$api.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
+      }
     },
     refresh () {
       this.refreshed = true
