@@ -7,29 +7,19 @@
       <table>
         <thead>
           <tr>
-            <th
-              @click="sort = 'name', reverse = ! reverse"
-            >
+            <th @click="sort = 'name', reverse = ! reverse">
               Client
             </th>
-            <th
-              @click="sort = 'revenue', reverse = ! reverse"
-            >
+            <th @click="sort = 'revenue', reverse = ! reverse">
               Revenue
             </th>
-            <th
-              @click="sort = 'expenses', reverse = ! reverse"
-            >
+            <th @click="sort = 'expenses', reverse = ! reverse">
               Expenses
             </th>
-            <th
-              @click="sort = 'net-profit', reverse = ! reverse"
-            >
+            <th @click="sort = 'net-profit', reverse = ! reverse">
               Net Profit
             </th>
-            <th
-              @click="sort = 'profit-margin', reverse = ! reverse"
-            >
+            <th @click="sort = 'profit-margin', reverse = ! reverse">
               Profit Margin
             </th>
           </tr>

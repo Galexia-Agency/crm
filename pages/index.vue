@@ -33,13 +33,6 @@
         max-width: 350px;
         width: calc(100vw - 4rem)
       }
-      table {
-        width: 100%;
-        th {
-          cursor: pointer;
-          user-select: none
-        }
-      }
       &.span-2 {
         max-width: calc(900px + 2rem);
         >div:has(canvas) {

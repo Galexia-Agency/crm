@@ -1,7 +1,6 @@
 <style scoped lang="scss">
   table {
     max-width: 500px;
-    width: 100%;
     margin-bottom: 1rem
   }
 
@@ -15,65 +14,19 @@
     <table>
       <thead>
         <tr>
-          <th
-            style="cursor: pointer"
-            @click="
-              productsValue = productsNameReverse
-                ?
-                  productsValue.sort(function (a, b) {
-                    const textA = a.name.toUpperCase()
-                    const textB = b.name.toUpperCase()
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-                  }).reverse()
-                :
-                  productsValue.sort(function (a, b) {
-                    const textA = a.name.toUpperCase()
-                    const textB = b.name.toUpperCase()
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-                  })
-              productsNameReverse = !productsNameReverse
-            "
-          >
+          <th @click="sort = 'name', reverse = !reverse">
             Name
           </th>
-          <th
-            style="cursor: pointer"
-            @click="
-              productsValue = productsTypeReverse
-                ?
-                  productsValue.sort(function (a, b) {
-                    const textA = a.type.toUpperCase()
-                    const textB = b.type.toUpperCase()
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-                  }).reverse()
-                :
-                  productsValue.sort(function (a, b) {
-                    const textA = a.type.toUpperCase()
-                    const textB = b.type.toUpperCase()
-                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-                  })
-              productsTypeReverse = !productsTypeReverse
-            "
-          >
+          <th @click="sort = 'type', reverse = !reverse">
             Type
           </th>
-          <th
-            style="cursor: pointer"
-            @click="
-              productsValue = productsPriceReverse
-                ?
-                  productsValue.sort((a, b) => b.price - a.price).reverse()
-                :
-                  productsValue.sort((a, b) => b.price - a.price)
-              productsPriceReverse = !productsPriceReverse
-            "
-          >
+          <th @click="sort = 'price', reverse = !reverse">
             Price
           </th>
         </tr>
       </thead>
       <tbody>
-        <template v-for="(product, index) in productsValue">
+        <template v-for="(product, index) in productsValues">
           <Product :key="`product_${index}`" :product="product" @updateProduct="showModal" />
         </template>
       </tbody>
@@ -112,25 +65,51 @@ export default {
   data () {
     return {
       modal: false,
-      productsValue: [],
-      productsNameReverse: false,
-      productsTypeReverse: false,
-      productsPriceReverse: false
+      sort: '',
+      reverse: false
     }
   },
   computed: {
     ...mapState([
       'claims',
       'products'
-    ])
-  },
-  watch: {
-    products () {
-      this.productsValue = [...this.products]
+    ]),
+    productsValues () {
+      const clonedProducts = []
+      Object.assign(clonedProducts, this.products)
+      if (this.sort === 'name') {
+        return this.reverse
+          ? clonedProducts.sort(function (a, b) {
+            const textA = a.name.toUpperCase()
+            const textB = b.name.toUpperCase()
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+          })
+          : clonedProducts.sort(function (a, b) {
+            const textA = a.name.toUpperCase()
+            const textB = b.name.toUpperCase()
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+          }).reverse()
+      }
+      if (this.sort === 'type') {
+        return this.reverse
+          ? clonedProducts.sort(function (a, b) {
+            const textA = a.type.toUpperCase()
+            const textB = b.type.toUpperCase()
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+          })
+          : clonedProducts.sort(function (a, b) {
+            const textA = a.type.toUpperCase()
+            const textB = b.type.toUpperCase()
+            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+          }).reverse()
+      }
+      if (this.sort === 'price') {
+        return this.reverse
+          ? clonedProducts.sort((a, b) => b.price - a.price)
+          : clonedProducts.sort((a, b) => b.price - a.price).reverse()
+      }
+      return clonedProducts
     }
-  },
-  mounted () {
-    this.productsValue = [...this.products]
   },
   methods: {
     async submitProduct (product) {

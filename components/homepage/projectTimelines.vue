@@ -7,24 +7,16 @@
       <table>
         <thead>
           <tr>
-            <th
-              @click="sort = 'name', reverse = !reverse"
-            >
+            <th @click="sort = 'name', reverse = !reverse">
               Project
             </th>
-            <th
-              @click="sort = 'enquiry', reverse = !reverse"
-            >
+            <th @click="sort = 'enquiry', reverse = !reverse">
               Date of project enquiry
             </th>
-            <th
-              @click="sort = 'start', reverse = !reverse"
-            >
+            <th @click="sort = 'start', reverse = !reverse">
               Days from date of enquiry to project kick-off
             </th>
-            <th
-              @click="sort = 'complete', reverse = !reverse"
-            >
+            <th @click="sort = 'complete', reverse = !reverse">
               Days from project kick-off to publication
             </th>
           </tr>

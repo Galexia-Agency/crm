@@ -381,8 +381,13 @@
 
   /* Tables */
   table {
+    width: 100%;
     thead {
       border-bottom: 1px solid black
+    }
+    th {
+      cursor: pointer;
+      user-select: none
     }
     th, td {
       padding: .5em
