@@ -1,6 +1,8 @@
+import { safeURL } from '~/plugins/mixins/urls'
+
 export default {
   async addClient ({ commit }, data) {
-    data.business_shortname = encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase())
+    data.business_shortname = safeURL(data.business_shortname)
     data.address = JSON.stringify(data.address)
     const response = await this.$axios.$put('https://api.galexia.agency/clients',
       {
@@ -57,7 +59,7 @@ export default {
       }
     }
     try {
-      data.business_shortname = encodeURIComponent(data.business_shortname.replaceAll(' ', '-').toLowerCase())
+      data.business_shortname = safeURL(data.business_shortname)
       const response = await this.$axios.$post('https://api.galexia.agency/clients',
         {
           ...data,
@@ -191,7 +193,7 @@ export default {
               after: data.source
             })
           }
-          whatToForcePush.business_shortname = encodeURIComponent(whatToForcePush.business_shortname.replaceAll(' ', '-').toLowerCase())
+          whatToForcePush.business_shortname = safeURL(whatToForcePush.business_shortname)
           const response = await this.$axios.$post('https://api.galexia.agency/clients',
             {
               ...whatToForcePush,

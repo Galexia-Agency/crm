@@ -20,6 +20,7 @@ export default {
       }
     })
     await commit('projects', response)
+    await commit('projectDatesHelper')
     await commit('filteredProjectsHelper')
     return response
   }

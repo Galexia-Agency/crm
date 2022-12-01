@@ -1,5 +1,7 @@
 import { makeItem, makeList } from '~/utils/data'
 import { getItemById, getListById, getListByItemId } from '~/utils/board'
+import { diffDays } from '~/plugins/mixins/dates'
+import { safeURL } from '~/plugins/mixins/urls'
 
 const mutations = {
   okta (state, { authenticated, claims }) {
@@ -29,6 +31,34 @@ const mutations = {
   },
   projects (state, data) {
     state.projects = data
+  },
+  projectDatesHelper (state) {
+    for (const project in state.projects) {
+      const client = state.clients.find(client => client.id === state.projects[project].client_id)
+      state.projects[project].client_name = client.business_name
+      state.projects[project].link = '/client/' + client.business_shortname.toLowerCase() + '#' + safeURL(state.projects[project].name)
+      state.projects[project].daysToStart = 0
+      state.projects[project].daysToComplete = 0
+      state.projects[project].daysWithUs = 0
+      if (state.projects[project].enquiry_date && state.projects[project].start_date) {
+        state.projects[project].daysToStart = diffDays(state.projects[project].enquiry_date, state.projects[project].start_date)
+        if (!state.projects[project].ongoing) {
+          if (state.projects[project].completion_date) {
+            state.projects[project].daysToComplete = diffDays(state.projects[project].start_date, state.projects[project].completion_date)
+          } else {
+            state.projects[project].daysToComplete = diffDays(state.projects[project].start_date, null) + '+'
+          }
+        }
+        if (state.projects[project].status === 'On-Going') {
+          state.projects[project].daysWithUs = diffDays(state.projects[project].start_date, null)
+        }
+      }
+    }
+    state.projects.sort(function (a, b) {
+      const textA = a.client_name.toUpperCase()
+      const textB = b.client_name.toUpperCase()
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+    })
   },
   filteredProjectsHelper (state) {
     const hotLeads = []

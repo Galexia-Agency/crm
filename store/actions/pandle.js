@@ -1,3 +1,5 @@
+import { safeURL } from '~/plugins/mixins/urls'
+
 export default {
   async addClientPandle ({ dispatch }, data) {
     const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/pandle_request', {
@@ -42,7 +44,7 @@ export default {
       url: `/companies/${this.$config.PANDLE_COMPANY_ID}`,
       body: {
         project: {
-          name: data.client_name + '-' + encodeURIComponent(data.name.replaceAll(' ', '-').toLowerCase()),
+          name: data.client_name + '-' + safeURL(data.name),
           status: 'Open',
           date_started: day + '/' + month + '/' + year
         }

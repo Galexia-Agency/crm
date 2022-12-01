@@ -221,7 +221,8 @@ export default {
           delete response[0].lists
           await commit('updateProject', response[0])
           await commit('filteredProjectsHelper')
-          return await commit('updatePandleDataHelper', null)
+          await commit('projectDatesHelper')
+          return await commit('updatePandleDataHelper')
         } catch (e) {
           const error = {}
           error.active = true

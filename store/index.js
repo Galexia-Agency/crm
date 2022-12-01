@@ -61,7 +61,8 @@ export const actions = {
           commit('projects', response[3])
           commit('products', response[4])
           commit('pandleDashboard', response[5])
-          commit('updatePandleDataHelper', null)
+          commit('projectDatesHelper')
+          commit('updatePandleDataHelper')
           commit('filteredProjectsHelper')
           if (route && route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {

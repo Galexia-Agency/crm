@@ -19,20 +19,29 @@
             <th @click="sort = 'complete', reverse = !reverse">
               Days from project kick-off to publication
             </th>
+            <th @click="sort = 'with-us', reverse = !reverse">
+              This project has been with us for x days
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="project, index in projectsTimelinesValue" :key="`project_timelines_${index}`">
-            <td>
-              <nuxt-link :to="project.link" style="color: black" v-text="project.name" />
-            </td>
-            <td v-text="humanReadableDate(project.enquiry_date)" />
-            <td v-text="project.daysToStart" />
-            <td v-if="project.daysToComplete" v-text="project.daysToComplete" />
-            <td v-else>
-              -
-            </td>
-          </tr>
+          <template v-for="project, index in projectsTimelinesValue">
+            <tr v-if="project.enquiry_date && project.start_date" :key="`project_timelines_${index}`">
+              <td>
+                <nuxt-link :to="project.link" style="color: black" v-text="`${project.client_name} - ${project.name}`" />
+              </td>
+              <td v-text="humanReadableDate(project.enquiry_date)" />
+              <td v-text="project.daysToStart" />
+              <td v-if="project.daysToComplete" v-text="project.daysToComplete" />
+              <td v-else>
+                -
+              </td>
+              <td v-if="project.daysWithUs" v-text="project.daysWithUs" />
+              <td v-else>
+                -
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </section>
@@ -55,38 +64,9 @@ export default {
       'clients',
       'projects'
     ]),
-    projectsTimelines () {
-      const projects = []
-      for (const projectId in this.projects) {
-        const projectToPush = {}
-        const project = this.projects[projectId]
-        const client = this.clients.find(client => client.id === project.client_id)
-        if (project.enquiry_date && project.start_date) {
-          projectToPush.daysToStart = this.diffDays(project.enquiry_date, project.start_date)
-          projectToPush.enquiry_date = project.enquiry_date
-          projectToPush.daysToComplete = 0
-          if (!project.ongoing) {
-            if (project.completion_date) {
-              projectToPush.daysToComplete = this.diffDays(project.start_date, project.completion_date)
-            } else {
-              projectToPush.daysToComplete = this.diffDays(project.start_date, null) + '+'
-            }
-          }
-          projectToPush.client_name = client.business_name
-          projectToPush.name = client.business_name + ' - ' + project.name
-          projectToPush.link = '/client/' + client.business_shortname.toLowerCase() + '#' + this.safeURL(project.name)
-          projects.push(projectToPush)
-        }
-      }
-      return projects.sort(function (a, b) {
-        const textA = a.client_name.toUpperCase()
-        const textB = b.client_name.toUpperCase()
-        return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-      })
-    },
     projectsTimelinesValue () {
       const clonedProjects = []
-      Object.assign(clonedProjects, this.projectsTimelines)
+      Object.assign(clonedProjects, this.projects)
       if (this.sort === 'name') {
         return this.reverse
           ? clonedProjects.sort(function (a, b) {
@@ -114,6 +94,11 @@ export default {
         return this.reverse
           ? clonedProjects.sort((a, b) => parseInt(b.daysToComplete) - parseInt(a.daysToComplete))
           : clonedProjects.sort((a, b) => parseInt(b.daysToComplete) - parseInt(a.daysToComplete)).reverse()
+      }
+      if (this.sort === 'with-us') {
+        return this.reverse
+          ? clonedProjects.sort((a, b) => parseInt(b.daysWithUs) - parseInt(a.daysWithUs))
+          : clonedProjects.sort((a, b) => parseInt(b.daysWithUs) - parseInt(a.daysWithUs)).reverse()
       }
       return clonedProjects
     }
