@@ -13,7 +13,7 @@
 </style>
 
 <template>
-  <main>
+  <main v-if="overdueItems.length > 0 || dueItems.length > 0">
     <section v-if="overdueItems.length > 0">
       <h2>Overdue</h2>
       <section class="list-container">
