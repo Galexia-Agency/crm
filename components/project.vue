@@ -274,13 +274,16 @@ export default {
       try {
         this.$nuxt.$loading.start()
         newProject.lists = JSON.parse(newProject.lists)
-        const currentProject = this.$store.state.projects.find(project => project.id === newProject.id)
+        const currentProject = this.$store.getters.getProjectById(newProject.id)
         // If the database content is newer, then replace our version
         if (new Date(newProject.updated_at) > new Date(currentProject.updated_at)) {
           this.$store.commit('updateProject', newProject)
         }
         this.$nuxt.$loading.finish()
       } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e)
+        this.$nuxt.$loading.finish()
         this.sse_end()
       }
     },
@@ -302,7 +305,6 @@ export default {
       this.hideProjectModal()
       try {
         await this.$store.dispatch('updateProject', data)
-        this.$parent.$forceUpdate()
       } catch (e) {
         const error = {}
         error.description = e

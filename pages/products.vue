@@ -119,7 +119,6 @@ export default {
       } else {
         await this.$store.dispatch('addProduct', product)
       }
-      this.$forceUpdate()
     },
     showModal (product) {
       this.modal = true

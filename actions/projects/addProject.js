@@ -1,5 +1,5 @@
 export default {
-  async addProject ({ commit }, data) {
+  async addProject ({ commit, dispatch }, data) {
     data.completion_amount = parseFloat(data.completion_amount).toFixed(2)
     data.bb_revenue = parseFloat(data.bb_revenue).toFixed(2)
     data.bb_expenses = parseFloat(data.bb_expenses).toFixed(2)
@@ -20,8 +20,8 @@ export default {
       }
     })
     await commit('projects', response)
-    await commit('projectDatesHelper')
-    await commit('filteredProjectsHelper')
+    await dispatch('projectDatesHelper')
+    await dispatch('filteredProjectsHelper')
     return response
   }
 }

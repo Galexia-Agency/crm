@@ -432,57 +432,7 @@
         </template>
       </div>
     </ui-modal>
-    <template>
-      <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
-      <button type="button" class="refresh" :class="{clicked: refreshed}" @click="refresh">
-        <font-awesome-icon :icon="['fa-solid', 'fa-sync']" />
-      </button>
-      <nav>
-        <nuxt-link to="/">
-          <h2>Home</h2>
-        </nuxt-link>
-        <nuxt-link v-if="claims.groups.includes('billing')" to="/products">
-          <h3>Products</h3>
-        </nuxt-link>
-        <input
-          v-model="search"
-          type="search"
-          rel="search"
-          placeholder="Search clients..."
-          aria-label="Search clients..."
-          class="search"
-        >
-        <project-nav-link v-if="filteredProjects.hotLeads.length > 0" type="Hot Leads" :clients="clients" :filtered-projects="filteredProjects.hotLeads" :search="search" />
-        <project-nav-link v-if="filteredProjects.development.length > 0" type="Development" :clients="clients" :filtered-projects="filteredProjects.development" :search="search" />
-        <project-nav-link v-if="filteredProjects.inHouse.length > 0" type="In House" :clients="clients" :filtered-projects="filteredProjects.inHouse" :search="search" />
-        <project-nav-link v-if="filteredProjects.coldLeads.length > 0" type="Cold Leads" :clients="clients" :filtered-projects="filteredProjects.coldLeads" :search="search" />
-        <project-nav-link v-if="filteredProjects.paused.length > 0" type="Paused" :clients="clients" :filtered-projects="filteredProjects.paused" :search="search" />
-        <project-nav-link v-if="filteredProjects.onGoing.length > 0" type="On-Going" :clients="clients" :filtered-projects="filteredProjects.onGoing" :search="search" />
-        <project-nav-link v-if="filteredProjects.closedLead.length > 0" type="Closed Leads" :clients="clients" :filtered-projects="filteredProjects.closedLead" :search="search" />
-        <project-nav-link v-if="filteredProjects.completed.length > 0" type="Completed" :clients="clients" :filtered-projects="filteredProjects.completed" :search="search" />
-        <project-nav-link v-if="filteredProjects.cancelled.length > 0" type="Cancelled" :clients="clients" :filtered-projects="filteredProjects.cancelled" :search="search" />
-        <template v-if="filteredProjects.other.length > 0">
-          <h4 id="other">
-            Other
-          </h4>
-          <template v-for="(project, index) in filteredProjects.other">
-            <nuxt-link
-              v-show="((!search) || ((project.business_name).toLowerCase()).startsWith(search.toLowerCase()))"
-              :key="`${index}_${project.business_name}`"
-              :to="`/client/${project.business_shortname.toLowerCase()}`"
-              class="navLink other"
-              v-text="project.business_name"
-            />
-          </template>
-        </template>
-        <button v-if="claims.groups.includes('admin')" type="button" class="button primary" style="margin-top: .75em" @click="showClientModal()">
-          New Client
-        </button>
-        <button type="button" class="button primary" style="margin-top: .75em" @click="logout()">
-          Logout
-        </button>
-      </nav>
-    </template>
+    <Sidebar />
     <nuxt />
     <ui-modal
       ref="modal"
@@ -497,38 +447,28 @@
 
 <script>
 import { mapState } from 'vuex'
-import Hamburger from 'vue-hamburger/hamburger.vue'
-import projectNavLink from '~/components/projectNavLink'
+import Sidebar from '~/components/sidebar'
 import clientModal from '~/components/modals/update/clientModal'
 import ConflictsModal from '~/components/modals/conflictModal'
 
 export default {
+  name: 'DefaultLayout',
   components: {
-    projectNavLink,
-    Hamburger,
+    Sidebar,
     clientModal,
     ConflictsModal
   },
   data () {
     return {
-      search: '',
-      refreshed: false,
       modal: {
         client: false
-      },
-      expanded: null
+      }
     }
   },
   computed: {
     ...mapState([
       'error',
-      'contacts',
-      'domains',
-      'projects',
-      'filteredProjects',
-      'clients',
       'authenticated',
-      'claims',
       'conflicts'
     ])
   },
@@ -539,31 +479,12 @@ export default {
     document.removeEventListener('visibilitychange', this.refreshOkta)
   },
   methods: {
-    async logout () {
-      this.$nuxt.$loading.start()
-      await this.$auth.signOut()
-      this.$store.dispatch('okta', { authenticated: await this.$auth.isAuthenticated() })
-      localStorage.clear()
-      sessionStorage.clear()
-      const COOKIES = document.cookie.split(';')
-      for (let i = 0; i < COOKIES.length; i++) {
-        const COOKIE = COOKIES[i]
-        const EQ_POS = COOKIE.indexOf('=')
-        const NAME = EQ_POS > -1 ? COOKIE.substr(0, EQ_POS) : COOKIE
-        document.cookie = NAME + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
-      }
-      this.$nuxt.$loading.finish()
-    },
     async refreshOkta () {
       if (document.visibilityState === 'visible' && await this.$auth.isAuthenticated()) {
         await this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
         this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
         this.$api.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
       }
-    },
-    refresh () {
-      this.refreshed = true
-      location.reload()
     },
     showClientModal (data) {
       this.modal.client = true

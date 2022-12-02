@@ -1,5 +1,5 @@
 export default {
-  async updateProject ({ commit, dispatch }, data) {
+  async updateProject ({ commit, dispatch, state }, data) {
     data.completion_amount = parseFloat(data.completion_amount).toFixed(2)
     data.bb_revenue = parseFloat(data.bb_revenue).toFixed(2)
     data.bb_expenses = parseFloat(data.bb_expenses).toFixed(2)
@@ -18,8 +18,9 @@ export default {
       // Don't update lists
       delete response[0].lists
       await commit('updateProject', response[0])
-      await commit('filteredProjectsHelper')
-      return await commit('updatePandleDataHelper', null)
+      await dispatch('filteredProjectsHelper')
+      await dispatch('projectDatesHelper')
+      return await dispatch('updateClientPandleDataHelper')
     } catch (e) {
       if (await e.response && await e.response.status === 429) {
         // Data from the database
@@ -220,9 +221,9 @@ export default {
           // Don't update lists
           delete response[0].lists
           await commit('updateProject', response[0])
-          await commit('filteredProjectsHelper')
-          await commit('projectDatesHelper')
-          return await commit('updatePandleDataHelper')
+          await dispatch('filteredProjectsHelper')
+          await dispatch('projectDatesHelper')
+          return await dispatch('updateClientPandleDataHelper')
         } catch (e) {
           const error = {}
           error.active = true

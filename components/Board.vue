@@ -123,7 +123,7 @@ export default {
   },
   computed: {
     lists () {
-      return this.$store.state.projects.find(project => project.id === this.projectId).lists
+      return this.$store.getters.getProjectById(this.projectId).lists
     }
   },
   methods: {

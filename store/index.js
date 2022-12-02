@@ -1,4 +1,4 @@
-import importedActions from './actions'
+import importedActions from '../actions'
 
 export const state = () => ({
   authenticated: false,
@@ -7,6 +7,7 @@ export const state = () => ({
   contacts: [],
   domains: [],
   projects: [],
+  filteredProjects: {},
   products: [],
   error: {
     active: false
@@ -29,7 +30,7 @@ export const state = () => ({
 })
 
 export const actions = {
-  async nuxtClientInit ({ commit }, { route, store, $auth, $axios, $api }) {
+  async nuxtClientInit ({ commit, dispatch }, { route, store, $auth, $axios, $api }) {
     if (await $auth.isAuthenticated()) {
       commit('okta', { authenticated: await $auth.isAuthenticated(), claims: await $auth.getUser() })
       $axios.setHeader('Authorization', `Bearer ${$auth.getAccessToken()}`)
@@ -61,9 +62,9 @@ export const actions = {
           commit('projects', response[3])
           commit('products', response[4])
           commit('pandleDashboard', response[5])
-          commit('projectDatesHelper')
-          commit('updatePandleDataHelper')
-          commit('filteredProjectsHelper')
+          dispatch('projectDatesHelper')
+          dispatch('updateClientPandleDataHelper')
+          dispatch('filteredProjectsHelper')
           if (route && route.name && route.name === 'client-client') {
             if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })

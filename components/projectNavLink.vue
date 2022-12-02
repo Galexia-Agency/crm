@@ -19,11 +19,11 @@
   <div>
     <h4 v-text="type" />
     <template v-for="(project, index) in filteredProjects">
-      <template v-for="(client, indexed) in clients">
+      <template v-for="client in clients">
         <nuxt-link
           v-show="((!search) || ((client.business_name).toLowerCase()).startsWith(search.toLowerCase()))"
           v-if="project.client_id === client.id && index === 0 || project.client_id === client.id && filteredProjects[index - 1].client_id !== project.client_id"
-          :key="index + indexed"
+          :key="`${client.business_shortname}_${project.status}`"
           :to="`/client/${client.business_shortname.toLowerCase()}`"
           class="navLink"
           :class="{blossomTreePhoto: project.admin.includes('chelsea@galexia.agency')}"

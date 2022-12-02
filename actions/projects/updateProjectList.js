@@ -13,7 +13,7 @@ function removeItem (array, item) {
 }
 
 export default {
-  updateProjectList ({ commit, state, dispatch }, projectId) {
+  updateProjectList ({ commit, state, dispatch, getters }, projectId) {
     // Add the projectId to the queue
     LIST_REQUESTS.push(projectId)
     // Wait 1 second before executing
@@ -23,7 +23,7 @@ export default {
         // Remove the projectId from the array, this project has been updated
         removeItem(LIST_REQUESTS, projectId)
         // Proceed with pushing the changes to the API
-        const project = state.projects.find(project => project.id === projectId)
+        const project = getters.getProjectById(projectId)
         // Assign the project list from the store to a new variable so we don't mutate state
         const projectList = Array.from(project.lists)
         if (JSON.stringify(project.lists)) {
