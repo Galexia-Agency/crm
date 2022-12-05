@@ -45,23 +45,41 @@ export default {
       }
     }
   },
+  mounted () {
+    // If Galexia doesn't have any expenses it means the client profit / loss cron failed, so we're forcing it on component load here
+    if (!this.$store.getters.getClientById(30).expenses) {
+      this.refreshClientProfitLoss()
+    }
+  },
   methods: {
     async refreshMonthlyCharts (force) {
       this.loading = true
       let response
-      if (force) {
-        response = await this.$axios.$get('https://api.galexia.agency/monthly_stats?force=true')
-      } else {
-        response = await this.$axios.$get('https://api.galexia.agency/monthly_stats')
+      try {
+        if (force) {
+          response = await this.$axios.$get('https://api.galexia.agency/monthly_stats?force=true')
+        } else {
+          response = await this.$axios.$get('https://api.galexia.agency/monthly_stats')
+        }
+        this.$store.commit('pandleDashboard', response)
+      } catch (e) {
+        this.$store.commit('error', e)
       }
-      this.$store.commit('pandleDashboard', response)
       this.loading = false
+      this.loadingText = 'Loading'
+      this.$parent.$forceUpdate()
     },
     async refreshClientProfitLoss () {
       this.loading = true
-      await this.$axios.$get('https://api.galexia.agency/project_profit_loss')
-      await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
+      try {
+        await this.$axios.$get('https://api.galexia.agency/project_profit_loss')
+        await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
+      } catch (e) {
+        this.$store.commit('error', e)
+      }
       this.loading = false
+      this.loadingText = 'Loading'
+      this.$parent.$forceUpdate()
     }
   }
 }
