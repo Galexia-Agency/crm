@@ -1,6 +1,6 @@
 <template>
   <main>
-    <section v-if="Object.keys(filteredProjects).length > 0 && flatten(filteredProjects).length > 0" class="chart">
+    <section v-if="Object.keys(filteredProjects).length > 0" class="chart">
       <h2>Projects Status</h2>
       <pie-chart :chart-data="projectStatus" />
     </section>
@@ -137,34 +137,6 @@ export default {
           }
         ]
       }
-    }
-  },
-  methods: {
-    flatten (data) {
-      const result = {}
-      function recurse (cur, prop) {
-        if (Object(cur) !== cur) {
-          result[prop] = cur
-        } else if (Array.isArray(cur)) {
-          for (let i = 0, l = cur.length; i < l; i++) {
-            recurse(cur[i], prop + '[' + i + ']')
-            if (l === 0) {
-              result[prop] = []
-            }
-          }
-        } else {
-          let isEmpty = true
-          for (const p in cur) {
-            isEmpty = false
-            recurse(cur[p], prop ? prop + '.' + p : p)
-          }
-          if (isEmpty && prop) {
-            result[prop] = {}
-          }
-        }
-      }
-      recurse(data, '')
-      return result
     }
   }
 }
