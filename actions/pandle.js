@@ -19,7 +19,7 @@ export default {
           nominal_account_id: 2166632,
           business_name: data.business_name,
           name: data.business_name,
-          customer_ref: this.safeURL(data.business_shortname),
+          customer_ref: safeURL(data.business_shortname),
           credit_limit: 0,
           currency_id: '1',
           days_until_payment_due: 30,

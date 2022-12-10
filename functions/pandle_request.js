@@ -50,17 +50,16 @@ exports.handler = async function handler (event, context, callback) {
       })
     }
     if (event.body && oktaResponse.data.active === true) {
-      let response = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
+      const response = await axios.post('https://my.pandle.com/api/v1/auth/sign_in',
         {
           email: process.env.PANDLE_USERNAME,
           password: process.env.PANDLE_PASSWORD
         }
       )
-      response = JSON.stringify(response.headers)
       axios.interceptors.request.use(function (config) {
-        config.headers['access-token'] = response['access-token']
-        config.headers.client = response.client
-        config.headers.uid = response.uid
+        config.headers['access-token'] = response.headers['access-token']
+        config.headers.client = response.headers.client
+        config.headers.uid = response.headers.uid
         return config
       })
       const data = JSON.parse(event.body)
