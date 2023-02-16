@@ -479,11 +479,18 @@ export default {
     document.removeEventListener('visibilitychange', this.refreshOkta)
   },
   methods: {
+    // This manually renews the access token each time we navigate to the app
     async refreshOkta () {
-      if (document.visibilityState === 'visible' && await this.$auth.isAuthenticated()) {
-        await this.$store.commit('okta', { authenticated: await this.$auth.isAuthenticated(), claims: await this.$auth.getUser() })
-        this.$axios.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
-        this.$api.setHeader('Authorization', `Bearer ${this.$auth.getAccessToken()}`)
+      if (document.visibilityState === 'visible') {
+        try {
+          const accessToken = this.$auth.getAccessToken()
+          await this.$store.commit('okta', { authenticated: true, claims: await this.$auth.getUser() })
+          this.$axios.setHeader('Authorization', `Bearer ${accessToken}`)
+          this.$api.setHeader('Authorization', `Bearer ${accessToken}`)
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error(error)
+        }
       }
     },
     showClientModal (data) {

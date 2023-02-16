@@ -47,8 +47,10 @@ export default {
   },
   mounted () {
     // If Galexia doesn't have any expenses it means the client profit / loss cron failed, so we're forcing it on component load here
-    if (!this.$store.getters.getClientById(30).expenses) {
-      this.refreshClientProfitLoss()
+    if (this.$store.getters.getClientById(30)) {
+      if (!this.$store.getters.getClientById(30).expenses) {
+        this.refreshClientProfitLoss()
+      }
     }
   },
   methods: {

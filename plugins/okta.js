@@ -9,9 +9,11 @@ export default (ctx, inject) => {
     redirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback',
     scopes: ['openid', 'profile', 'email', 'groups', 'offline_access'],
     pkce: true,
+    // This renews the access token if it is expiring and we are using the app
     autoRenew: true,
+    // This will redirect the user to the login page when Okta detects that a user's session is no longer active
     async onSessionExpired () {
-      await ctx.app.$auth.logout({ postLogoutRedirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host : 'https://' + window.location.host })
+      await ctx.$logout()
     }
   })
   Vue.use(OktaVue, { oktaAuth })

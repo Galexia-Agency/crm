@@ -48,7 +48,7 @@
       <button v-if="claims.groups.includes('admin')" type="button" class="button primary" style="margin-top: .75em" @click="showClientModal()">
         New Client
       </button>
-      <button type="button" class="button primary" style="margin-top: .75em" @click="logout()">
+      <button type="button" class="button primary" style="margin-top: .75em" @click="$logout()">
         Logout
       </button>
     </nav>
@@ -80,21 +80,6 @@ export default {
     ])
   },
   methods: {
-    async logout () {
-      this.$nuxt.$loading.start()
-      await this.$auth.signOut()
-      this.$store.dispatch('okta', { authenticated: await this.$auth.isAuthenticated() })
-      localStorage.clear()
-      sessionStorage.clear()
-      const COOKIES = document.cookie.split(';')
-      for (let i = 0; i < COOKIES.length; i++) {
-        const COOKIE = COOKIES[i]
-        const EQ_POS = COOKIE.indexOf('=')
-        const NAME = EQ_POS > -1 ? COOKIE.substr(0, EQ_POS) : COOKIE
-        document.cookie = NAME + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
-      }
-      this.$nuxt.$loading.finish()
-    },
     refresh () {
       this.refreshed = true
       location.reload()

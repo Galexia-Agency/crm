@@ -49,6 +49,8 @@ export default {
    ** Plugins to load before mounting the App
    */
   plugins: [
+    '~plugins/logout',
+    '~plugins/okta',
     '~plugins/board',
     '~plugins/mixins/dates',
     '~plugins/mixins/urls',
@@ -70,7 +72,6 @@ export default {
    */
   modules: [
     'nuxt-client-init-module',
-    '~modules/okta',
     '@nuxtjs/axios',
     '@nuxtjs/pwa'
   ],
