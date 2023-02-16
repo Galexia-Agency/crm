@@ -405,7 +405,7 @@ export default {
             },
             error (err) {
               // eslint-disable-next-line no-console
-              console.error(err.message)
+              console.error(err)
             }
           })
         } else {

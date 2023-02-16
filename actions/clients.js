@@ -53,8 +53,8 @@ export default {
         } catch (e) {
           const error = {}
           error.active = true
-          error.description = e.message
-          return commit('error', { error })
+          error.description = e
+          return commit('error', error)
         }
       }
     }
@@ -212,16 +212,16 @@ export default {
         } catch (e) {
           const error = {}
           error.active = true
-          error.description = e.message
+          error.description = e
           error.data = data
-          return commit('error', { error })
+          return commit('error', error)
         }
       } else {
         const error = {}
         error.active = true
-        error.description = e.message
+        error.description = e
         error.data = data
-        return commit('error', { error })
+        return commit('error', error)
       }
     }
   }

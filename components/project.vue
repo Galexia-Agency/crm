@@ -114,7 +114,7 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysWithUs" />
       </div>
-      <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle(project)">
+      <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle()">
         <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
       </a>
@@ -122,6 +122,12 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         View in Pandle
       </a>
+      <!-- <button v-if="project.pandle_id && claims.groups.includes('billing')" class="list-container" type="button" @click="createInvoice()">
+        Create Invoice
+      </button>
+      <button v-if="project.pandle_id && claims.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
+        Create Quote
+      </button> -->
       <Toggle :model="showArchived" label="Show Deleted Items" class="list-container" :class="{toggled: showArchived}" @input="showArchived = $event">
         <font-awesome-icon :icon="['fa-solid', 'fa-trash-can']" />
       </Toggle>
@@ -312,12 +318,12 @@ export default {
         this.$store.commit('error', error)
       }
     },
-    async addProjectPandle (data) {
-      const datad = {}
-      Object.assign(datad, data)
-      datad.client_name = this.$parent.client.business_shortname
+    async addProjectPandle () {
+      const data = {}
+      Object.assign(data, this.project)
+      data.client_name = this.$parent.client.business_shortname
       try {
-        await this.$store.dispatch('addProjectPandle', datad)
+        await this.$store.dispatch('addProjectPandle', data)
       } catch (e) {
         const error = {}
         error.description = e

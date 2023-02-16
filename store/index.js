@@ -74,7 +74,7 @@ export const actions = {
         })
         .catch(function (e) {
           const error = {}
-          error.description = e.message
+          error.description = e
           commit('error', error)
         })
     } else {

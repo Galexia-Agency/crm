@@ -184,7 +184,7 @@ export default {
           })
           .catch(function (e) {
             const error = {}
-            error.description = e.message
+            error.description = e
             self.$store.commit('error', error)
           })
       }
@@ -203,7 +203,7 @@ export default {
         return self.$axios.post(location.origin + '/.netlify/functions/delete-image', { file: image })
           .catch(function (e) {
             const error = {}
-            error.description = e.message
+            error.description = e
             self.$store.commit('error', error)
           })
       }

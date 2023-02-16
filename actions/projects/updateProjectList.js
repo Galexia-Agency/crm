@@ -161,16 +161,16 @@ export default {
               } catch (e) {
                 const error = {}
                 error.active = true
-                error.description = e.message
+                error.description = e
                 error.data = projectList
-                return commit('error', { error })
+                return commit('error', error)
               }
             } else {
               const error = {}
               error.active = true
-              error.description = e.message
+              error.description = e
               error.data = projectList
-              return commit('error', { error })
+              return commit('error', error)
             }
           }
         } else {
@@ -178,7 +178,7 @@ export default {
           error.active = true
           error.description = 'Cannot stringify data'
           error.data = projectList
-          commit('error', { error })
+          commit('error', error)
         }
       }
     }, 1000)
