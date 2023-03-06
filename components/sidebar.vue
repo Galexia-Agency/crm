@@ -45,7 +45,7 @@
           </template>
         </template>
       </template>
-      <button v-if="claims.groups.includes('admin')" type="button" class="button primary" style="margin-top: .75em" @click="showClientModal()">
+      <button v-if="claims.groups.includes('admin')" type="button" class="button primary" style="margin-top: .75em" @click="$parent.showClientModal()">
         New Client
       </button>
       <button type="button" class="button primary" style="margin-top: .75em" @click="$logout()">
