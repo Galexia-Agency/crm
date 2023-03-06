@@ -39,6 +39,3 @@ Content-Security-Policy = "upgrade-insecure-requests"
 for = "/_nuxt/*"
 [headers.values]
 Cache-Control = "max-age=365000000, immutable"
-
-[[plugins]]
-package = "netlify-plugin-cache-nuxt"
