@@ -34,7 +34,6 @@
     "compressorjs": "^1.0.7",
     "cross-env": "^7.0.3",
     "eventsource": "^2.0.2",
-    "netlify-plugin-cache-nuxt": "^0.0.1",
     "nuxt": "^2.15.8",
     "nuxt-client-init-module": "^0.3.0",
     "querystring": "^0.2.1",
