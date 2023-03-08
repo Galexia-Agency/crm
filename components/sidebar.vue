@@ -1,3 +1,17 @@
+<style lang="scss">
+.sidebar-buttons {
+  display: flex;
+  column-gap: 1rem;
+  row-gap: .5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  .button {
+    display: block;
+    color: black
+  }
+}
+</style>
+
 <template>
   <div style="display: contents">
     <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
@@ -8,9 +22,17 @@
       <nuxt-link to="/">
         <h2>Home</h2>
       </nuxt-link>
-      <nuxt-link v-if="claims.groups.includes('billing')" to="/products">
-        <h3>Products</h3>
-      </nuxt-link>
+      <div class="sidebar-buttons">
+        <nuxt-link v-if="claims.groups.includes('billing')" to="/products" class="button primary">
+          Products
+        </nuxt-link>
+        <button v-if="claims.groups.includes('admin')" type="button" class="button primary" @click="$parent.showClientModal()">
+          New Client
+        </button>
+        <button type="button" class="button primary" @click="$logout()">
+          Logout
+        </button>
+      </div>
       <input
         v-model="search"
         type="search"
@@ -45,12 +67,6 @@
           </template>
         </template>
       </template>
-      <button v-if="claims.groups.includes('admin')" type="button" class="button primary" style="margin-top: .75em" @click="$parent.showClientModal()">
-        New Client
-      </button>
-      <button type="button" class="button primary" style="margin-top: .75em" @click="$logout()">
-        Logout
-      </button>
     </nav>
   </div>
 </template>
