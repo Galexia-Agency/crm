@@ -483,10 +483,10 @@ export default {
     async refreshOkta () {
       if (document.visibilityState === 'visible') {
         try {
-          const accessToken = this.$auth.getAccessToken()
+          const accessToken = await this.$auth.getAccessToken()
           await this.$store.commit('okta', { authenticated: true, claims: await this.$auth.getUser() })
-          this.$axios.setHeader('Authorization', `Bearer ${accessToken}`)
-          this.$api.setHeader('Authorization', `Bearer ${accessToken}`)
+          this.$axios.setHeader('Authorization', `Bearer ${await accessToken}`)
+          this.$api.setHeader('Authorization', `Bearer ${await accessToken}`)
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error(error)
