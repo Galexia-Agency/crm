@@ -483,6 +483,8 @@ export default {
     async refreshOkta () {
       if (document.visibilityState === 'visible') {
         try {
+          const renewToken = await this.$auth.token.renewTokens()
+          await this.$auth.tokenManager.setTokens(renewToken)
           const accessToken = await this.$auth.getAccessToken()
           await this.$store.commit('okta', { authenticated: true, claims: await this.$auth.getUser() })
           this.$axios.setHeader('Authorization', `Bearer ${await accessToken}`)
