@@ -31,9 +31,9 @@ export const state = () => ({
 
 export const actions = {
   async nuxtClientInit ({ commit, dispatch }, { route, store, $auth, $axios, $api }) {
-    console.log('nuxtclientinitauthenticated')
-    if (await $auth.isAuthenticated()) {
-      console.log('nuxtclientinitauthenticated', true)
+    const authenticated = await $auth.isAuthenticated()
+    console.log('nuxtclientinitauthenticated', authenticated)
+    if (authenticated) {
       commit('okta', { authenticated: true, claims: await $auth.getUser() })
       const accessToken = await $auth.getAccessToken()
       $axios.setHeader('Authorization', `Bearer ${accessToken}`)
@@ -80,7 +80,22 @@ export const actions = {
           commit('error', error)
         })
     } else {
-      window.onNuxtReady(() => { window.$nuxt.$router.push('/login') })
+      try {
+        console.log('Trying to renew tokens')
+        const renewToken = await this.$auth.token.renewTokens()
+        await this.$auth.tokenManager.setTokens(renewToken)
+        dispatch('nuxtClientInit')
+      } catch {
+        console.error('You are not logged in')
+        window.onNuxtReady(() => {
+          if (window.$nuxt.$route.path !== '/login') {
+            console.log('Redirecting to login page')
+            window.$nuxt.$router.push('/login')
+          } else {
+            console.log('You are already on the login page')
+          }
+        })
+      }
     }
   },
   ...importedActions
