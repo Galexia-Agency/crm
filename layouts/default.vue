@@ -480,26 +480,9 @@ export default {
   },
   methods: {
     // This manually renews the access token each time we navigate to the app
-    async refreshOkta () {
+    refreshOkta () {
       if (document.visibilityState === 'visible') {
-        console.log('refreshOktaAuthenticated')
-        if (await this.$auth.isAuthenticated()) {
-          console.log('refreshOktaAuthenticated', true)
-          try {
-            const renewToken = await this.$auth.token.renewTokens()
-            await this.$auth.tokenManager.setTokens(renewToken)
-            const accessToken = await this.$auth.getAccessToken()
-            await this.$store.commit('okta', { authenticated: true, claims: await this.$auth.getUser() })
-            this.$axios.setHeader('Authorization', `Bearer ${await accessToken}`)
-            this.$api.setHeader('Authorization', `Bearer ${await accessToken}`)
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error(error)
-            this.$router.push('/login')
-          }
-        } else {
-          this.$router.push('/login')
-        }
+        this.$auth.manuallyRenewTokens()
       }
     },
     showClientModal (data) {

@@ -2,6 +2,9 @@ import { makeItem, makeList } from '~/utils/data'
 import { getItemById, getListById, getListByItemId } from '~/utils/board'
 
 const mutations = {
+  isRenewingTokens (state, bool) {
+    state.isRenewingTokens = bool
+  },
   okta (state, { authenticated, claims }) {
     state.authenticated = authenticated
     if (claims) {

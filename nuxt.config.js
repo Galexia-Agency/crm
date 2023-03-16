@@ -36,7 +36,8 @@ export default {
   loading: {
     color: '#1A237E',
     height: '3px',
-    continuous: true
+    duration: 1000,
+    continuous: false
   },
   /*
    ** Global CSS
@@ -81,6 +82,7 @@ export default {
   publicRuntimeConfig: {
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID,
     OKTA_ISSUER: process.env.OKTA_ISSUER,
+    OKTA_SCOPES: ['openid', 'profile', 'email', 'groups', 'offline_access'],
     PANDLE_COMPANY_ID: process.env.PANDLE_COMPANY_ID,
     COMPANY_INCORPORATION: process.env.COMPANY_INCORPORATION,
     TAX_YEAR_MONTH: process.env.TAX_YEAR_MONTH

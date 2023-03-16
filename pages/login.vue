@@ -118,23 +118,24 @@ export default {
   name: 'Login',
   layout: 'login',
   async mounted () {
-    const scopes = ['openid', 'profile', 'email', 'groups', 'offline_access']
     let OktaSignIn
     await import(/* webpackChunkName: "okta.signin", webpackPreload: true  */ '@okta/okta-signin-widget/dist/js/okta-sign-in.no-polyfill.min.js').then((module) => {
       OktaSignIn = module.default
     })
+    const redirectUri = window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback'
     this.$nextTick(function () {
       this.widget = new OktaSignIn({
         baseUrl: this.$config.OKTA_ISSUER,
         issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
         clientId: this.$config.OKTA_CLIENT_ID,
-        redirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback',
+        redirectUri,
         authParams: {
           pkce: true,
           display: 'page',
           issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
-          scopes,
+          scopes: this.$config.OKTA_SCOPES,
           tokenManager: {
+            // This renews the access token if it is expiring and we are using the app
             autoRenew: true,
             expireEarlySeconds: 120
           }
@@ -142,30 +143,17 @@ export default {
       })
       this.widget.showSignInToGetTokens({
         el: '#okta-signin-container',
-        scopes
+        scopes: this.$config.OKTA_SCOPES
       }).then(async (tokens) => {
         this.$nuxt.$loading.start()
         await this.$auth.handleLoginRedirect(tokens)
+        this.widget.remove()
+        this.$store.commit('okta', { authenticated: true, claims: await this.$auth.getUser() })
+        await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
       }).catch((err) => {
         throw err
       })
     })
-    if (await this.$auth.isAuthenticated()) {
-      this.$router.push('/')
-    } else {
-      const cookies = document.cookie.split(';')
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i]
-        const eqPos = cookie.indexOf('=')
-        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
-        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
-      }
-    }
-  },
-  async beforeDestroy () {
-    this.widget.remove()
-    await this.$auth.isAuthenticated()
-    await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
   }
 }
 </script>

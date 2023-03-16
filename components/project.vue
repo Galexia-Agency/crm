@@ -176,7 +176,8 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims'
+      'claims',
+      'isRenewingTokens'
     ]),
     daysToStart () {
       if (!this.project.enquiry_date) {
@@ -218,6 +219,19 @@ export default {
       return `Project has been with us for ${this.project.daysWithUs} days`
     }
   },
+  watch: {
+    isRenewingTokens (newVal) {
+      if (newVal) {
+        // eslint-disable-next-line no-console
+        console.log('Stopping SSE due to renewing tokens')
+        this.sse_end()
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('Starting SSE due to tokens now being renewed')
+        this.sse_start()
+      }
+    }
+  },
   mounted () {
     this.sse_start()
     document.addEventListener('visibilitychange', this.visibleChange)
@@ -235,34 +249,42 @@ export default {
       }
     },
     sse_start () {
-      const id = this.project.id
-      const authToken = `Bearer ${this.$auth.getAccessToken()}`
-      const self = this
-      const url = `https://api.galexia.agency/projects/sse?id=${id}`
-      if (window.Worker) {
-        if (!this.sseWorker) {
-          this.sseWorker = new Worker()
-          this.sseWorker.postMessage(['start', url, id, authToken])
-          this.sseWorker.onmessage = (e) => {
-            self.sse_updateProject(e.data)
+      if (!this.isRenewingTokens) {
+        // eslint-disable-next-line no-console
+        console.log('Starting SSE')
+        const id = this.project.id
+        const authToken = `Bearer ${this.$auth.getAccessToken()}`
+        const self = this
+        const url = `https://api.galexia.agency/projects/sse?id=${id}`
+        if (window.Worker) {
+          if (!this.sseWorker) {
+            this.sseWorker = new Worker()
+            this.sseWorker.postMessage(['start', url, id, authToken])
+            this.sseWorker.onmessage = (e) => {
+              self.sse_updateProject(e.data)
+            }
+          }
+        } else {
+          // eslint-disable-next-line no-lonely-if
+          if (!this.sse) {
+            this.sse = new EventSourcePolyfill(url, {
+              headers: {
+                Authorization: authToken
+              },
+              withCredentials: false
+            })
+            this.sse.addEventListener(id, function (event) {
+              self.sse_updateProject(JSON.parse(event.data)[0])
+            }, false)
           }
         }
       } else {
-        // eslint-disable-next-line no-lonely-if
-        if (!this.sse) {
-          this.sse = new EventSourcePolyfill(url, {
-            headers: {
-              Authorization: authToken
-            },
-            withCredentials: false
-          })
-          this.sse.addEventListener(id, function (event) {
-            self.sse_updateProject(JSON.parse(event.data)[0])
-          }, false)
-        }
+        // eslint-disable-next-line no-console
+        console.log('Can\'t start SSE as currently renewing tokens')
       }
     },
     sse_end () {
+      console.log('Stopped SSE')
       if (window.Worker) {
         if (this.sseWorker) {
           this.sseWorker.postMessage(['stop'])

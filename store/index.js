@@ -1,6 +1,7 @@
 import importedActions from '../actions'
 
 export const state = () => ({
+  isRenewingTokens: false,
   authenticated: false,
   claims: [],
   clients: [],
@@ -30,15 +31,14 @@ export const state = () => ({
 })
 
 export const actions = {
-  async nuxtClientInit ({ commit, dispatch }, { route, store, $auth, $axios, $api }) {
-    const authenticated = await $auth.isAuthenticated()
-    console.log('nuxtclientinitauthenticated', authenticated)
-    if (authenticated) {
-      commit('okta', { authenticated: true, claims: await $auth.getUser() })
-      const accessToken = await $auth.getAccessToken()
-      $axios.setHeader('Authorization', `Bearer ${accessToken}`)
-      $api.setHeader('Authorization', `Bearer ${accessToken}`)
-      await $axios.$get('https://api.galexia.agency/get',
+  async nuxtClientInit ({ commit, dispatch, state }, { route, $auth, $axios, app }) {
+    if (await $auth.manuallyRenewTokens()) {
+      if (route && route.name && route.name === 'login') {
+        window.onNuxtReady(() => { app.router.push('/') })
+      }
+      // eslint-disable-next-line no-console
+      console.log('Starting the initial get')
+      $axios.$get('https://api.galexia.agency/get',
         {
           headers: {
             Accept: 'application/json',
@@ -69,7 +69,7 @@ export const actions = {
           dispatch('updateClientPandleDataHelper')
           dispatch('filteredProjectsHelper')
           if (route && route.name && route.name === 'client-client') {
-            if (!store.state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
+            if (!state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })
             }
           }
@@ -79,24 +79,29 @@ export const actions = {
           error.description = e
           commit('error', error)
         })
-    } else {
-      try {
-        console.log('Trying to renew tokens')
-        const renewToken = await this.$auth.token.renewTokens()
-        await this.$auth.tokenManager.setTokens(renewToken)
-        dispatch('nuxtClientInit')
-      } catch {
-        console.error('You are not logged in')
-        window.onNuxtReady(() => {
-          if (window.$nuxt.$route.path !== '/login') {
-            console.log('Redirecting to login page')
-            window.$nuxt.$router.push('/login')
-          } else {
-            console.log('You are already on the login page')
-          }
-        })
+      if (state.claims.length === 0) {
+        // We only need to get the user info once, so we do it here rather than in the updateAuthHeaders call
+        commit('okta', { authenticated: true, claims: await $auth.getUser() })
       }
+      // eslint-disable-next-line no-console
+      console.log('Claims have been updated')
     }
+  },
+  updateAuthHeaders ({ commit, state }, context) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      const accessToken = await context.$auth.getAccessToken()
+      if (!accessToken) {
+        reject(Error('We couldn\'t get the access token'))
+      }
+      if (state.accessToken !== accessToken) {
+        context.$axios.setHeader('Authorization', `Bearer ${accessToken}`)
+        context.$api.setHeader('Authorization', `Bearer ${accessToken}`)
+        // eslint-disable-next-line no-console
+        console.log('Auth headers have been updated')
+      }
+      resolve()
+    })
   },
   ...importedActions
 }

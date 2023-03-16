@@ -3,6 +3,7 @@ export default (ctx, inject) => {
     await ctx.app.$auth.signOut({ postLogoutRedirectUri: window.location.host === 'localhost:8888' ? 'http://' + window.location.host : 'https://' + window.location.host })
     localStorage.clear()
     sessionStorage.clear()
+    // Delete all cookies
     const COOKIES = document.cookie.split(';')
     for (let i = 0; i < COOKIES.length; i++) {
       const COOKIE = COOKIES[i]
