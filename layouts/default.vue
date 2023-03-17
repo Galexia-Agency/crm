@@ -137,7 +137,7 @@
 
   /* Menu */
   .hamburger {
-    /* stylelint-disable-next-line */
+    /* stylelint-disable-next-line declaration-no-important */
     display: none!important
   }
 
@@ -150,7 +150,7 @@
       padding-top: 4rem
     }
     .hamburger, nav, .contentWrapper {
-      /* stylelint-disable-next-line */
+      /* stylelint-disable-next-line declaration-no-important */
       transition: .5s!important
     }
     .hamburger {
