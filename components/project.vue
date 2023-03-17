@@ -225,7 +225,7 @@ export default {
         // eslint-disable-next-line no-console
         console.log('Stopping SSE due to renewing tokens')
         this.sse_end()
-      } else {
+      } else if (document.visibilityState === 'visible') {
         // eslint-disable-next-line no-console
         console.log('Starting SSE due to tokens now being renewed')
         this.sse_start()
@@ -242,9 +242,7 @@ export default {
   },
   methods: {
     visibleChange () {
-      if (document.visibilityState === 'visible') {
-        this.sse_start()
-      } else {
+      if (document.visibilityState !== 'visible') {
         this.sse_end()
       }
     },
