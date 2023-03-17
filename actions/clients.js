@@ -1,7 +1,7 @@
 import { safeURL } from '~/plugins/mixins/urls'
 
 export default {
-  async addClient ({ commit }, data) {
+  async addClient ({ commit, dispatch }, data) {
     data.business_shortname = safeURL(data.business_shortname)
     data.address = JSON.stringify(data.address)
     const response = await this.$axios.$put('https://api.galexia.agency/clients',
@@ -15,7 +15,13 @@ export default {
         }
       }
     )
-    return await commit('clients', response)
+    await commit('clients', response.sort(function (a, b) {
+      const textA = a.business_shortname.toUpperCase()
+      const textB = b.business_shortname.toUpperCase()
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+    }))
+    await dispatch('updateClientPandleDataHelper')
+    return await dispatch('filteredProjectsHelper')
   },
   async updateClient ({ commit, dispatch }, data) {
     let adr = {}

@@ -44,10 +44,10 @@
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
       <div v-if="claims.groups.includes('billing')" class="monies">
-        <h2 v-text="'Total Revenue: £' + client.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Expenses: £' + client.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Total Net Profit: £' + client.profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-text="'Completion Total: £' + client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-if="client.revenue" v-text="'Total Revenue: £' + client.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-if="client.expenses" v-text="'Total Expenses: £' + client.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-if="client.profit" v-text="'Total Net Profit: £' + client.profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-if="client.completion_amount" v-text="'Completion Total: £' + client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
       <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
         Add to Pandle

@@ -451,6 +451,7 @@ import { mapState } from 'vuex'
 import Sidebar from '~/components/sidebar'
 import clientModal from '~/components/modals/update/clientModal'
 import ConflictsModal from '~/components/modals/conflictModal'
+import { safeURL } from '~/plugins/mixins/urls'
 
 export default {
   name: 'DefaultLayout',
@@ -514,7 +515,7 @@ export default {
       this.hideClientModal()
       try {
         await this.$store.dispatch('addClient', data)
-        this.$router.push('/client/' + data.business_shortname)
+        this.$router.push('/client/' + safeURL(data.business_shortname))
       } catch (e) {
         const error = {}
         error.description = e
