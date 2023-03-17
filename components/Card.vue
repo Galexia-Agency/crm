@@ -67,10 +67,10 @@
 <template>
   <div class="card" :class="classes" :data-id="item.id" @click="edit">
     <div class="icons">
-      <template v-if="icons && (project.admin.includes(claims.email) || (project.contributor && project.contributor.includes(claims.email)))">
+      <template v-if="icons && (project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))">
         <template v-if="item.archived">
           <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="unarchive" />
-          <font-awesome-icon v-if="project.admin.includes(claims.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click.stop="remove" />
+          <font-awesome-icon v-if="project.admin.includes(userInfo.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click.stop="remove" />
         </template>
         <template v-else>
           <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="archive" />
@@ -87,7 +87,7 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
         {{ item.day + ' ' + item.dayNo + ' ' + item.month + ' - ' + daysRemaining(item.dateUNIX) }}
       </p>
-      <p v-if="item.assignee && item.assignee !== claims.email" class="item-date">
+      <p v-if="item.assignee && item.assignee !== userInfo.email" class="item-date">
         <font-awesome-icon :icon="['fa-solid', 'fa-user']" />
         {{ item.assignee }}
       </p>
@@ -115,7 +115,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims'
+      'userInfo'
     ]),
 
     classes () {
@@ -124,7 +124,7 @@ export default {
         'is-overdue': this.isOverdue,
         icons_draggable: !this.icons,
         archived: this.item.archived,
-        isnt_draggable: this.icons && !(this.project.admin.includes(this.claims.email) || (this.project.contributor && this.project.contributor.includes(this.claims.email)))
+        isnt_draggable: this.icons && !(this.project.admin.includes(this.userInfo.email) || (this.project.contributor && this.project.contributor.includes(this.userInfo.email)))
       }
     },
 

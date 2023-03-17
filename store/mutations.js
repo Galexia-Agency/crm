@@ -2,14 +2,19 @@ import { makeItem, makeList } from '~/utils/data'
 import { getItemById, getListById, getListByItemId } from '~/utils/board'
 
 const mutations = {
+  isClientLoaded (state, bool) {
+    state.isClientLoaded = bool
+  },
   isRenewingTokens (state, bool) {
     state.isRenewingTokens = bool
   },
-  okta (state, { authenticated, claims }) {
-    state.authenticated = authenticated
-    if (claims) {
-      state.claims = claims
-    }
+  isAuthenticated (state, bool) {
+    state.isAuthenticated = bool
+  },
+  updateUserInfo (state, userInfo) {
+    state.userInfo = userInfo
+    // eslint-disable-next-line no-console
+    console.log('Claims have been updated')
   },
   error (state, data) {
     // eslint-disable-next-line no-console

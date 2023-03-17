@@ -59,7 +59,7 @@
       <h2>
         {{ project.name }}
       </h2>
-      <a v-if="project.admin.includes(claims.email)" class="edit" @click="showProjectModal(project)">
+      <a v-if="project.admin.includes(userInfo.email)" class="edit" @click="showProjectModal(project)">
         <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
       </a>
       <a v-if="project.project_url" class="list-container" :href="project.project_url" target="_blank">
@@ -114,18 +114,18 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysWithUs" />
       </div>
-      <a v-if="$parent.client.pandle_id && !project.pandle_id && claims.groups.includes('admin')" class="list-container" @click="addProjectPandle()">
+      <a v-if="$parent.client.pandle_id && !project.pandle_id && userInfo.groups.includes('admin')" class="list-container" @click="addProjectPandle()">
         <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
       </a>
-      <a v-else-if="project.pandle_id && claims.groups.includes('admin')" class="list-container" :href="`https://my.pandle.com/projects/${project.pandle_id}`" target="_blank">
+      <a v-else-if="project.pandle_id && userInfo.groups.includes('admin')" class="list-container" :href="`https://my.pandle.com/projects/${project.pandle_id}`" target="_blank">
         <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
         View in Pandle
       </a>
-      <!-- <button v-if="project.pandle_id && claims.groups.includes('billing')" class="list-container" type="button" @click="createInvoice()">
+      <!-- <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createInvoice()">
         Create Invoice
       </button>
-      <button v-if="project.pandle_id && claims.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
+      <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
         Create Quote
       </button> -->
       <Toggle :model="showArchived" label="Show Deleted Items" class="list-container" :class="{toggled: showArchived}" @input="showArchived = $event">
@@ -176,7 +176,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims',
+      'userInfo',
       'isRenewingTokens'
     ]),
     daysToStart () {

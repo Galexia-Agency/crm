@@ -1,9 +1,10 @@
 import importedActions from '../actions'
 
 export const state = () => ({
+  isClientLoaded: false,
   isRenewingTokens: false,
-  authenticated: false,
-  claims: [],
+  isAuthenticated: false,
+  userInfo: [],
   clients: [],
   contacts: [],
   domains: [],
@@ -32,79 +33,55 @@ export const state = () => ({
 
 export const actions = {
   async nuxtClientInit ({ commit, dispatch, state }, { route, $auth, $axios, app }) {
-    commit('okta', { authenticated: false })
+    commit('isClientLoaded', false)
     if (await $auth.manuallyRenewTokens()) {
       if (route && route.name && route.name === 'login') {
+        // We do this to go home as soon as possible
+        app.router.push('/')
+        // We then have to do this to stop nuxt redirecting back to the login page when it's initialised
         window.onNuxtReady(() => { app.router.push('/') })
       }
       // eslint-disable-next-line no-console
       console.log('Starting the initial get')
-      $axios.$get('https://api.galexia.agency/get',
-        {
+      await Promise.all([
+        $axios.$get('https://api.galexia.agency/get', {
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
           }
-        }
-      )
-        .then((response) => {
-          response[3].forEach((project, index) => {
-            if (project.lists) {
-              response[3][index].lists = JSON.parse(project.lists)
-            }
-            if (project.ongoing) {
-              response[3][index].ongoing = Boolean(project.ongoing)
-            }
-          })
-          commit('clients', response[0].sort(function (a, b) {
-            const textA = a.business_shortname.toUpperCase()
-            const textB = b.business_shortname.toUpperCase()
-            return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-          }))
-          commit('contacts', response[1])
-          commit('domains', response[2])
-          commit('projects', response[3])
-          commit('products', response[4])
-          commit('pandleDashboard', response[5])
-          dispatch('projectDatesHelper')
-          dispatch('updateClientPandleDataHelper')
-          dispatch('filteredProjectsHelper')
-          if (route && route.name && route.name === 'client-client') {
-            if (!state.clients.find((client) => client.business_shortname.toLowerCase() === route.params.client)) {
-              window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })
-            }
+        }),
+        state.userInfo.length === 0 ? dispatch('updateUserInfo', $auth) : Promise.resolve(null)
+      ]).then(([response]) => {
+        response[3].forEach((project, index) => {
+          if (project.lists) {
+            response[3][index].lists = JSON.parse(project.lists)
+          }
+          if (project.ongoing) {
+            response[3][index].ongoing = Boolean(project.ongoing)
           }
         })
-        .catch(function (e) {
-          const error = {}
-          error.description = e
-          commit('error', error)
-        })
-      if (state.claims.length === 0) {
-        // We only need to get the user info once, so we do it here rather than in the updateAuthHeaders call
-        commit('okta', { claims: await $auth.getUser() })
-      }
-      // We update the authenticated state here as we have now renewed the tokens and are authenticated again
-      commit('okta', { authenticated: true })
-      // eslint-disable-next-line no-console
-      console.log('Claims have been updated')
-    }
-  },
-  updateAuthHeaders ({ commit, state }, context) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      const accessToken = await context.$auth.getAccessToken()
-      if (!accessToken) {
-        reject(Error('We couldn\'t get the access token'))
-      }
-      if (state.accessToken !== accessToken) {
-        context.$axios.setHeader('Authorization', `Bearer ${accessToken}`)
-        context.$api.setHeader('Authorization', `Bearer ${accessToken}`)
+        commit('clients', response[0].sort(function (a, b) {
+          const textA = a.business_shortname.toUpperCase()
+          const textB = b.business_shortname.toUpperCase()
+          return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+        }))
+        commit('contacts', response[1])
+        commit('domains', response[2])
+        commit('projects', response[3])
+        commit('products', response[4])
+        commit('pandleDashboard', response[5])
+        dispatch('projectDatesHelper')
+        dispatch('updateClientPandleDataHelper')
+        dispatch('filteredProjectsHelper')
+        commit('isClientLoaded', true)
         // eslint-disable-next-line no-console
-        console.log('Auth headers have been updated')
-      }
-      resolve()
-    })
+        console.log('Initial get has completed')
+      }).catch(function (e) {
+        const error = {}
+        error.description = e
+        commit('error', error)
+      })
+    }
   },
   ...importedActions
 }

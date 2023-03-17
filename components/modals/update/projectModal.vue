@@ -201,15 +201,15 @@ export default {
       return this.$data
     },
     ...mapState([
-      'claims'
+      'userInfo'
     ])
   },
   methods: {
     show (data) {
       this.reset()
       Object.assign(this, data)
-      if (this.claims.email !== 'joe@galexia.agency') {
-        this.admin = 'joe@galexia.agency,' + this.claims.email
+      if (this.userInfo.email !== 'joe@galexia.agency') {
+        this.admin = 'joe@galexia.agency,' + this.userInfo.email
       }
       this.ongoing = Boolean(this.ongoing)
     },

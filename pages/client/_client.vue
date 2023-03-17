@@ -38,21 +38,21 @@
     <div class="fixed">
       <h1>
         {{ client.business_name }}
-        <a v-if="claims.groups.includes('admin')" @click="showClientModal(client)">
+        <a v-if="userInfo.groups.includes('admin')" @click="showClientModal(client)">
           <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
         </a>
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
-      <div v-if="claims.groups.includes('billing')" class="monies">
+      <div v-if="userInfo.groups.includes('billing')" class="monies">
         <h2 v-if="client.revenue" v-text="'Total Revenue: £' + client.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
         <h2 v-if="client.expenses" v-text="'Total Expenses: £' + client.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
         <h2 v-if="client.profit" v-text="'Total Net Profit: £' + client.profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
         <h2 v-if="client.completion_amount" v-text="'Completion Total: £' + client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
       </div>
-      <button v-if="!client.pandle_id && claims.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
+      <button v-if="!client.pandle_id && userInfo.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
         Add to Pandle
       </button>
-      <div v-if="claims.groups.includes('admin')" class="contact container">
+      <div v-if="userInfo.groups.includes('admin')" class="contact container">
         <template v-for="contact in contactsForClient">
           <span :key="contact.id + 'i'" style="display: none">
             {{ contact.org = client.business_name }}
@@ -100,7 +100,7 @@
     >
       <clientModal ref="client" @submit="editClient" @cancel="hideClientModal" />
     </ui-modal>
-    <div v-if="claims.groups.includes('admin')" class="fixed">
+    <div v-if="userInfo.groups.includes('admin')" class="fixed">
       <button type="button" class="button primary" @click="showNewProjectModal({client_id: client.id})">
         New Project
       </button>
@@ -147,7 +147,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims',
+      'userInfo',
       'clients',
       'contacts',
       'projects'
@@ -171,6 +171,11 @@ export default {
         }
       }
       return false
+    }
+  },
+  created () {
+    if (this.clients && !this.client) {
+      this.$nuxt.context.error({ statusCode: 404, message: 'Client not found' })
     }
   },
   mounted () {
@@ -260,10 +265,9 @@ export default {
     async editClient (data) {
       this.hideClientModal()
       try {
-        const location = data.business_shortname.toLowerCase()
         await this.$store.dispatch('updateClient', data)
-        if (location !== data.business_shortname.toLowerCase()) {
-          window.location = '/client/' + data.business_shortname.toLowerCase()
+        if (this.$route.params.client !== data.business_shortname.toLowerCase()) {
+          this.$router.push('/client/' + data.business_shortname.toLowerCase())
         }
       } catch (e) {
         const error = {}

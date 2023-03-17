@@ -417,7 +417,7 @@
 </style>
 
 <template>
-  <div v-if="authenticated" class="contentWrapper">
+  <div v-if="isAuthenticated && isClientLoaded" class="contentWrapper">
     <ui-modal
       ref="modal"
       :active="error.active"
@@ -471,8 +471,9 @@ export default {
   computed: {
     ...mapState([
       'error',
-      'authenticated',
-      'conflicts'
+      'isAuthenticated',
+      'conflicts',
+      'isClientLoaded'
     ])
   },
   mounted () {

@@ -52,11 +52,11 @@
 <template>
   <div class="home">
     <template>
-      <h1>Welcome back {{ claims.name }}</h1>
+      <h1>Welcome back {{ userInfo.name }}</h1>
       <ToDoLists />
       <NetData />
       <ClientStatusGraphs />
-      <template v-if="claims.groups.includes('billing')">
+      <template v-if="userInfo.groups.includes('billing')">
         <MoneyBreakdown />
         <MonthlyCharts />
         <ProjectTimelines />
@@ -92,7 +92,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims'
+      'userInfo'
     ])
   }
 }

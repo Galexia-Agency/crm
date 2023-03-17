@@ -31,7 +31,7 @@
         </template>
       </tbody>
     </table>
-    <div v-if="claims.groups.includes('admin')">
+    <div v-if="userInfo.groups.includes('admin')">
       <button type="button" class="button primary" @click="showModal">
         New Product
       </button>
@@ -71,7 +71,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims',
+      'userInfo',
       'products'
     ]),
     productsValues () {

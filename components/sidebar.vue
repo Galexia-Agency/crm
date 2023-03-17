@@ -23,10 +23,10 @@
         <h2>Home</h2>
       </nuxt-link>
       <div class="sidebar-buttons">
-        <nuxt-link v-if="claims.groups.includes('billing')" to="/products" class="button primary">
+        <nuxt-link v-if="userInfo.groups.includes('billing')" to="/products" class="button primary">
           Products
         </nuxt-link>
-        <button v-if="claims.groups.includes('admin')" type="button" class="button primary" @click="$parent.showClientModal()">
+        <button v-if="userInfo.groups.includes('admin')" type="button" class="button primary" @click="$parent.showClientModal()">
           New Client
         </button>
         <button type="button" class="button primary" @click="$logout()">
@@ -92,7 +92,7 @@ export default {
     ...mapState([
       'filteredProjects',
       'clients',
-      'claims'
+      'userInfo'
     ])
   },
   methods: {

@@ -50,7 +50,7 @@ export default {
   computed: {
     ...mapState([
       'projects',
-      'claims'
+      'userInfo'
     ]),
     dueItems () {
       return this.getLists('due')
@@ -73,7 +73,7 @@ export default {
         if (project.lists) {
           project.lists.forEach((list) => {
             list.items.forEach((item) => {
-              if (item.assignee === this.claims.email || (this.claims.email === 'joe@galexia.agency' && !item.assignee) || (this.claims.email === 'joe@galexia.agency' && item.assignee !== this.claims.email)) {
+              if (item.assignee === this.userInfo.email || (this.userInfo.email === 'joe@galexia.agency' && !item.assignee) || (this.userInfo.email === 'joe@galexia.agency' && item.assignee !== this.userInfo.email)) {
                 if (item.date) {
                   if (item.dateUNIX && due(item.dateUNIX)) {
                     const newItem = { ...item }

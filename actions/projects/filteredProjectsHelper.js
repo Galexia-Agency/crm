@@ -28,7 +28,7 @@ export default {
         filteredProjects['Closed Lead'].find((e) => e.client_id === client.id) === undefined &&
         filteredProjects.Completed.find((e) => e.client_id === client.id) === undefined &&
         filteredProjects.Cancelled.find((e) => e.client_id === client.id) === undefined &&
-        state.claims.groups.includes('admin')
+        state.userInfo.groups.includes('admin')
       ) {
         filteredProjects.Other.push(client)
       }

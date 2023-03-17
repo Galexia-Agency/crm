@@ -1,6 +1,6 @@
 export default {
   async addItem ({ state, commit, dispatch, getters }, { projectId, listId, title, description, date, assignee }) {
-    assignee = assignee || state.claims.email
+    assignee = assignee || state.userInfo.email
     let dayNo, day, month, dateUNIX
     if (date) {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -13,16 +13,16 @@ export default {
     }
     const clientName = getters.getClientById(getters.getProjectById(projectId).client_id).business_name
     const clientShortName = getters.getClientById(getters.getProjectById(projectId).client_id).business_shortname
-    const updatedBy = state.claims.email
+    const updatedBy = state.userInfo.email
 
     await commit('addItem', { projectId, listId, title, description, date, dateUNIX, dayNo, day, month, clientName, clientShortName, updatedBy, assignee })
     return await dispatch('updateProjectList', projectId)
   },
   async updateItem ({ state, commit, dispatch, getters }, { projectId, itemId, title, description, date, createdDate, clientName, clientShortName, assignee }) {
-    assignee = assignee || state.claims.email
+    assignee = assignee || state.userInfo.email
     clientName = clientName || getters.getClientById(getters.getProjectById(projectId).client_id).business_name
     clientShortName = clientShortName || getters.getClientById(getters.getProjectById(projectId).client_id).business_shortname
-    const updatedBy = state.claims.email
+    const updatedBy = state.userInfo.email
     let dayNo, day, month, dateUNIX
     if (date) {
       const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']

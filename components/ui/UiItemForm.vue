@@ -16,7 +16,7 @@
         v-model="title"
         name="title"
         label="Title"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
         :autofocus="true"
         :required="true"
       />
@@ -24,7 +24,7 @@
         v-if="title"
         v-model="description"
         label="Description"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
         @editorUpdateShim="editorUpdateShim"
       />
       <ui-input
@@ -32,7 +32,7 @@
         name="date"
         type="date"
         label="Date"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
       />
       <ui-input
         v-model="assignee"
@@ -40,7 +40,7 @@
         type="text"
         label="Assignee"
         help="Email Address"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))"
+        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
       />
       <div v-if="id" class="field last-updated">
         Last updated by <strong>{{ updatedBy }}</strong> at <strong>{{ (new Date(updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedDate)).toLocaleDateString("en-GB") }}</strong>
@@ -53,7 +53,7 @@
           <ui-button style-type="text" @click="cancel">
             Cancel
           </ui-button>
-          <ui-button type="submit" style-type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(claims.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(claims.email)))">
+          <ui-button type="submit" style-type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))">
             {{ id ? 'Update' : 'Add' }}
           </ui-button>
         </div>
@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     ...mapState([
-      'claims'
+      'userInfo'
     ]),
     values () {
       return this.$data

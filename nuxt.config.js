@@ -52,6 +52,7 @@ export default {
   plugins: [
     '~plugins/logout',
     '~plugins/okta',
+    '~plugins/manuallyRenewTokens',
     '~plugins/board',
     '~plugins/mixins/dates',
     '~plugins/mixins/urls',

@@ -145,7 +145,7 @@ export default {
         this.$nuxt.$loading.start()
         await this.$auth.handleLoginRedirect(tokens)
         this.widget.remove()
-        this.$store.commit('okta', { authenticated: true, claims: await this.$auth.getUser() })
+        await this.$store.dispatch('updateUserInfo', this.$auth)
         await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
       }).catch((err) => {
         throw err

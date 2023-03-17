@@ -13,20 +13,20 @@
           <template v-for="(list, listIndex) in lists">
             <Draggable v-show="list.archived !== true || ($parent.showArchived && list.archived)" :key="list.id">
               <section ref="list" class="list-container" :data-id="list.id" :class="{archived: list.archived}">
-                <div v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))" class="list-header">
+                <div v-if="$parent.project.admin.includes($parent.userInfo.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.userInfo.email))" class="list-header">
                   <font-awesome-icon :icon="['fa-solid', 'fa-grip']" class="list-drag-handle" />
                   <input class="list-title" :value="list.title" @blur="editList($event, list.id)">
                   <font-awesome-icon v-if="!list.archived" :icon="['fa-solid', 'fa-box-archive']" class="list-delete" @click="archiveList(list.id)" />
                   <template v-else>
                     <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="list-delete" @click="unarchiveList(list.id)" />
-                    <font-awesome-icon v-if="$parent.project.admin.includes($parent.claims.email)" :icon="['fa-solid', 'fa-trash-can']" class="list-delete" @click="removeList(list.id)" />
+                    <font-awesome-icon v-if="$parent.project.admin.includes($parent.userInfo.email)" :icon="['fa-solid', 'fa-trash-can']" class="list-delete" @click="removeList(list.id)" />
                   </template>
                 </div>
                 <div v-else class="list-header">
                   <p class="list-title" v-text="list.title" />
                 </div>
                 <Container
-                  v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))"
+                  v-if="$parent.project.admin.includes($parent.userInfo.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.userInfo.email))"
                   group-name="list"
                   drag-class="card-ghost"
                   drop-class="card-ghost-drop"
@@ -59,7 +59,7 @@
                 </template>
                 <div class="item-entry">
                   <UiItemEntry
-                    v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))"
+                    v-if="$parent.project.admin.includes($parent.userInfo.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.userInfo.email))"
                     :list-id="list.id"
                     placeholder="Add an item"
                     icon="ellipsis-h"
@@ -70,7 +70,7 @@
             </Draggable>
           </template>
         </Container>
-        <div v-if="$parent.project.admin.includes($parent.claims.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.claims.email))" class="new-list">
+        <div v-if="$parent.project.admin.includes($parent.userInfo.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.userInfo.email))" class="new-list">
           <UiItemEntry placeholder="Add a list" @enter="onAddList" />
         </div>
       </div>
