@@ -30,31 +30,31 @@
   }
   ::-webkit-scrollbar-thumb {
     background-color: var(--thumbBG);
-    border-radius: 6px;
-    border: 3px solid var(--scrollbarBG)
+    border: 3px solid var(--scrollbarBG);
+    border-radius: 6px
   }
 
   /* Content */
   .contentWrapper {
-    font-family: var(--secondaryFont);
-    color: var(--secondaryColor);
-    font-size: 16px;
-    font-weight: 400;
-    margin: 0;
     display: grid;
     grid-template-columns: 300px 1fr;
+    margin: 0;
+    color: var(--secondaryColor);
+    font-weight: 400;
+    font-size: 1rem;
+    font-family: var(--secondaryFont);
     h1, h2, h3, h4, h5, h6 {
-      font-family: var(--primaryFont);
-      font-weight: 400;
+      margin: 0 0 1em;
       color: var(--primaryColor);
-      margin: 0 0 1em
+      font-weight: 400;
+      font-family: var(--primaryFont)
     }
     h1 {
       font-size: 1.66em
     }
     h2 {
-      font-size: 1.5em;
-      margin: 0 0 .5em
+      margin: 0 0 .5em;
+      font-size: 1.5em
     }
     h3 {
       font-size: 1.33em
@@ -75,9 +75,9 @@
       opacity: .9
     }
     .button.is-archive[disabled], fieldset[disabled] .button.is-archive, .button.is-archive, .button.is-archive:hover, .button.is-archive.is-hovered {
+      color: red;
       background: transparent;
-      border: 1px solid red;
-      color: red
+      border: 1px solid red
     }
     .button.is-archive:hover, .button.is-archive.is-hovered {
       background: whitesmoke
@@ -103,22 +103,21 @@
     padding: 2rem
   }
   nav {
-    padding: 2rem;
     height: 100vh;
+    padding: 2rem;
     overflow-y: scroll
   }
   button {
+    color: var(--primaryColor);
+    font-family: inherit;
     background: transparent;
     border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    font-family: inherit;
-    color: var(--primaryColor)
+    cursor: pointer
   }
   .search {
     width: 75%;
-    font-size: 1rem;
-    padding: .25rem
+    padding: .25rem;
+    font-size: 1rem
   }
 
   /* Card */
@@ -126,10 +125,10 @@
     font-weight: 100
   }
   .item-title, .item-date {
-    font-size: .9rem;
     max-width: 82%;
-    overflow-wrap: break-word;
-    word-wrap: break-word
+    font-size: .9rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word
   }
   .item-date, .item-assignee {
     color: var(--primaryColor);
@@ -147,30 +146,32 @@
       padding: 1.5rem
     }
     main {
-      padding-top: 4rem;
-      min-width: 100vw
+      min-width: 100vw;
+      padding-top: 4rem
     }
     .hamburger, nav, .contentWrapper {
       /* stylelint-disable-next-line */
       transition: .5s!important
     }
     .hamburger {
-      padding: 0;
-      /* stylelint-disable-next-line */
-      display: inline-block!important;
       position: absolute;
-      left: 1.75rem;
       top: 1rem;
-      cursor: pointer;
-      z-index: 2
+      left: 1.75rem;
+      z-index: 2;
+      /* stylelint-disable-next-line declaration-no-important */
+      display: inline-block!important;
+      padding: 0;
+      cursor: pointer
     }
     .contentWrapper {
       grid-template-columns: 1fr
     }
     nav {
-      z-index: 98;
       position: absolute;
+      /* stylelint-disable-next-line function-name-case, declaration-property-value-no-unknown */
       left: Min(calc(-100vw - 3rem - 46px), -300px);
+      z-index: 98;
+      /* stylelint-disable-next-line function-name-case, declaration-property-value-no-unknown */
       width: Min(calc(100vw - 3rem - 46px), 300px);
       background: white;
       border-right: 2px solid #F3F3F3
@@ -179,6 +180,7 @@
       left: 0
     }
     .nav_open .contentWrapper, .nav_open .hamburger {
+      /* stylelint-disable-next-line function-name-case, declaration-property-value-no-unknown */
       margin-left: Min(calc(100vw - 3rem - 46px), 300px)
     }
   }
@@ -201,18 +203,17 @@
   }
   .list-container {
     width: $column-width;
-    padding: 10px;
-    margin: 5px;
-    margin-right: 20px;
-    background-color: #F3F3F3;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .12), 0 1px 1px rgba(0, 0, 0, .24);
     max-height: 60vh;
+    margin: 5px 20px 5px 5px;
+    padding: 10px;
     overflow: auto;
+    background-color: #F3F3F3;
+    box-shadow: 0 1px 1px rgba(0 0 0 / 12%), 0 1px 1px rgba(0 0 0 / 24%);
     > .item-entry {
-      background-color: #F3F3F3;
-      padding-bottom: 10px;
       position: sticky;
-      bottom: -1px
+      bottom: -1px;
+      padding-bottom: 10px;
+      background-color: #F3F3F3
     }
   }
   .lists-container {
@@ -222,19 +223,19 @@
     }
   }
   .list-header {
-    padding-bottom: 10px;
-    padding-top: 10px;
-    margin-top: -10px;
-    margin-left: 5px;
-    margin-right: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: .5rem;
-    font-size: 18px;
     position: sticky;
     top: -10px;
     z-index: 1;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -10px;
+    margin-right: 5px;
+    margin-left: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 18px;
     background: #F3F3F3
   }
   .list-header .list-delete {
@@ -244,11 +245,11 @@
     opacity: 1
   }
   .list-title {
-    border: none;
-    background: transparent;
-    font-size: 1rem;
+    width: 75%;
     padding: .25rem;
-    width: 75%
+    font-size: 1rem;
+    background: transparent;
+    border: none
   }
   .archived {
     color: black;
@@ -262,15 +263,15 @@
   }
   .card {
     margin: 5px;
+    padding: 10px;
     background-color: white;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .12), 0 1px 1px rgba(0, 0, 0, .24);
-    padding: 10px
+    box-shadow: 0 1px 1px rgba(0 0 0 / 12%), 0 1px 1px rgba(0 0 0 / 24%)
   }
   .card-ghost {
-    transition: .25s all;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, .12);
+    box-shadow: 0 5px 10px rgba(0 0 0 / 12%);
     transform: scale(1.1);
-    cursor: move
+    cursor: move;
+    transition: .25s all
   }
   .card-ghost-drop {
     transform: scale(1)
@@ -285,8 +286,8 @@
     cursor: pointer
   }
   .item-entry {
-    padding-top: 10px;
     margin-top: 10px;
+    padding-top: 10px;
     border-top: 1px solid #DDDDDD
   }
   .new-list {
@@ -299,13 +300,13 @@
     right: 20px
   }
   .refresh {
-    font-size: 2rem;
-    width: min-content;
     position: absolute;
-    right: 2rem;
     top: .5rem;
-    cursor: pointer;
+    right: 2rem;
     z-index: 9;
+    width: min-content;
+    font-size: 2rem;
+    cursor: pointer;
     transition: transform .66s ease-in-out 0s
   }
   .refresh.clicked {
@@ -323,11 +324,11 @@
 
   /* Error */
   .error {
-    background-color: white;
     display: grid;
     gap: 1rem;
-    place-content: center;
-    padding: 30px
+    padding: 30px;
+    background-color: white;
+    place-content: center
   }
 
   /* NavLink */
@@ -338,8 +339,8 @@
   }
   .navLink.other {
     display: block;
-    white-space: nowrap;
     overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis
   }
 
@@ -349,15 +350,15 @@
     animation: fade-data .6s linear infinite alternate-reverse
   }
   .loading-content {
+    height: 20px;
+    margin-bottom: 20px;
     background: linear-gradient(90deg, #F4F4F4 8%, #E4E4E4 18%, #F4F4F4 33%);
     border-radius: 10px;
-    animation: shimmer-data 5s linear infinite forwards;
-    height: 20px;
-    margin-bottom: 20px
+    animation: shimmer-data 5s linear infinite forwards
   }
-  /* stylelint-disable-next-line at-rule-no-unknown */
   @for $i from 2 through 10 {
     .loading-content:nth-child(#{$i}) {
+      /* stylelint-disable-next-line declaration-property-value-no-unknown */
       animation-delay: .25s * $i
     }
   }
