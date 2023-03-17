@@ -1,5 +1,5 @@
 [build]
-command = "npm run generate --no-optional"
+command = "yarn generate --ignore-optional"
 publish = "dist"
 functions = "functions"
 
