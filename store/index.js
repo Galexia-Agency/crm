@@ -32,6 +32,7 @@ export const state = () => ({
 
 export const actions = {
   async nuxtClientInit ({ commit, dispatch, state }, { route, $auth, $axios, app }) {
+    commit('okta', { authenticated: false })
     if (await $auth.manuallyRenewTokens()) {
       if (route && route.name && route.name === 'login') {
         window.onNuxtReady(() => { app.router.push('/') })
@@ -81,8 +82,10 @@ export const actions = {
         })
       if (state.claims.length === 0) {
         // We only need to get the user info once, so we do it here rather than in the updateAuthHeaders call
-        commit('okta', { authenticated: true, claims: await $auth.getUser() })
+        commit('okta', { claims: await $auth.getUser() })
       }
+      // We update the authenticated state here as we have now renewed the tokens and are authenticated again
+      commit('okta', { authenticated: true })
       // eslint-disable-next-line no-console
       console.log('Claims have been updated')
     }

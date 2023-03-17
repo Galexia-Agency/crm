@@ -44,8 +44,6 @@ export default (ctx, inject) => {
         await ctx.app.store.dispatch('updateAuthHeaders', ctx)
         // eslint-disable-next-line no-console
         console.log('Successfully renewed tokens')
-        // We update the authenticated state here as we have now renewed the tokens and are authenticated again
-        ctx.app.store.commit('okta', { authenticated: true })
         ctx.app.store.commit('isRenewingTokens', false)
         resolve(true)
       } catch (error) {
