@@ -284,6 +284,7 @@ export default {
       }
     },
     sse_end () {
+      // eslint-disable-next-line no-console
       console.log('Stopped SSE')
       if (window.Worker) {
         if (this.sseWorker) {

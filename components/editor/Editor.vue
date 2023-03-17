@@ -298,7 +298,9 @@ div#rich_editor {
 <script>
 import Compressor from 'compressorjs'
 import { Editor, EditorContent } from '@tiptap/vue-2'
+// eslint-disable-next-line import/no-named-as-default
 import StarterKit from '@tiptap/starter-kit'
+// eslint-disable-next-line import/no-named-as-default
 import Underline from '@tiptap/extension-underline'
 // eslint-disable-next-line import/no-named-as-default
 import Link from '@tiptap/extension-link'
