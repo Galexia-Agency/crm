@@ -6,28 +6,28 @@
     height: 46px;
     cursor: pointer;
     input {
-      opacity: 0;
       width: 0;
-      height: 0
+      height: 0;
+      opacity: 0
     }
   }
   .slider {
     position: absolute;
     top: 10px;
+    bottom: 10px;
     left: calc(10px + 1.66em);
     min-width: 40px;
-    bottom: 10px;
     background-color: #CCCCCC;
     transition: .4s;
     &:before {
       position: absolute;
-      content: '';
-      height: 20px;
-      width: 20px;
-      left: 4px;
       bottom: 2px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
       background-color: white;
-      transition: .4s
+      transition: .4s;
+      content: ''
     }
     &.round {
       border-radius: 34px;

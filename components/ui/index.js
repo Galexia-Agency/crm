@@ -12,4 +12,4 @@ const components = {
 
 Object
   .keys(components)
-  .forEach(name => Vue.component(name, components[name]))
+  .forEach((name) => Vue.component(name, components[name]))

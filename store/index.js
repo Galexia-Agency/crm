@@ -69,7 +69,7 @@ export const actions = {
           dispatch('updateClientPandleDataHelper')
           dispatch('filteredProjectsHelper')
           if (route && route.name && route.name === 'client-client') {
-            if (!state.clients.find(client => client.business_shortname.toLowerCase() === route.params.client)) {
+            if (!state.clients.find((client) => client.business_shortname.toLowerCase() === route.params.client)) {
               window.onNuxtReady(() => { window.$nuxt.error({ statusCode: 404, message: 'Client not found' }) })
             }
           }

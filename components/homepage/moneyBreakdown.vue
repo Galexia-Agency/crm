@@ -10,7 +10,7 @@
             <td>
               Date of Incorportation
             </td>
-            <td v-text="humanReadableDate(this.$config.COMPANY_INCORPORATION)" />
+            <td v-text="humanReadableDate($config.COMPANY_INCORPORATION)" />
           </tr>
           <template v-for="year, index in yearlyMoneyBreakdown">
             <tr :key="index + '_divider'" class="divider" />

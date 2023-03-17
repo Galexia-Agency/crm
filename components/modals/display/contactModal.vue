@@ -3,8 +3,8 @@
     color: var(--primaryColor)
   }
   .fa-address-card {
-    font-size: 3rem;
-    margin-bottom: 1rem
+    margin-bottom: 1rem;
+    font-size: 3rem
   }
   .edit {
     float: right;

@@ -10,8 +10,8 @@
     color: var(--primaryColor)
   }
   .client {
-    height: 100vh;
     position: relative;
+    height: 100vh;
     overflow-y: scroll;
     &.blossomTreePhoto {
       --primaryColor: #D485C4
@@ -22,9 +22,9 @@
     left: 0
   }
   .about_the_business {
+    max-width: 1000px;
     margin-bottom: 2em;
-    white-space: break-spaces;
-    max-width: 1000px
+    white-space: break-spaces
   }
   .monies {
     display: flex;
@@ -153,13 +153,13 @@ export default {
       'projects'
     ]),
     client () {
-      return this.clients.find(client => client.business_shortname.toLowerCase() === this.$route.params.client)
+      return this.clients.find((client) => client.business_shortname.toLowerCase() === this.$route.params.client)
     },
     contactsForClient () {
-      return this.client ? this.contacts.filter(contact => contact.client_id === this.client.id) : null
+      return this.client ? this.contacts.filter((contact) => contact.client_id === this.client.id) : null
     },
     projectsForClient () {
-      return this.client ? this.projects.filter(project => project.client_id === this.client.id) : null
+      return this.client ? this.projects.filter((project) => project.client_id === this.client.id) : null
     },
     hover () {
       return window.matchMedia('(hover: none)').matches

@@ -1,23 +1,22 @@
 <style lang="scss">
 /* Editor objects */
 .editor_object_standard {
+  background: var(--back);
   border: 3px solid var(--base);
   border-radius: 10px;
-  background: var(--back);
   transition: .6s border cubic-bezier(.165, .84, .44, 1);
   h3 {
     position: relative;
     left: 2rem;
-    padding: .6rem;
     width: fit-content;
-    width: -moz-fit-content;
-    background: var(--base);
+    padding: .6rem;
     color: var(--fore);
+    background: var(--base);
     border-radius: 0 0 10px 10px
   }
   #wrapper--rich_editor {
-    background: var(--back);
-    margin: 2rem
+    margin: 2rem;
+    background: var(--back)
   }
 
   /* State */
@@ -42,8 +41,8 @@
 /* Editor */
 button.menu_button {
   display: inline-flex;
-  border-radius: .25em;
   border: 1px solid transparent;
+  border-radius: .25em;
   &:focus {
     box-shadow: none
   }
@@ -52,12 +51,12 @@ button.menu_button {
   }
 }
 #wrapper--rich_editor .control {
+  height: auto;
   min-height: calc(120px + 48px);
   padding: 0;
-  height: auto;
   &:focus-within {
     border-color: var(--primaryColor);
-    box-shadow: 0 0 0 .125em rgba(50, 115, 220, 25%)
+    box-shadow: 0 0 0 .125em rgb(50 115 220 / 25%)
   }
 }
 #wrapper--rich_editor[disabled] .control {
@@ -66,8 +65,8 @@ button.menu_button {
 div#rich_editor {
   padding: 0;
   ul[data-type='taskList'] {
-    list-style: none;
     padding: 0;
+    list-style: none;
     li {
       display: flex;
       align-items: center;
@@ -78,16 +77,15 @@ div#rich_editor {
     }
   }
   div[contenteditable] {
-    padding: .625em;
     height: 100%;
     min-height: 120px;
     max-height: 40vh;
-    outline: none;
-    -moz-appearance: none;
-    -webkit-appearance: none;
+    padding: .625em;
     overflow-y: auto;
-    resize: vertical;
     white-space: pre-wrap;
+    outline: none;
+    appearance: none;
+    resize: vertical;
     scrollbar-gutter: stable;
     > div:not(:first-child),
     > p:not(:first-child) {
@@ -147,13 +145,13 @@ div#rich_editor {
   #menu_bar {
     padding: 0 1em;
     button {
-      padding: 0;
       margin: .8rem 1rem .6rem 0;
+      padding: 0;
       background-color: transparent
     }
     svg {
-      height: 20px;
-      width: 20px
+      width: 20px;
+      height: 20px
     }
   }
 }

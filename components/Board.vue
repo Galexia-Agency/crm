@@ -250,7 +250,7 @@ export default {
     },
 
     focusInput (listId) {
-      const index = this.lists.findIndex(list => list.id === listId)
+      const index = this.lists.findIndex((list) => list.id === listId)
       if (index > -1) {
         this.$refs.list[index].querySelector('input').focus()
       }

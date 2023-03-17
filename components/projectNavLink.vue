@@ -6,8 +6,8 @@
   }
   .navLink {
     display: block;
-    white-space: nowrap;
     overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
     &.blossomTreePhoto {
       color: #D485C4

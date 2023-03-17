@@ -9,7 +9,7 @@
   }
   .button {
     display: inline;
-    margin: .8rem 0 .6rem 0
+    margin: .8rem 0 .6rem
   }
 }
 </style>

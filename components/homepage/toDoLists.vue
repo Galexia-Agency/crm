@@ -1,7 +1,7 @@
 <style lang="scss">
   .home-card-container {
-    margin-bottom: 1rem;
     display: block;
+    margin-bottom: 1rem;
     cursor: pointer;
     .card {
       display: block;

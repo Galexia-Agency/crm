@@ -1,8 +1,8 @@
 <style lang="scss">
   .home {
-    overflow-y: auto;
-    height: 100vh;
     position: relative;
+    height: 100vh;
+    overflow-y: auto;
     h1 {
       padding: 2rem;
       padding-bottom: 0;
@@ -15,23 +15,23 @@
       margin-top: 2rem
     }
     main {
-      overflow-y: auto;
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
       width: auto;
       margin: auto;
+      overflow-y: auto;
       @media (max-width: 1000px) {
-        padding-top: 0;
-        min-width: 97.5vw
+        min-width: 97.5vw;
+        padding-top: 0
       }
     }
     section {
       width: 100%;
       max-width: 450px;
       &.chart {
-        max-width: 350px;
-        width: calc(100vw - 4rem)
+        width: calc(100vw - 4rem);
+        max-width: 350px
       }
       &.span-2 {
         max-width: calc(900px + 2rem);

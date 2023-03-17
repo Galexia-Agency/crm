@@ -1,7 +1,7 @@
 <style scoped>
   .before-after {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minMax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem
   }
   p {
@@ -77,7 +77,7 @@
         <ui-button style-type="primary" type="submit" style="margin-top: 1rem">
           Resolve
         </ui-button>
-        <p style="font-size: .8em; font-weight: 700; margin-top: .5rem">
+        <p style=" margin-top: .5rem; font-weight: 700;font-size: .8em">
           Please note, once you click resolve, all previous data will be lost
         </p>
       </form>

@@ -1,8 +1,8 @@
 <style lang="scss">
   .help-text {
-    font-size: .8em;
     display: block;
-    font-weight: 400
+    font-weight: 400;
+    font-size: .8em
   }
   input {
     accent-color: var(--primaryColor)
@@ -15,8 +15,8 @@
     &:has(input[type='checkbox']) {
       display: grid;
       grid-template-columns: auto 1fr;
-      align-items: center;
       gap: .5rem;
+      align-items: center;
       .control {
         grid-row: 1;
         grid-column: 1
@@ -26,33 +26,33 @@
   .select-wrapper {
     position: relative;
     &:after {
-      content: '';
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
+      position: absolute;
+      top: calc(50% - 2.5px);
+      right: 10px;
       width: 10px;
       height: 10px;
-      position: absolute;
-      right: 10px;
-      top: calc(50% - 2.5px);
-      transform: rotate(45deg)
+      border-right: 1px solid black;
+      border-bottom: 1px solid black;
+      transform: rotate(45deg);
+      content: ''
     }
   }
   .control.withPrefix {
     position: relative;
     &:before {
-      content: var(--prefix);
-      line-height: 1;
-      height: calc(100% - .5em);
-      width: 2rem;
-      text-align: center;
-      display: inline-flex;
-      place-content: center;
-      place-items: center;
       position: absolute;
-      left: 0;
       top: .5em;
+      left: 0;
       z-index: 1;
-      color: #363636
+      display: inline-flex;
+      width: 2rem;
+      height: calc(100% - .5em);
+      color: #363636;
+      line-height: 1;
+      text-align: center;
+      content: var(--prefix);
+      place-content: center;
+      place-items: center
     }
     input {
       padding-left: 2rem

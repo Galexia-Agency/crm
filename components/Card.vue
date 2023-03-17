@@ -8,8 +8,8 @@
       &:hover,
       &:active,
       &:focus {
-        cursor: pointer;
-        background-color: rgb(225, 225, 225)
+        background-color: rgb(225 225 225);
+        cursor: pointer
       }
     }
     &.icons_draggable {
@@ -29,14 +29,14 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    cursor: pointer;
     display: grid;
+    grid-auto-flow: column;
     gap: .5rem;
-    grid-auto-flow: column
+    cursor: pointer
   }
   .icon {
-    height: 1.1rem;
     width: 1.1rem;
+    height: 1.1rem;
     transition: color .25s ease-in-out;
     &:hover {
       color: black

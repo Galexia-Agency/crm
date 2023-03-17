@@ -7,7 +7,7 @@ export default {
       clientsToPush[client].revenue = 0
       clientsToPush[client].profit = 0
       clientsToPush[client].completion_amount = 0
-      const projects = state.projects.filter(project => project.client_id === clientsToPush[client].id)
+      const projects = state.projects.filter((project) => project.client_id === clientsToPush[client].id)
       if (projects.length > 0) {
         for (const project in projects) {
           // Set client expenses

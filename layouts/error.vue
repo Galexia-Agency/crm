@@ -1,8 +1,8 @@
 <style scoped>
   .error {
-    text-align: center;
+    align-content: center;
     min-height: 600px;
-    align-content: center
+    text-align: center
   }
   .error h1 {
     margin-top: 5rem;
@@ -36,17 +36,17 @@ export default {
       default: null
     }
   },
+  head () {
+    return {
+      title: this.message
+    }
+  },
   computed: {
     statusCode () {
       return (this.error && this.error.statusCode) || 500
     },
     message () {
       return this.error.message
-    }
-  },
-  head () {
-    return {
-      title: this.message
     }
   }
 }

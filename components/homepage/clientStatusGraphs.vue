@@ -33,22 +33,22 @@ export default {
     projectStatus () {
       if (Object.keys(this.filteredProjects).length > 0) {
         const leads = this.filteredProjects['Hot Lead'].concat(this.filteredProjects['Cold Lead']).filter((thing, index, self) =>
-          index === self.findIndex(t => (
+          index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
         const development = this.filteredProjects.Development.filter((thing, index, self) =>
-          index === self.findIndex(t => (
+          index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
         const onGoing = this.filteredProjects['On-Going'].filter((thing, index, self) =>
-          index === self.findIndex(t => (
+          index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
         const paused = this.filteredProjects.Paused.filter((thing, index, self) =>
-          index === self.findIndex(t => (
+          index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )

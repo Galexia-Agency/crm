@@ -1,8 +1,8 @@
 <style lang="scss">
   #login {
     width: 320px;
-    padding: 8% 0 0;
     margin: auto;
+    padding: 8% 0 0;
     #okta-sign-in {
       min-width: auto;
       padding-top: 1.2rem
@@ -19,24 +19,24 @@
     h1 {
       text-align: center;
       a {
-        background-position: center top;
-        color: #3C434A;
-        font-size: 20px;
-        font-weight: 400;
-        line-height: 1.3;
+        display: block;
+        width: 125px;
+        height: 125px;
         margin: 0 auto 25px;
+        margin-bottom: 40px;
         padding: 0;
+        overflow: hidden;
+        color: #3C434A;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 1.3;
         text-decoration: none;
         text-indent: -9999px;
-        outline: 0;
-        overflow: hidden;
-        display: block;
         background-image: url('./assets/img/logo.png');
-        height: 125px;
-        width: 125px;
-        background-size: cover;
         background-repeat: no-repeat;
-        margin-bottom: 40px;
+        background-position: center top;
+        background-size: cover;
+        outline: 0;
         filter: drop-shadow(.5px 2.5px 2.5px #6564AE99)
       }
     }
@@ -50,11 +50,11 @@
       float: right;
       margin-top: -3.5rem;
       .button {
+        display: inline-block;
+        color: white;
+        font-size: 13px;
         background: var(--primaryColor);
         border-color: var(--primaryColor);
-        color: white;
-        display: inline-block;
-        font-size: 13px;
         &:hover {
           background-color: #534BAE
         }
@@ -68,37 +68,34 @@
     }
     .o-form-input, .o-form-input-name-answer {
       input[type='text'], input[type='password'], input[type='tel'] {
-        margin: 1rem 0;
         display: block;
-        border-radius: .25rem;
-        border: none;
-        box-shadow: 0 5px 5px rgba(26, 35, 126, .075);
-        background: -moz-linear-gradient(180deg, rgba(83, 75, 174, .15) 0%, rgba(26, 35, 126, .15) 100%);
-        background: -webkit-linear-gradient(180deg, rgba(83, 75, 174, .15) 0%, rgba(26, 35, 126, .15) 100%);
-        background: linear-gradient(180deg, rgba(83, 75, 174, .15) 0%, rgba(26, 35, 126, .15) 100%);
-        font-size: 1rem;
-        line-height: 1.75rem;
         width: 100%;
-        font-family: Open Sans, sans-serif;
-        padding: .5rem;
         min-height: 40px;
-        max-height: none
+        max-height: none;
+        margin: 1rem 0;
+        padding: .5rem;
+        font-size: 1rem;
+        font-family: Open Sans, sans-serif;
+        line-height: 1.75rem;
+        background: linear-gradient(180deg, rgb(83 75 174 / 15%) 0%, rgb(26 35 126 / 15%) 100%);
+        border: none;
+        border-radius: .25rem;
+        box-shadow: 0 5px 5px rgb(26 35 126 / 7.5%)
       }
     }
     .okta-form-input-error {
       span {
         display: none
       }
-
+      margin-bottom: .5em;
       color: red;
-      text-align: left;
-      margin-bottom: .5em
+      text-align: left
     }
     .o-form-label label {
-      font-size: 14px;
-      line-height: 1.5;
       display: inline-block;
-      margin-bottom: 3px
+      margin-bottom: 3px;
+      font-size: 14px;
+      line-height: 1.5
     }
   }
 </style>

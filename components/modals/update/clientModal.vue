@@ -1,7 +1,7 @@
 <style scoped>
   textarea {
-    resize: horizontal;
-    min-height: 8em
+    min-height: 8em;
+    resize: horizontal
   }
 </style>
 

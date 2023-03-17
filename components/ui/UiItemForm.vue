@@ -1,7 +1,7 @@
 <style scoped lang="scss">
   .card-modal-buttons-container {
-    justify-content: space-between;
     flex-direction: initial;
+    justify-content: space-between;
     > div {
       display: flex;
       gap: .75rem

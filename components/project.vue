@@ -4,11 +4,11 @@
     font-size: 1.25rem
   }
   button.centered {
-    cursor: pointer;
     display: inline-grid;
+    font-size: 1.5rem;
+    cursor: pointer;
     place-content: center;
     place-items: center;
-    font-size: 1.5rem;
     .fa-sort-up {
       margin-top: .4em
     }
@@ -18,9 +18,9 @@
   }
   .project-details {
     display: flex;
-    align-items: center;
-    gap: 1rem;
     flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
     h2 {
       margin: 0
     }
@@ -37,15 +37,15 @@
     margin: 2rem 0
   }
   .list-container {
-    color: var(--primaryColor);
     display: inline-block;
-    width: auto
+    width: auto;
+    color: var(--primaryColor)
   }
   select {
-    border: none;
+    height: 100%;
     font-size: 16px;
     background: transparent;
-    height: 100%
+    border: none
   }
 </style>
 

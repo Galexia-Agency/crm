@@ -1,10 +1,10 @@
 <style lang="scss">
 .sidebar-buttons {
   display: flex;
-  column-gap: 1rem;
-  row-gap: .5rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+  column-gap: 1rem;
+  row-gap: .5rem;
   .button {
     display: block;
     color: black

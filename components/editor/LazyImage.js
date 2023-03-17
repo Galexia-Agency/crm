@@ -55,7 +55,7 @@ export default Node.create({
 
   addCommands () {
     return {
-      setImage: options => ({ commands }) => {
+      setImage: (options) => ({ commands }) => {
         return commands.insertContent({
           type: this.name,
           attrs: options
