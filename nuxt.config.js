@@ -57,7 +57,8 @@ export default {
     '~plugins/mixins/urls',
     '~plugins/vueInlineSVG',
     '~plugins/fontAwesome',
-    '~plugins/axiosConcurrency'
+    '~plugins/axiosConcurrency',
+    '~plugins/pauseAxiosWhilstRenewingTokens'
   ],
   /*
    ** Nuxt.js dev-modules

@@ -11,9 +11,6 @@ export default (ctx, inject) => {
     redirectUri,
     scopes: ctx.app.$config.OKTA_SCOPES,
     pkce: true,
-    // This renews the access token if it is expiring and we are using the app
-    autoRenew: true,
-    expireEarlySeconds: 120,
     // This will redirect the user to the login page when Okta detects that a user's session is no longer active
     async onSessionExpired () {
       await ctx.$logout()
@@ -27,13 +24,19 @@ export default (ctx, inject) => {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
+        ctx.app.store.commit('isRenewingTokens', true)
+        // Set a timeout of 1 second for fetching the auth state so we don't get stuck in a loop
+        const timeoutPromise = new Promise((resolve, reject) => {
+          setTimeout(() => {
+            reject(new Error('Timeout'))
+          }, 1000) // set timeout to 1 second
+        })
         // If we're already authenticated, then setup Vuex with the required info and resolve as quickly as possible
         // We then continue to renew tokens in the background
-        if (await ctx.$auth.isAuthenticated()) {
+        if (await Promise.race([ctx.$auth.isAuthenticated(), timeoutPromise])) {
           await ctx.app.store.dispatch('updateAuthHeaders', ctx)
           resolve(true)
         }
-        ctx.app.store.commit('isRenewingTokens', true)
         // eslint-disable-next-line no-console
         console.log('Trying to renew tokens')
         const renewToken = await ctx.$auth.token.renewTokens()
