@@ -161,7 +161,10 @@ export default {
   props: {
     project: {
       type: Object,
-      default: null,
+      required: true
+    },
+    index: {
+      type: Number,
       required: true
     }
   },
@@ -247,23 +250,23 @@ export default {
       }
     },
     sse_start () {
-      if (!this.isRenewingTokens) {
+      window.setTimeout(async () => {
+        if (!this.isRenewingTokens) {
         // eslint-disable-next-line no-console
-        console.log('Starting SSE')
-        const id = this.project.id
-        const authToken = `Bearer ${this.$auth.getAccessToken()}`
-        const self = this
-        const url = `https://api.galexia.agency/projects/sse?id=${id}`
-        if (window.Worker) {
-          if (!this.sseWorker) {
-            this.sseWorker = new Worker()
-            this.sseWorker.postMessage(['start', url, id, authToken])
-            this.sseWorker.onmessage = (e) => {
-              self.sse_updateProject(e.data)
+          console.log('Starting SSE')
+          const id = this.project.id
+          const authToken = `Bearer ${await this.$auth.getAccessToken()}`
+          const self = this
+          const url = `https://api.galexia.agency/projects/sse?id=${id}`
+          if (window.Worker) {
+            if (!this.sseWorker) {
+              this.sseWorker = new Worker()
+              this.sseWorker.postMessage(['start', url, id, authToken])
+              this.sseWorker.onmessage = (e) => {
+                self.sse_updateProject(e.data)
+              }
             }
-          }
-        } else {
-          // eslint-disable-next-line no-lonely-if
+          } else
           if (!this.sse) {
             this.sse = new EventSourcePolyfill(url, {
               headers: {
@@ -273,13 +276,17 @@ export default {
             })
             this.sse.addEventListener(id, function (event) {
               self.sse_updateProject(JSON.parse(event.data)[0])
-            }, false)
+            }, {
+              once: false,
+              retry: 5000
+            })
           }
-        }
-      } else {
+        } else {
         // eslint-disable-next-line no-console
-        console.log('Can\'t start SSE as currently renewing tokens')
-      }
+          console.log('Can\'t start SSE as currently renewing tokens')
+        }
+        // Delay the SSE request slightly for each consecutive project
+      }, (this.index + 1) * 500)
     },
     sse_end () {
       // eslint-disable-next-line no-console
@@ -289,12 +296,9 @@ export default {
           this.sseWorker.postMessage(['stop'])
           this.sseWorker = null
         }
-      } else {
-        // eslint-disable-next-line no-lonely-if
-        if (this.sse) {
-          this.sse.close()
-          this.sse = null
-        }
+      } else if (this.sse) {
+        this.sse.close()
+        this.sse = null
       }
     },
     sse_updateProject (newProject) {

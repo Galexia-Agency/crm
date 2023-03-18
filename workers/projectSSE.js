@@ -14,9 +14,12 @@ onmessage = (e) => {
       },
       withCredentials: false
     })
-    sse.addEventListener(id, function (event) {
+    sse.addEventListener(id, (event) => {
       postMessage(JSON.parse(event.data)[0])
-    }, false)
+    }, {
+      once: false,
+      retry: 5000
+    })
   } else if (type === 'stop') {
     sse.close()
     self.close()
