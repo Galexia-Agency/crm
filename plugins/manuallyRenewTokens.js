@@ -5,6 +5,8 @@ async function renewTokens (ctx) {
   const tokens = await ctx.$auth.token.renewTokens()
   await ctx.$auth.tokenManager.setTokens(tokens)
   await ctx.app.store.dispatch('updateAuthHeaders', ctx)
+  // eslint-disable-next-line no-console
+  console.log('Successfully renewed tokens')
 }
 
 export default (ctx) => {
@@ -42,13 +44,11 @@ export default (ctx) => {
         if (delay <= 0) {
           await renewTokens(ctx)
         } else {
-          setTimeout(await renewTokens(ctx), delay)
+          setTimeout(async () => { await renewTokens(ctx) }, delay)
         }
         // We update the authenticated state here as we have now renewed the tokens and are authenticated again
         ctx.app.store.commit('isAuthenticated', true)
         ctx.app.store.commit('isRenewingTokens', false)
-        // eslint-disable-next-line no-console
-        console.log('Successfully renewed tokens')
         resolve(true)
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -58,6 +58,7 @@ export default (ctx) => {
         if (ctx.route.path !== '/login') {
           // eslint-disable-next-line no-console
           console.log('Redirecting to login page')
+          ctx.app.router.push('/login')
           window.onNuxtReady(() => { ctx.app.router.push('/login') })
         } else {
           // eslint-disable-next-line no-console
