@@ -69,7 +69,7 @@
       </div>
     </div>
     <template v-for="(project, index) in projectsForClient">
-      <project :id="safeURL(project.name)" :key="project.id" :project="project" :index="index" class="project container" />
+      <project :id="safeURL(project.name)" :key="project.id" :project-id="project.id" :index="index" class="project container" />
     </template>
     <ui-modal
       ref="modal"

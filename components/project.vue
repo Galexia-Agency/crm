@@ -159,8 +159,8 @@ export default {
     projectModal
   },
   props: {
-    project: {
-      type: Object,
+    projectId: {
+      type: Number,
       required: true
     },
     index: {
@@ -180,8 +180,12 @@ export default {
   computed: {
     ...mapState([
       'userInfo',
-      'isRenewingTokens'
+      'isRenewingTokens',
+      'projects'
     ]),
+    project () {
+      return this.projects.find((project) => project.id === this.projectId)
+    },
     daysToStart () {
       if (!this.project.enquiry_date) {
         return null
