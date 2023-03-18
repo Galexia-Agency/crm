@@ -265,9 +265,11 @@ export default {
               this.sseWorker.onmessage = (e) => {
                 self.sse_updateProject(e.data)
               }
+            } else {
+              this.sse_end()
+              this.sse_start()
             }
-          } else
-          if (!this.sse) {
+          } else if (!this.sse) {
             this.sse = new EventSourcePolyfill(url, {
               headers: {
                 Authorization: authToken
@@ -280,6 +282,9 @@ export default {
               once: false,
               retry: 5000
             })
+          } else {
+            this.sse_end()
+            this.sse_start()
           }
         } else {
         // eslint-disable-next-line no-console
