@@ -1,5 +1,11 @@
 
-import jwtDecode from 'jwt-decode'
+async function renewTokens (ctx) {
+  // eslint-disable-next-line no-console
+  console.log('Trying to renew tokens')
+  const tokens = await ctx.$auth.token.renewTokens()
+  await ctx.$auth.tokenManager.setTokens(tokens)
+  await ctx.app.store.dispatch('updateAuthHeaders', ctx)
+}
 
 export default (ctx) => {
   // Add the manually renew tokens method to Okta Auth
@@ -14,7 +20,7 @@ export default (ctx) => {
         const timeoutPromise = new Promise((resolve, reject) => {
           setTimeout(() => {
             reject(new Error('Timeout'))
-          }, 1000) // set timeout to 1 second
+          }, 3000) // set timeout to 3 seconds
         })
         // If we're already authenticated, then setup Vuex with the required info and resolve as quickly as possible
         // We then continue to renew tokens in the background
@@ -24,30 +30,26 @@ export default (ctx) => {
           ctx.app.store.commit('isAuthenticated', true)
           resolve(true)
         }
-        // eslint-disable-next-line no-console
-        console.log('Trying to renew tokens')
-        const tokens = await ctx.$auth.token.renewTokens()
-        await ctx.$auth.tokenManager.setTokens(tokens)
-        await ctx.app.store.dispatch('updateAuthHeaders', ctx)
-        // eslint-disable-next-line no-console
-        console.log('Successfully renewed tokens')
-        // We update the authenticated state here as we have now renewed the tokens and are authenticated again
-        ctx.app.store.commit('isAuthenticated', true)
-        ctx.app.store.commit('isRenewingTokens', false)
-        resolve(true)
         // Renew the accessToken 30 seconds before it expires
         // Current time
         const now = new Date().getTime()
         // Decode the token to get the expiration time
-        const { exp } = jwtDecode(tokens.accessToken.value)
+        const accessToken = await ctx.$auth.tokenManager.get('accessToken')
+        const exp = accessToken.expiresAt
         // Calculate the delay between now and expiry time
         const delay = new Date((exp - 30) * 1000).getTime() - now
         // If the Unix time is in the past, execute the callback immediately
         if (delay <= 0) {
-          ctx.$auth.manuallyRenewTokens()
+          await renewTokens(ctx)
         } else {
-          setTimeout(ctx.$auth.manuallyRenewTokens, delay)
+          setTimeout(await renewTokens(ctx), delay)
         }
+        // We update the authenticated state here as we have now renewed the tokens and are authenticated again
+        ctx.app.store.commit('isAuthenticated', true)
+        ctx.app.store.commit('isRenewingTokens', false)
+        // eslint-disable-next-line no-console
+        console.log('Successfully renewed tokens')
+        resolve(true)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error(error)

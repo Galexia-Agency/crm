@@ -9,12 +9,10 @@ export default {
       if (!accessToken) {
         reject(Error('We couldn\'t get the access token'))
       }
-      if (state.accessToken !== accessToken) {
-        context.$axios.setHeader('Authorization', `Bearer ${accessToken}`)
-        context.$api.setHeader('Authorization', `Bearer ${accessToken}`)
-        // eslint-disable-next-line no-console
-        console.log('Auth headers have been updated')
-      }
+      context.$axios.setHeader('Authorization', `Bearer ${accessToken}`)
+      context.$api.setHeader('Authorization', `Bearer ${accessToken}`)
+      // eslint-disable-next-line no-console
+      console.log('Auth headers have been updated')
       resolve()
     })
   }
