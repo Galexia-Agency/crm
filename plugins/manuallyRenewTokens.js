@@ -43,11 +43,6 @@ export default (ctx) => {
     return new Promise(async (resolve, reject) => {
       try {
         /*
-          Set the authenticated state to false as we don't know what the state is yet
-        */
-        ctx.app.store.commit('isAuthenticated', false)
-
-        /*
           Set the authenticated state and resolve as quickly as possible to start the initial get
         */
         const isAuthenticated = await ctx.$auth.isAuthenticated()
@@ -72,6 +67,7 @@ export default (ctx) => {
         resolve(true)
       } catch (error) {
         redirectToLogin({ error, route: ctx.route, app: ctx.app })
+        ctx.app.store.commit('isAuthenticated', false)
         ctx.app.store.commit('isClientLoaded', true)
         resolve(false)
       }
