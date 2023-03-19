@@ -228,14 +228,16 @@ export default {
   },
   watch: {
     isRenewingTokens (newVal) {
-      if (newVal) {
+      if (document.visibilityState === 'visible') {
+        if (newVal) {
         // eslint-disable-next-line no-console
-        console.log('Stopping SSE due to renewing tokens and we need to send the new token with SSE')
-        this.sse_end()
-      } else if (document.visibilityState === 'visible') {
+          console.log('Stopping SSE due to renewing tokens and we need to send the new token with SSE')
+          this.sse_end()
+        } else {
         // eslint-disable-next-line no-console
-        console.log('Starting SSE due to tokens now being renewed')
-        this.sse_start()
+          console.log('Starting SSE due to tokens now being renewed')
+          this.sse_start()
+        }
       }
     }
   },
@@ -256,8 +258,6 @@ export default {
     sse_start () {
       window.setTimeout(async () => {
         if (!this.isRenewingTokens) {
-        // eslint-disable-next-line no-console
-          console.log('Starting SSE')
           const id = this.project.id
           const authToken = `Bearer ${await this.$auth.getAccessToken()}`
           const self = this
@@ -269,6 +269,8 @@ export default {
               this.sseWorker.onmessage = (e) => {
                 self.sse_updateProject(e.data)
               }
+              // eslint-disable-next-line no-console
+              console.log('Started SSE')
             } else {
               this.sse_end()
               this.sse_start()
@@ -286,6 +288,8 @@ export default {
               once: false,
               retry: 5000
             })
+            // eslint-disable-next-line no-console
+            console.log('Started SSE')
           } else {
             this.sse_end()
             this.sse_start()
@@ -298,16 +302,18 @@ export default {
       }, (this.index + 1) * 500)
     },
     sse_end () {
-      // eslint-disable-next-line no-console
-      console.log('Stopped SSE')
       if (window.Worker) {
         if (this.sseWorker) {
           this.sseWorker.postMessage(['stop'])
           this.sseWorker = null
+          // eslint-disable-next-line no-console
+          console.log('Stopped SSE')
         }
       } else if (this.sse) {
         this.sse.close()
         this.sse = null
+        // eslint-disable-next-line no-console
+        console.log('Stopped SSE')
       }
     },
     sse_updateProject (newProject) {
