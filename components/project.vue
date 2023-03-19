@@ -257,7 +257,7 @@ export default {
     },
     sse_start () {
       window.setTimeout(async () => {
-        if (!this.isRenewingTokens) {
+        if (!this.isRenewingTokens && document.visibilityState === 'visible') {
           const id = this.project.id
           const authToken = `Bearer ${await this.$auth.getAccessToken()}`
           const self = this
@@ -294,9 +294,6 @@ export default {
             this.sse_end()
             this.sse_start()
           }
-        } else {
-        // eslint-disable-next-line no-console
-          console.log('Can\'t start SSE as currently renewing tokens')
         }
         // Delay the SSE request slightly for each consecutive project
       }, (this.index + 1) * 500)
