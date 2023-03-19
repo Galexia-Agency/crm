@@ -1,4 +1,3 @@
-
 async function renewTokens (ctx) {
   // eslint-disable-next-line no-console
   console.log('Trying to renew tokens')
@@ -19,18 +18,20 @@ export default (ctx) => {
         ctx.app.store.commit('isAuthenticated', false)
         ctx.app.store.commit('isRenewingTokens', true)
         // Set a timeout of 1 second for fetching the auth state so we don't get stuck in a loop
-        const timeoutPromise = new Promise((resolve, reject) => {
-          setTimeout(() => {
-            reject(new Error('Timeout'))
-          }, 3000) // set timeout to 3 seconds
-        })
+        // const timeoutPromise = new Promise((resolve, reject) => {
+        //   setTimeout(() => {
+        //     reject(new Error('Timeout'))
+        //   }, 3000) // set timeout to 3 seconds
+        // })
         // If we're already authenticated, then setup Vuex with the required info and resolve as quickly as possible
         // We then continue to renew tokens in the background
-        if (await Promise.race([ctx.$auth.isAuthenticated(), timeoutPromise])) {
-          await ctx.app.store.dispatch('updateAuthHeaders', ctx)
+        // if (await Promise.race([ctx.$auth.isAuthenticated(), timeoutPromise])) {
+        if (await ctx.$auth.isAuthenticated()) {
+          if (await ctx.app.store.dispatch('updateAuthHeaders', ctx)) {
           // We update the authenticated state here as we know we are now authenticated
-          ctx.app.store.commit('isAuthenticated', true)
-          resolve(true)
+            ctx.app.store.commit('isAuthenticated', true)
+            resolve(true)
+          }
         }
         // Renew the accessToken 30 seconds before it expires
         // Current time
