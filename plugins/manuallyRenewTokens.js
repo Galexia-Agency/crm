@@ -31,13 +31,20 @@ export default (ctx) => {
           // We update the authenticated state here as we know we are now authenticated
             ctx.app.store.commit('isAuthenticated', true)
             resolve(true)
+          } else {
+            throw new Error('Problem with getting the access token')
           }
+        } else {
+          throw new Error('You are not authenticated')
         }
         // Renew the accessToken 30 seconds before it expires
         // Current time
         const now = new Date().getTime()
         // Decode the token to get the expiration time
         const accessToken = await ctx.$auth.tokenManager.get('accessToken')
+        if (!accessToken) {
+          throw new Error('There is no access token')
+        }
         const exp = accessToken.expiresAt
         // Calculate the delay between now and expiry time
         const delay = new Date((exp - 30) * 1000).getTime() - now
