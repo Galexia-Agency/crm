@@ -132,9 +132,7 @@ export default {
           issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
           scopes: this.$config.OKTA_SCOPES,
           tokenManager: {
-            // This renews the access token if it is expiring and we are using the app
-            autoRenew: true,
-            expireEarlySeconds: 120
+            autoRenew: false
           }
         }
       })

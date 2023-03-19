@@ -11,6 +11,9 @@ export default (ctx, inject) => {
     redirectUri,
     scopes: ctx.app.$config.OKTA_SCOPES,
     pkce: true,
+    tokenManager: {
+      autoRenew: false
+    },
     // This will redirect the user to the login page when Okta detects that a user's session is no longer active
     async onSessionExpired () {
       await ctx.$logout()
