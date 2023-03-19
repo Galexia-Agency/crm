@@ -50,6 +50,7 @@ export const actions = {
             'Content-Type': 'application/json'
           }
         }),
+        // If userInfo is already in the store, we don't need to fetch it again
         state.userInfo.length === 0 ? dispatch('updateUserInfo', $auth) : Promise.resolve(null)
       ]).then(([response]) => {
         response[3].forEach((project, index) => {

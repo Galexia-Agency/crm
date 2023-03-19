@@ -464,8 +464,7 @@ export default {
     return {
       modal: {
         client: false
-      },
-      refreshIntervalId: null
+      }
     }
   },
   computed: {
@@ -483,18 +482,15 @@ export default {
     document.removeEventListener('visibilitychange', this.handleVisibilityChange)
   },
   methods: {
-    // This manually renews the access token each time we navigate to the app
+    /*
+      Although we have a timer running to renew the accessToken,
+      it is possible this timer got cleared by the browser putting the tab into a sleep mode.
+      When we navigate back to the tab, we call manuallyRenewTokens, which checks whether the timer is still running, and re-confirms our auth state
+    */
     handleVisibilityChange () {
       if (document.visibilityState === 'visible') {
         // Renew tokens now as we've just got back to the page
         this.$auth.manuallyRenewTokens()
-        // Start the interval to renew tokens every 4 minutes if we are still on the page
-        this.refreshIntervalId = setInterval(() => {
-          this.$auth.manuallyRenewTokens()
-        }, 4 * 60 * 1000) // 4 minutes in milliseconds
-      } else if (this.refreshIntervalId) {
-        // Stop the interval when visibility changes to not visible
-        clearInterval(this.refreshIntervalId)
       }
     },
     showClientModal (data) {

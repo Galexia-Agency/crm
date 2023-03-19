@@ -230,7 +230,7 @@ export default {
     isRenewingTokens (newVal) {
       if (newVal) {
         // eslint-disable-next-line no-console
-        console.log('Stopping SSE due to renewing tokens')
+        console.log('Stopping SSE due to renewing tokens and we need to send the new token with SSE')
         this.sse_end()
       } else if (document.visibilityState === 'visible') {
         // eslint-disable-next-line no-console

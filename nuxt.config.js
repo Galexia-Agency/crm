@@ -59,7 +59,8 @@ export default {
     '~plugins/vueInlineSVG',
     '~plugins/fontAwesome',
     '~plugins/axiosConcurrency',
-    '~plugins/pauseAxiosWhilstRenewingTokens'
+    '~plugins/pauseAxiosWhilstRenewingTokens',
+    '~plugins/authHeaders'
   ],
   /*
    ** Nuxt.js dev-modules
