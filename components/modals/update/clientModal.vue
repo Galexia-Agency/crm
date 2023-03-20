@@ -115,7 +115,6 @@ function data () {
     id: null,
     pandle_id: null,
     billing_email: null,
-    existing_shortname: null,
     updated_at: null,
     created_at: null
   }
@@ -150,9 +149,6 @@ export default {
               country: 'United Kingdom',
               postcode: '',
               town: ''
-            }
-            if (this.business_shortname) {
-              this.existing_shortname = true
             }
           }
         } catch (e) {
@@ -197,8 +193,10 @@ export default {
       Object.assign(this, data())
     },
     businessShortnameCreator ($event) {
-      if (!this.existing_shortname) {
-        this.business_shortname = this.safeURL($event)
+      const currentBusinessShortName = this.business_shortname ? this.safeURL(this.business_shortname) : ''
+      const newBusinessShortName = $event ? this.safeURL($event) : ''
+      if (currentBusinessShortName.slice(0, -1) === newBusinessShortName || currentBusinessShortName === newBusinessShortName.slice(0, -1)) {
+        this.business_shortname = newBusinessShortName
       }
     }
   }
