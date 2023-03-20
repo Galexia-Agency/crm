@@ -1,5 +1,15 @@
 /* eslint-disable no-console */
-import { redirectToLogin } from '~/utils/auth'
+function redirectToLogin ({ route, app, error }) {
+  console.error(error)
+  console.error('You are not logged in')
+  if (route.path !== '/login') {
+    console.log('Redirecting to login page')
+    app.router.push('/login')
+    window.onNuxtReady(() => { app.router.push('/login') })
+  } else {
+    console.log('You are already on the login page')
+  }
+}
 
 async function renewTokens (ctx) {
   ctx.app.store.commit('isRenewingTokens', true)
@@ -45,7 +55,9 @@ export default (ctx) => {
         /*
           Set the authenticated state and resolve as quickly as possible to start the initial get
         */
-        const isAuthenticated = await ctx.$auth.isAuthenticated()
+        const isAuthenticated = await ctx.$auth.isAuthenticated({
+          expiredTokenBehavior: 'none'
+        })
         console.log(`Okta thinks we are${isAuthenticated ? '' : ' not'} authenticated`)
         if (isAuthenticated) {
           // We update the authenticated state here as we know we are now authenticated
@@ -68,6 +80,7 @@ export default (ctx) => {
       } catch (error) {
         redirectToLogin({ error, route: ctx.route, app: ctx.app })
         ctx.app.store.commit('isAuthenticated', false)
+        ctx.app.store.commit('isRenewingTokens', false)
         ctx.app.store.commit('isClientLoaded', true)
         resolve(false)
       }

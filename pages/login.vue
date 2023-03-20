@@ -141,10 +141,10 @@ export default {
         scopes: this.$config.OKTA_SCOPES
       }).then(async (tokens) => {
         this.$nuxt.$loading.start()
-        await this.$auth.handleLoginRedirect(tokens)
+        await this.$auth.tokenManager.setTokens(tokens)
         this.widget.remove()
-        await this.$store.dispatch('updateUserInfo', this.$auth)
         await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
+        this.$nuxt.$loading.finish()
       }).catch((err) => {
         throw err
       })
