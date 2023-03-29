@@ -156,7 +156,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import EventSourcePolyfill from 'eventsource'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!../workers/projectSSE.js'
@@ -199,8 +199,11 @@ export default {
       'isRenewingTokens',
       'projects'
     ]),
+    ...mapGetters([
+      'getProjectById'
+    ]),
     project () {
-      return this.projects.find((project) => project.id === this.projectId)
+      return this.getProjectById(this.projectId)
     },
     daysToStart () {
       if (!this.project.enquiry_date) {
