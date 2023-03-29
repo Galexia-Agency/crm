@@ -128,7 +128,7 @@
       <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
         Create Quote
       </button> -->
-      <button v-if="project.pandle_id && claims.groups.includes('billing')" class="list-container" type="button" @click="showMoneyGraphsModal()">
+      <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="showMoneyGraphsModal()">
         <font-awesome-icon :icon="['fa-solid', 'fa-chart-bar']" />
         View Monthly Monetary Accounts
       </button>
@@ -189,7 +189,8 @@ export default {
       show: true,
       showArchived: false,
       sseWorker: null,
-      sse: null
+      sse: null,
+      timeout: null
     }
   },
   computed: {
@@ -261,17 +262,19 @@ export default {
     document.addEventListener('visibilitychange', this.visibleChange)
   },
   beforeDestroy () {
+    clearTimeout(this.timeout)
     document.removeEventListener('visibilitychange', this.visibleChange)
     this.sse_end()
   },
   methods: {
     visibleChange () {
       if (document.visibilityState !== 'visible') {
+        clearTimeout(this.timeout)
         this.sse_end()
       }
     },
     sse_start () {
-      window.setTimeout(async () => {
+      this.timeout = window.setTimeout(async () => {
         if (!this.isRenewingTokens && document.visibilityState === 'visible') {
           const id = this.project.id
           const authToken = `Bearer ${await this.$auth.getAccessToken()}`
