@@ -163,7 +163,7 @@ import Worker from 'worker-loader!../workers/projectSSE.js'
 import Toggle from '~/components/ui/UiToggle.vue'
 import Board from '~/components/Board'
 import projectModal from '~/components/modals/update/projectModal'
-import projectMoneyGraphsModel from '~/components/modals/projectMoneyGraphsModel'
+import projectMoneyGraphsModel from '~/components/modals/display/projectMoneyGraphsModel'
 
 export default {
   components: {
