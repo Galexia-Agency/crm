@@ -10,12 +10,18 @@
       cursor: pointer!important
     }
   }
+  .card-count {
+    font-size: .75em
+  }
 </style>
 
 <template>
   <main v-if="overdueItems.length > 0 || dueItems.length > 0">
     <section v-if="overdueItems.length > 0">
-      <h2>Overdue</h2>
+      <h2>
+        Overdue
+        <span class="card-count" v-html="`(${overdueItems.length} tasks total)`" />
+      </h2>
       <section class="list-container">
         <nuxt-link v-for="(item, index) in overdueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${safeURL(item.projectName)}`" class="home-card-container">
           <h6 v-if="index === 0 || overdueItems[index - 1].clientName !== item.clientName || overdueItems[index - 1].projectName !== item.projectName" v-text="`${item.clientName} - ${item.projectName}`" />
@@ -24,7 +30,10 @@
       </section>
     </section>
     <section v-if="dueItems.length > 0">
-      <h2>To Do</h2>
+      <h2>
+        To Do
+        <span class="card-count" v-html="`(${dueItems.length} tasks total)`" />
+      </h2>
       <section class="list-container">
         <nuxt-link v-for="(item, index) in dueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${safeURL(item.projectName)}`" class="home-card-container">
           <h6 v-if="index === 0 || dueItems[index - 1].clientName !== item.clientName || dueItems[index - 1].projectName !== item.projectName" v-text="`${item.clientName} - ${item.projectName}`" />
