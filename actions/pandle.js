@@ -41,7 +41,7 @@ export default {
 
     const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/pandle_request', {
       type: 'POST',
-      url: `/companies/${this.$config.PANDLE_COMPANY_ID}`,
+      url: `/companies/${this.$config.PANDLE_COMPANY_ID}/projects`,
       body: {
         project: {
           name: data.client_name + '-' + safeURL(data.name),
