@@ -86,6 +86,7 @@
       border-color: var(--primaryColor)
     }
     input[type='date'] {
+      display: inline-block;
       max-width: calc(100% - 49px)
     }
   }
