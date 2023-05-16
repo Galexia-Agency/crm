@@ -9,6 +9,10 @@ const getters = {
     return state.clients.find((item) => item.id === id)
   },
 
+  getClientByShortname: (state) => (shortname) => {
+    return state.clients.find((client) => client.business_shortname.toLowerCase() === shortname)
+  },
+
   getContactById: (state) => (id) => {
     return state.contacts.find((item) => item.id === id)
   },

@@ -128,6 +128,10 @@
       <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
         Create Quote
       </button> -->
+      <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="showMoneyGraphsModal()">
+        <font-awesome-icon :icon="['fa-solid', 'fa-chart-bar']" />
+        View Monthly Monetary Accounts
+      </button>
       <div class="list-container">
         <font-awesome-icon :icon="['fa-solid', 'fa-trash-can']" />
         <Toggle :model="showArchived" label="Show Deleted Items" :class="{toggled: showArchived}" @input="showArchived = $event" />
@@ -141,23 +145,33 @@
     >
       <projectModal ref="project" @submit="updateProject" @cancel="hideProjectModal" />
     </ui-modal>
+    <ui-modal
+      ref="moneyGraphsModal"
+      :active="moneyGraphsModal"
+      :cancellable="true"
+      @close="hideMoneyGraphsModal"
+    >
+      <projectMoneyGraphsModel ref="projectMoneyGraphs" :project="project" @cancel="hideMoneyGraphsModal" />
+    </ui-modal>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import EventSourcePolyfill from 'eventsource'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!../workers/projectSSE.js'
 import Toggle from '~/components/ui/UiToggle.vue'
 import Board from '~/components/Board'
 import projectModal from '~/components/modals/update/projectModal'
+import projectMoneyGraphsModel from '~/components/modals/display/projectMoneyGraphsModel'
 
 export default {
   components: {
     Toggle,
     Board,
-    projectModal
+    projectModal,
+    projectMoneyGraphsModel
   },
   props: {
     projectId: {
@@ -172,10 +186,12 @@ export default {
   data () {
     return {
       modal: false,
+      moneyGraphsModal: false,
       show: true,
       showArchived: false,
       sseWorker: null,
-      sse: null
+      sse: null,
+      timeout: null
     }
   },
   computed: {
@@ -184,8 +200,11 @@ export default {
       'isRenewingTokens',
       'projects'
     ]),
+    ...mapGetters([
+      'getProjectById'
+    ]),
     project () {
-      return this.projects.find((project) => project.id === this.projectId)
+      return this.getProjectById(this.projectId)
     },
     daysToStart () {
       if (!this.project.enquiry_date) {
@@ -247,17 +266,19 @@ export default {
     document.addEventListener('visibilitychange', this.visibleChange)
   },
   beforeDestroy () {
+    clearTimeout(this.timeout)
     document.removeEventListener('visibilitychange', this.visibleChange)
     this.sse_end()
   },
   methods: {
     visibleChange () {
       if (document.visibilityState !== 'visible') {
+        clearTimeout(this.timeout)
         this.sse_end()
       }
     },
     sse_start () {
-      window.setTimeout(async () => {
+      this.timeout = window.setTimeout(async () => {
         if (!this.isRenewingTokens && document.visibilityState === 'visible') {
           const id = this.project.id
           const authToken = `Bearer ${await this.$auth.getAccessToken()}`
@@ -344,6 +365,14 @@ export default {
     hideProjectModal () {
       this.$parent.dragging = false
       this.modal = false
+    },
+    showMoneyGraphsModal () {
+      this.$parent.dragging = true
+      this.moneyGraphsModal = true
+    },
+    hideMoneyGraphsModal () {
+      this.$parent.dragging = false
+      this.moneyGraphsModal = false
     },
     async updateProject (data) {
       this.hideProjectModal()

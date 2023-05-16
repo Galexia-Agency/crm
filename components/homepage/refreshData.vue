@@ -65,6 +65,8 @@ export default {
         }
         this.$store.commit('pandleDashboard', response)
       } catch (e) {
+        this.loading = false
+        this.loadingText = 'Loading'
         this.$store.commit('error', e)
       }
       this.loading = false
@@ -77,6 +79,8 @@ export default {
         await this.$axios.$get('https://api.galexia.agency/project_profit_loss')
         await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
       } catch (e) {
+        this.loading = false
+        this.loadingText = 'Loading'
         this.$store.commit('error', e)
       }
       this.loading = false

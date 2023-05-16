@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { dragscroll } from 'vue-dragscroll'
 import Contact from '~/components/modals/display/contactModal'
 import contactModal from '~/components/modals/update/contactModal'
@@ -148,12 +148,14 @@ export default {
   computed: {
     ...mapState([
       'userInfo',
-      'clients',
       'contacts',
       'projects'
     ]),
+    ...mapGetters([
+      'getClientByShortname'
+    ]),
     client () {
-      return this.clients.find((client) => client.business_shortname.toLowerCase() === this.$route.params.client)
+      return this.getClientByShortname(this.$route.params.client)
     },
     contactsForClient () {
       return this.client ? this.contacts.filter((contact) => contact.client_id === this.client.id) : null
@@ -174,7 +176,7 @@ export default {
     }
   },
   created () {
-    if (this.clients && !this.client) {
+    if (!this.client) {
       this.$nuxt.context.error({ statusCode: 404, message: 'Client not found' })
     }
   },

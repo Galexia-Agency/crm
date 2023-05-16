@@ -110,6 +110,7 @@
   }
   button {
     color: var(--primaryColor);
+    font-size: 1rem;
     font-family: inherit;
     background: transparent;
     border: none;
