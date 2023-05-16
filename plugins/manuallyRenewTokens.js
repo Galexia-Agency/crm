@@ -66,11 +66,9 @@ export default (ctx) => {
         }
 
         /*
-          If we don't currently have a timer set to renew the accessToken, then we should proceed with trying to set up token renewal
+          Set up token renewal
         */
-        if (!window.timer) {
-          await automaticTokenRenewal(ctx)
-        }
+        await automaticTokenRenewal(ctx)
 
         /*
           We update the authenticated state here as we have now renewed the tokens and are authenticated again

@@ -132,9 +132,10 @@
         <font-awesome-icon :icon="['fa-solid', 'fa-chart-bar']" />
         View Monthly Monetary Accounts
       </button>
-      <Toggle :model="showArchived" label="Show Deleted Items" class="list-container" :class="{toggled: showArchived}" @input="showArchived = $event">
+      <div class="list-container">
         <font-awesome-icon :icon="['fa-solid', 'fa-trash-can']" />
-      </Toggle>
+        <Toggle :model="showArchived" label="Show Deleted Items" :class="{toggled: showArchived}" @input="showArchived = $event" />
+      </div>
     </div>
     <board v-show="show" :project-id="project.id" />
     <ui-modal

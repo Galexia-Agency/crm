@@ -1,9 +1,10 @@
 <style scoped lang="scss">
   /* Toggle */
-  .list-container.switch {
+  .switch {
     position: relative;
-    width: 92px;
-    height: 46px;
+    display: inline-block;
+    width: 40px;
+    height: 24px;
     cursor: pointer;
     input {
       width: 0;
@@ -13,9 +14,7 @@
   }
   .slider {
     position: absolute;
-    top: 10px;
-    bottom: 10px;
-    left: calc(10px + 1.66em);
+    inset: 0;
     min-width: 40px;
     background-color: #CCCCCC;
     transition: .4s;

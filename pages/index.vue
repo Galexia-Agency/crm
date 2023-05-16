@@ -11,9 +11,6 @@
         padding-top: 4rem
       }
     }
-    h2 {
-      margin-top: 2rem
-    }
     main {
       display: flex;
       flex-wrap: wrap;
