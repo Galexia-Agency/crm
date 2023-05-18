@@ -126,15 +126,8 @@ export default {
         issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
         clientId: this.$config.OKTA_CLIENT_ID,
         redirectUri,
-        authParams: {
-          pkce: true,
-          display: 'page',
-          issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
-          scopes: this.$config.OKTA_SCOPES,
-          tokenManager: {
-            autoRenew: false
-          }
-        }
+        useClassicEngine: true,
+        authClient: this.$auth
       })
       this.widget.showSignInToGetTokens({
         el: '#okta-signin-container',

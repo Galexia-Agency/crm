@@ -19,8 +19,8 @@ export default (ctx, inject) => {
       await ctx.$logout()
     }
   })
+  oktaAuth.start()
   Vue.use(OktaVue, { oktaAuth })
   // Inject okta to the context as $auth
-  ctx.$auth = oktaAuth
   inject('auth', oktaAuth)
 }

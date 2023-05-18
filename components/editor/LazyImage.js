@@ -9,7 +9,7 @@ const inputRegex = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/
 export default Node.create({
   name: 'image',
 
-  defaultOptions: {
+  addOptions: {
     inline: false,
     HTMLAttributes: {}
   },
