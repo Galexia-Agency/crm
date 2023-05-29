@@ -65,7 +65,19 @@ const mutations = {
     lists.splice(toIndex, 0, lists.splice(fromIndex, 1)[0])
   },
   archiveList (state, { projectId, listId }) {
-    state.projects.find((project) => project.id === projectId).lists.find((i) => i.id === listId).archived = true
+    const list = state.projects.find((project) => project.id === projectId).lists.find((i) => i.id === listId)
+    list.archived = true
+    list.items.forEach((item) => {
+      if (item.date) {
+        item.date = null
+        item.dateUNIX = null
+        item.day = null
+        item.dayNo = null
+        item.month = null
+        item.updatedBy = state.userInfo.email
+        item.updatedDate = Date.now()
+      }
+    })
   },
   unarchiveList (state, { projectId, listId }) {
     state.projects.find((project) => project.id === projectId).lists.find((i) => i.id === listId).archived = false
