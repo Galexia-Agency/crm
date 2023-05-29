@@ -11,6 +11,7 @@
   <ui-modal
     ref="modal"
     :active="reveal"
+    :cancellable="false"
   >
     <div class="query-form card">
       <form class="card-content" @submit.prevent="confirm">
@@ -38,6 +39,7 @@ export default {
   methods: {
     show (text) {
       if (this.reveal === false) {
+        window.addEventListener('keydown', this.onKeyDown)
         this.reveal = true
         this.text = text
         return new Promise((resolve) => {
@@ -45,6 +47,7 @@ export default {
         })
       } else {
         this.reveal = false
+        window.removeEventListener('keydown', this.onKeyDown)
       }
     },
     confirm () {
@@ -54,6 +57,11 @@ export default {
     cancel () {
       this.reveal = false
       this.resolvePromise(false)
+    },
+    onKeyDown (event) {
+      if (event.key === 'Escape') {
+        this.cancel()
+      }
     }
   }
 }

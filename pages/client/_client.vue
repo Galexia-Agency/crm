@@ -74,7 +74,6 @@
     <ui-modal
       ref="modal"
       :active="modal.contact"
-      :cancellable="1"
       @close="hideContactModal"
     >
       <contact ref="contact" @cancel="hideContactModal" @edit="showEditContactModal" />

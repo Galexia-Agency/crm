@@ -423,7 +423,6 @@
     <ui-modal
       ref="modal"
       :active="error.active"
-      :cancellable="!error.data"
       @close="$store.commit('error', { active: false })"
     >
       <div class="error">

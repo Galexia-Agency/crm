@@ -30,7 +30,7 @@ export default {
     active: Boolean,
     cancellable: {
       type: [Number, Boolean],
-      default: null
+      default: true
     }
   },
   mounted () {

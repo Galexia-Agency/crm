@@ -12,6 +12,7 @@
   <ui-modal
     ref="modal"
     :active="conflicts.reveal"
+    :cancellable="false"
   >
     <div class="query-form card">
       <form class="card-content" @submit.prevent="submit">
