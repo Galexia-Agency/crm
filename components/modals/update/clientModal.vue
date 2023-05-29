@@ -195,7 +195,12 @@ export default {
     businessShortnameCreator ($event) {
       const currentBusinessShortName = this.business_shortname ? this.safeURL(this.business_shortname) : ''
       const newBusinessShortName = $event ? this.safeURL($event) : ''
-      if (currentBusinessShortName.slice(0, -1) === newBusinessShortName || currentBusinessShortName === newBusinessShortName.slice(0, -1)) {
+      if (
+        currentBusinessShortName.slice(0, -1) === newBusinessShortName ||
+        currentBusinessShortName === newBusinessShortName.slice(0, -1) ||
+        currentBusinessShortName.slice(0, -2) === newBusinessShortName ||
+        currentBusinessShortName === newBusinessShortName.slice(0, -2)
+      ) {
         this.business_shortname = newBusinessShortName
       }
     }
