@@ -107,12 +107,18 @@
       </a>
     </h1>
     <div id="okta-signin-container" />
+    <Refresh />
   </div>
 </template>
 
 <script>
+import Refresh from '~/components/global/refresh'
+
 export default {
   name: 'Login',
+  components: {
+    Refresh
+  },
   layout: 'login',
   async mounted () {
     let OktaSignIn

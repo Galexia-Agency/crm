@@ -15,9 +15,7 @@
 <template>
   <div style="display: contents">
     <Hamburger type="arrow" color="var(--primaryColor)" :expanded="expanded" />
-    <button type="button" class="refresh" :class="{clicked: refreshed}" @click="refresh">
-      <font-awesome-icon :icon="['fa-solid', 'fa-sync']" />
-    </button>
+    <Refresh />
     <nav>
       <nuxt-link to="/">
         <h2>Home</h2>
@@ -75,16 +73,17 @@
 import { mapState } from 'vuex'
 import Hamburger from 'vue-hamburger/hamburger.vue'
 import projectNavLink from '~/components/projectNavLink'
+import Refresh from '~/components/global/refresh'
 
 export default {
   components: {
     Hamburger,
-    projectNavLink
+    projectNavLink,
+    Refresh
   },
   data () {
     return {
       search: '',
-      refreshed: false,
       expanded: null
     }
   },
@@ -94,12 +93,6 @@ export default {
       'clients',
       'userInfo'
     ])
-  },
-  methods: {
-    refresh () {
-      this.refreshed = true
-      location.reload()
-    }
   }
 }
 </script>
