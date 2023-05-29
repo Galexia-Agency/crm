@@ -47,7 +47,7 @@
     "vue-dragscroll": "^2.1.3",
     "vue-hamburger": "https://github.com/joebailey26/vue-hamburger",
     "vue-inline-svg": "^2.0.0",
-    "vue-smooth-dnd": "^0.2.1",
+    "vue-smooth-dnd": "^0.8.1",
     "worker-loader": "^3.0.8"
   },
   "devDependencies": {
