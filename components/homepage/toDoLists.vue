@@ -22,7 +22,7 @@
   <main v-if="overdueItems.length > 0 || dueItems.length > 0">
     <div class="toggle-container">
       Show in house tasks
-      <Toggle :model="showInHouseItems" label="Show In House Items" :class="{toggled: showInHouseItems}" @input="showInHouseItems = $event" />
+      <Toggle :model="showInHouseItems" label="Show In House Items" :class="{toggled: showInHouseItems}" @input="toggleShowInHouseItems" />
     </div>
     <section v-if="overdueItems.length > 0">
       <h2>
@@ -88,7 +88,17 @@ export default {
       return this.overdueItems.filter((obj) => obj.projectStatus !== 'In House')
     }
   },
+  mounted () {
+    const inHouseTasksVisibility = localStorage.getItem('inHouseTasks_visibility')
+    if (inHouseTasksVisibility !== null) {
+      this.showInHouseItems = JSON.parse(inHouseTasksVisibility)
+    }
+  },
   methods: {
+    toggleShowInHouseItems ($event) {
+      this.showInHouseItems = $event
+      localStorage.setItem('inHouseTasks_visibility', $event)
+    },
     getLists (dueType) {
       function due (timestamp) {
         if (dueType === 'overdue') {

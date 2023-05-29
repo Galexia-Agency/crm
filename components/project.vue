@@ -52,7 +52,7 @@
 <template>
   <div>
     <div class="project-details">
-      <button type="button" class="centered" @click="show = !show">
+      <button type="button" class="centered" @click="toggleProjectVisibility">
         <font-awesome-icon v-if="show" :icon="['fa-solid', 'fa-sort-up']" />
         <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-down']" />
       </button>
@@ -264,6 +264,10 @@ export default {
   mounted () {
     this.sse_start()
     document.addEventListener('visibilitychange', this.visibleChange)
+    const projectVisibility = localStorage.getItem(`${this.project.client_name}_${this.project.name}_visibility`)
+    if (projectVisibility !== null) {
+      this.show = JSON.parse(projectVisibility)
+    }
   },
   beforeDestroy () {
     clearTimeout(this.timeout)
@@ -271,6 +275,10 @@ export default {
     this.sse_end()
   },
   methods: {
+    toggleProjectVisibility () {
+      this.show = !this.show
+      localStorage.setItem(`${this.project.client_name}_${this.project.name}_visibility`, this.show)
+    },
     visibleChange () {
       if (document.visibilityState !== 'visible') {
         clearTimeout(this.timeout)
