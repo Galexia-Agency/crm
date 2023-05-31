@@ -135,17 +135,27 @@ export default {
         useClassicEngine: true,
         authClient: this.$auth
       })
+      const checkElementInterval = setInterval(() => {
+        const formElement = document.querySelector('form')
+
+        if (formElement) {
+          formElement.addEventListener('submit', () => {
+            this.$store.commit('loading', true)
+          })
+          clearInterval(checkElementInterval) // Stop the loop
+        }
+      }, 250)
       this.widget.showSignInToGetTokens({
         el: '#okta-signin-container',
         scopes: this.$config.OKTA_SCOPES
       }).then(async (tokens) => {
-        this.$nuxt.$loading.start()
         await this.$auth.tokenManager.setTokens(tokens)
         this.widget.remove()
         await this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
-        this.$nuxt.$loading.finish()
       }).catch((err) => {
         throw err
+      }).finally(() => {
+        this.$store.commit('loading', false)
       })
     })
   }

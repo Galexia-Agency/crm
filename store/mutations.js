@@ -2,6 +2,9 @@ import { makeItem, makeList } from '~/utils/data'
 import { getItemById, getListById, getListByItemId } from '~/utils/board'
 
 const mutations = {
+  loading (state, bool) {
+    state.loading = bool
+  },
   isClientLoaded (state, bool) {
     state.isClientLoaded = bool
   },

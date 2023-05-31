@@ -1,6 +1,7 @@
 import importedActions from '../actions'
 
 export const state = () => ({
+  loading: false,
   isClientLoaded: false,
   isRenewingTokens: false,
   isAuthenticated: false,

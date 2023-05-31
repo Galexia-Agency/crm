@@ -402,31 +402,34 @@
 </style>
 
 <template>
-  <div v-if="isAuthenticated && isClientLoaded" class="contentWrapper">
-    <ui-modal
-      ref="modal"
-      :active="error.active"
-      @close="$store.commit('error', { active: false })"
-    >
-      <div class="error">
-        <h1>Uh oh! An error has occured</h1>
-        <h2>{{ error.description }}</h2>
-        <template v-if="error.data">
-          <p>Please copy the below information so as to not lose your changes</p>
-          <textarea :value="JSON.stringify(error.data)" rows="10" />
-        </template>
-      </div>
-    </ui-modal>
-    <Sidebar />
-    <nuxt />
-    <ui-modal
-      ref="modal"
-      :active="modal.client"
-      @close="hideClientModal"
-    >
-      <clientModal ref="newClient" @add="newClient" @cancel="hideClientModal" />
-    </ui-modal>
-    <ConflictsModal v-if="conflicts.reveal" ref="conflicts" />
+  <div>
+    <Loading />
+    <div v-if="isAuthenticated && isClientLoaded" class="contentWrapper">
+      <ui-modal
+        ref="modal"
+        :active="error.active"
+        @close="$store.commit('error', { active: false })"
+      >
+        <div class="error">
+          <h1>Uh oh! An error has occured</h1>
+          <h2>{{ error.description }}</h2>
+          <template v-if="error.data">
+            <p>Please copy the below information so as to not lose your changes</p>
+            <textarea :value="JSON.stringify(error.data)" rows="10" />
+          </template>
+        </div>
+      </ui-modal>
+      <Sidebar />
+      <nuxt />
+      <ui-modal
+        ref="modal"
+        :active="modal.client"
+        @close="hideClientModal"
+      >
+        <clientModal ref="newClient" @add="newClient" @cancel="hideClientModal" />
+      </ui-modal>
+      <ConflictsModal v-if="conflicts.reveal" ref="conflicts" />
+    </div>
   </div>
 </template>
 
@@ -435,11 +438,13 @@ import { mapState } from 'vuex'
 import Sidebar from '~/components/sidebar'
 import clientModal from '~/components/modals/update/clientModal'
 import ConflictsModal from '~/components/modals/conflictModal'
+import Loading from '~/components/global/loading'
 import { safeURL } from '~/plugins/mixins/urls'
 
 export default {
   name: 'DefaultLayout',
   components: {
+    Loading,
     Sidebar,
     clientModal,
     ConflictsModal

@@ -33,12 +33,7 @@ export default {
   /*
    ** Customize the progress-bar color
    */
-  loading: {
-    color: '#1A237E',
-    height: '3px',
-    duration: 1000,
-    continuous: false
-  },
+  loading: false,
   /*
    ** Global CSS
    */
@@ -61,7 +56,8 @@ export default {
     '~plugins/fontAwesome',
     '~plugins/axiosConcurrency',
     '~plugins/pauseAxiosWhilstRenewingTokens',
-    '~plugins/authHeaders'
+    '~plugins/authHeaders',
+    '~plugins/axiosLoading'
   ],
   /*
    ** Nuxt.js dev-modules
