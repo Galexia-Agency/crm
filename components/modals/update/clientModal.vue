@@ -132,48 +132,24 @@ export default {
     show (data) {
       this.reset()
       if (data) {
-        Object.assign(this, data)
-        try {
-          if (data.address !== null || data.address !== '') {
-            if (data.address.includes('\\')) {
-              this.address = JSON.parse(JSON.parse(data.address))
-            } else {
-              this.address = JSON.parse(data.address)
-            }
-          } else {
-            this.address = {
-              line1: '',
-              line2: '',
-              line3: '',
-              county: '',
-              country: 'United Kingdom',
-              postcode: '',
-              town: ''
-            }
-          }
-        } catch (e) {
-          if (data.address !== null || data.address !== '') {
-            this.address = {
-              line1: data.address,
-              line2: '',
-              line3: '',
-              county: '',
-              country: 'United Kingdom',
-              postcode: '',
-              town: ''
-            }
-          } else {
-            this.address = {
-              line1: '',
-              line2: '',
-              line3: '',
-              county: '',
-              country: 'United Kingdom',
-              postcode: '',
-              town: ''
-            }
+        // Clone the data so we don't get Vuex moaning about mutation state
+        const newData = {}
+        Object.assign(newData, data)
+        // Check if we're already an address, and thus hydrate it, if not, create a new object placeholder
+        if (newData.address && this.isJsonString(newData.address)) {
+          newData.address = JSON.parse(newData.address)
+        } else {
+          newData.address = {
+            line1: '',
+            line2: '',
+            line3: '',
+            county: '',
+            country: 'United Kingdom',
+            postcode: '',
+            town: ''
           }
         }
+        Object.assign(this, newData)
       }
     },
     submit () {

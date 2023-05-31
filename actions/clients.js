@@ -24,15 +24,6 @@ export default {
     return await dispatch('filteredProjectsHelper')
   },
   async updateClient ({ commit, dispatch }, data) {
-    let adr = {}
-    if (data.address) {
-      try {
-        adr = JSON.parse(data.address)
-        adr = JSON.stringify(data.address)
-      } catch (e) {
-        adr = JSON.stringify(data.address)
-      }
-    }
     async function updatePandle () {
       if (data.pandle_id) {
         try {
@@ -66,10 +57,10 @@ export default {
     }
     try {
       data.business_shortname = safeURL(data.business_shortname)
+      data.address = JSON.stringify(data.address)
       const response = await this.$axios.$post('https://api.galexia.agency/clients',
         {
-          ...data,
-          address: adr
+          ...data
         },
         {
           headers: {

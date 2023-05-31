@@ -56,6 +56,7 @@ export default {
     '~plugins/board',
     '~plugins/mixins/dates',
     '~plugins/mixins/urls',
+    '~plugins/mixins/json',
     '~plugins/vueInlineSVG',
     '~plugins/fontAwesome',
     '~plugins/axiosConcurrency',

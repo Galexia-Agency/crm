@@ -172,6 +172,17 @@ export default {
         }
       }
       return false
+    },
+    addressForContact () {
+      let address
+      if (this.client.address) {
+        if (this.isJsonString(this.client.address)) {
+          address = this.client.address
+        } else {
+          address = JSON.stringify(this.client.address)
+        }
+      }
+      return address
     }
   },
   created () {
@@ -244,7 +255,7 @@ export default {
       this.hideContactModal()
       this.hideEditContactModal()
       try {
-        await this.$store.dispatch('updateContact', data)
+        await this.$store.dispatch('updateContact', { ...data, address: this.addressForContact })
       } catch (e) {
         const error = {}
         error.description = e
@@ -255,7 +266,7 @@ export default {
     async addContact (data) {
       this.hideEditContactModal()
       try {
-        await this.$store.dispatch('addContact', data)
+        await this.$store.dispatch('addContact', { ...data, address: this.addressForContact })
       } catch (e) {
         const error = {}
         error.description = e
