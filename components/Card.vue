@@ -78,7 +78,11 @@
       </template>
     </div>
     <div v-if="item">
-      <a v-if="validURL(item.title)" class="item-title" target="_blank" :href="item.title" v-text="formatURL(item.title)" />
+      <!-- Only put the first word through as a URL -->
+      <p v-if="validURL(item.title.split(' ')[0])" class="item-title">
+        <a target="_blank" :href="item.title.split(' ')[0]" v-text="formatURL(item.title.split(' ')[0])" />
+        <span v-text="item.title.split(' ').slice(1).join(' ')" />
+      </p>
       <p v-else class="item-title" v-text="item.title" />
       <p>
         <font-awesome-icon v-if="item.description && item.description !== '<p></p>' && item.description !== ' '" :icon="['fa-solid', 'fa-bars']" />
