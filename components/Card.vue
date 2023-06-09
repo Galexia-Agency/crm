@@ -84,8 +84,8 @@
         <span v-text="item.title.split(' ').slice(1).join(' ')" />
       </p>
       <p v-else class="item-title" v-text="item.title" />
-      <p>
-        <font-awesome-icon v-if="item.description && item.description !== '<p></p>' && item.description !== ' '" :icon="['fa-solid', 'fa-bars']" />
+      <p v-if="item.description && item.description !== '<p></p>' && item.description !== ' '">
+        <font-awesome-icon :icon="['fa-solid', 'fa-bars']" />
       </p>
       <p v-if="item.date" class="item-date">
         <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />

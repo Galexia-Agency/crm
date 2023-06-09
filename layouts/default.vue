@@ -129,7 +129,7 @@
   .item-title, .item-date {
     max-width: 82%;
     font-size: .9rem;
-    word-wrap: break-word;
+    text-wrap: initial;
     overflow-wrap: break-word
   }
   .item-date, .item-assignee {
