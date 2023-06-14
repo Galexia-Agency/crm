@@ -36,17 +36,18 @@
                   @drag-end="vibrate(300), $parent.$parent.dragging = false"
                   @drop="e => onCardDrop(e, list, listIndex)"
                 >
-                  <Draggable v-for="item in list.items" :key="item.id + + item.title + item.description + item.date">
-                    <Card
-                      v-if="!item.archived || ($parent.showArchived && item.archived)"
-                      :item="item"
-                      :project="$parent.project"
-                      @edit="editItem"
-                      @archive="archiveItem"
-                      @unarchive="unarchiveItem"
-                      @remove="removeItem"
-                    />
-                  </Draggable>
+                  <template v-for="item in list.items">
+                    <Draggable v-if="!item.archived || ($parent.showArchived && item.archived)" :key="item.id + + item.title + item.description + item.date">
+                      <Card
+                        :item="item"
+                        :project="$parent.project"
+                        @edit="editItem"
+                        @archive="archiveItem"
+                        @unarchive="unarchiveItem"
+                        @remove="removeItem"
+                      />
+                    </Draggable>
+                  </template>
                 </Container>
                 <template v-for="item in list.items" v-else>
                   <Card

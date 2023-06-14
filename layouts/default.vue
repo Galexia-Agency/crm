@@ -203,6 +203,9 @@
   .smooth-dnd-container.horizontal {
     display: initial!important
   }
+  .smooth-dnd-container:empty {
+    display: none
+  }
   .smooth-dnd-draggable-wrapper .list-container {
     padding-bottom: 0
   }
