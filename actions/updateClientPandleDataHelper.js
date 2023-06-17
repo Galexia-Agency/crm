@@ -8,7 +8,7 @@ export default {
       clientsToPush[client].profit = 0
       clientsToPush[client].completion_amount = 0
       const projects = []
-      clientsToPush[client].projects.forEach((projectId) => {
+      getters.getProjectsForClient(clientsToPush[client]).forEach((projectId) => {
         projects.push(getters.getProjectById(projectId))
       })
       if (projects.length > 0) {
