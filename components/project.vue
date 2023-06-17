@@ -47,79 +47,83 @@
     background: transparent;
     border: none
   }
+  .project-drag-handle {
+    color: var(--primaryColor);
+    transform: rotate(90deg);
+    cursor: move
+  }
 </style>
 
 <template>
   <div>
     <div class="project-details">
+      <FontAwesomeIcon :icon="['fa-solid', 'fa-grip']" class="project-drag-handle" />
       <button type="button" class="centered" @click="toggleProjectVisibility">
-        <font-awesome-icon v-if="show" :icon="['fa-solid', 'fa-sort-up']" />
-        <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-down']" />
+        <FontAwesomeIcon v-if="show" :icon="['fa-solid', 'fa-sort-up']" />
+        <FontAwesomeIcon v-else :icon="['fa-solid', 'fa-sort-down']" />
       </button>
-      <h2>
-        {{ project.name }}
-      </h2>
+      <h2 v-text="project.name" />
       <a v-if="project.admin.includes(userInfo.email)" class="edit" @click="showProjectModal(project)">
-        <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-edit']" />
       </a>
       <a v-if="project.project_url" class="list-container" :href="project.project_url" target="_blank">
-        <font-awesome-icon :icon="['fa-solid', 'fa-desktop']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-desktop']" />
         <span>URL</span>
       </a>
       <a v-if="project.project_login_url" class="list-container" :href="project.project_login_url" target="_blank">
-        <font-awesome-icon :icon="['fa-solid', 'fa-sign-in-alt']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-sign-in-alt']" />
         <span>Login</span>
       </a>
       <a v-if="project.github_url" class="list-container" :href="project.github_url" target="_blank">
-        <font-awesome-icon :icon="['fa-brands', 'fa-github']" />
+        <FontAwesomeIcon :icon="['fa-brands', 'fa-github']" />
         <span>GitHub</span>
       </a>
       <a v-if="project.drive_url" class="list-container" :href="project.drive_url" target="_blank">
-        <font-awesome-icon :icon="['fa-brands', 'fa-google-drive']" />
+        <FontAwesomeIcon :icon="['fa-brands', 'fa-google-drive']" />
         <span>Drive</span>
       </a>
       <span v-if="project.hosting && project.hosting === 'Digital Ocean'" class="list-container">
-        <font-awesome-icon :icon="['fa-brands', 'fa-digital-ocean']" />
+        <FontAwesomeIcon :icon="['fa-brands', 'fa-digital-ocean']" />
         <span>Digital Ocean</span>
       </span>
       <span v-else-if="project.hosting && project.hosting === 'Netlify'" class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-cloud']" />
         <span>Netlify</span>
       </span>
       <a v-else-if="project.hosting && validURL(project.hosting)" :href="project.hosting" target="_blank" class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-cloud']" />
         <span v-text="formatURL(project.hosting)" />
       </a>
       <span v-else-if="project.hosting" class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-cloud']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-cloud']" />
         <span v-text="project.hosting" />
       </span>
       <div v-if="project.php" class="list-container">
-        <font-awesome-icon :icon="['fa-brands', 'fa-php']" />
+        <FontAwesomeIcon :icon="['fa-brands', 'fa-php']" />
         <span v-text="project.php" />
       </div>
       <div class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-tasks']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-tasks']" />
         <span v-text="project.status" />
       </div>
       <div v-if="project.start_date && !project.ongoing" class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToStart" />
       </div>
       <div v-if="project.start_date && !project.ongoing" class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToComplete" />
       </div>
       <div v-if="project.daysWithUs" class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysWithUs" />
       </div>
-      <a v-if="$parent.client.pandle_id && !project.pandle_id && userInfo.groups.includes('admin')" class="list-container" @click="addProjectPandle()">
-        <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
+      <a v-if="client.pandle_id && !project.pandle_id && userInfo.groups.includes('admin')" class="list-container" @click="addProjectPandle()">
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
       </a>
       <a v-else-if="project.pandle_id && userInfo.groups.includes('admin')" class="list-container" :href="`https://my.pandle.com/projects/${project.pandle_id}`" target="_blank">
-        <font-awesome-icon :icon="['fa-solid', 'fa-calculator']" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-calculator']" />
         View in Pandle
       </a>
       <!-- <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createInvoice()">
@@ -128,31 +132,22 @@
       <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
         Create Quote
       </button> -->
-      <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="showMoneyGraphsModal()">
-        <font-awesome-icon :icon="['fa-solid', 'fa-chart-bar']" />
+      <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="showMoneyGraphsModal">
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-chart-bar']" />
         View Monthly Monetary Accounts
       </button>
       <div class="list-container">
-        <font-awesome-icon :icon="['fa-solid', 'fa-trash-can']" />
-        <Toggle :model="showArchived" label="Show Deleted Items" :class="{toggled: showArchived}" @input="showArchived = $event" />
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-trash-can']" />
+        <UiToggle :model="showArchived" label="Show Deleted Items" :class="{toggled: showArchived}" @input="showArchived = $event" />
       </div>
     </div>
-    <board v-show="show" :project-id="project.id" />
-    <ui-modal
-      ref="modal"
-      :active="modal"
-      @close="hideProjectModal"
-    >
-      <projectModal ref="project" @submit="updateProject" @cancel="hideProjectModal" />
-    </ui-modal>
-    <ui-modal
-      ref="moneyGraphsModal"
-      :active="moneyGraphsModal"
-      :cancellable="true"
-      @close="hideMoneyGraphsModal"
-    >
-      <projectMoneyGraphsModel ref="projectMoneyGraphs" :project="project" @cancel="hideMoneyGraphsModal" />
-    </ui-modal>
+    <KanbanBoard
+      v-show="show"
+      :project="project"
+      :show-archived="showArchived"
+    />
+    <ModalsUpdateProject :active="modalsUpdateProjectActive" :project="project" @submit="updateProject" @cancel="hideProjectModal" />
+    <ModalsDisplayProjectMoneyGraphs :active="modalsProjectMoneyGraphActive" :project="project" @cancel="hideMoneyGraphsModal" />
   </div>
 </template>
 
@@ -161,18 +156,8 @@ import { mapState, mapGetters } from 'vuex'
 import EventSourcePolyfill from 'eventsource'
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import Worker from 'worker-loader!../workers/projectSSE.js'
-import Toggle from '~/components/ui/UiToggle.vue'
-import Board from '~/components/Board'
-import projectModal from '~/components/modals/update/projectModal'
-import projectMoneyGraphsModel from '~/components/modals/display/projectMoneyGraphsModel'
 
 export default {
-  components: {
-    Toggle,
-    Board,
-    projectModal,
-    projectMoneyGraphsModel
-  },
   props: {
     projectId: {
       type: Number,
@@ -185,8 +170,8 @@ export default {
   },
   data () {
     return {
-      modal: false,
-      moneyGraphsModal: false,
+      modalsUpdateProjectActive: false,
+      modalsProjectMoneyGraphActive: false,
       show: true,
       showArchived: false,
       sseWorker: null,
@@ -201,8 +186,12 @@ export default {
       'projects'
     ]),
     ...mapGetters([
-      'getProjectById'
+      'getProjectById',
+      'getClientById'
     ]),
+    client () {
+      return this.getClientById(this.project.client_id)
+    },
     project () {
       return this.getProjectById(this.projectId)
     },
@@ -366,48 +355,27 @@ export default {
     changeArchived () {
       this.showArchived = !this.showArchived
     },
-    showProjectModal (data) {
-      this.$parent.dragging = true
-      this.modal = true
-      this.$nextTick(() => {
-        this.$refs.project.show(data)
-      })
+    showProjectModal () {
+      this.modalsUpdateProjectActive = true
     },
     hideProjectModal () {
-      this.$parent.dragging = false
-      this.modal = false
+      this.modalsUpdateProjectActive = false
     },
     showMoneyGraphsModal () {
-      this.$parent.dragging = true
-      this.moneyGraphsModal = true
+      this.modalsProjectMoneyGraphActive = true
     },
     hideMoneyGraphsModal () {
-      this.$parent.dragging = false
-      this.moneyGraphsModal = false
+      this.modalsProjectMoneyGraphActive = false
     },
-    async updateProject (data) {
+    updateProject (data) {
       this.hideProjectModal()
-      try {
-        await this.$store.dispatch('updateProject', data)
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
-      }
+      this.$store.dispatch('updateProject', data)
     },
-    async addProjectPandle () {
+    addProjectPandle () {
       const data = {}
       Object.assign(data, this.project)
-      data.client_name = this.$parent.client.business_shortname
-      try {
-        await this.$store.dispatch('addProjectPandle', data)
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
-      }
+      data.client_name = this.client.business_shortname
+      this.$store.dispatch('addProjectPandle', data)
     }
   }
 }

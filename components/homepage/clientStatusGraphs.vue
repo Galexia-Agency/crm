@@ -2,28 +2,23 @@
   <main>
     <section v-if="Object.keys(filteredProjects).length > 0" class="chart">
       <h2>Projects Status</h2>
-      <pie-chart :chart-data="projectStatus" />
+      <ChartsPie :chart-data="projectStatus" />
     </section>
     <section v-if="clients.length > 0" class="chart">
       <h2>Source of Clients</h2>
-      <pie-chart :chart-data="clientSource" />
+      <ChartsPie :chart-data="clientSource" />
     </section>
     <section v-if="projects.length > 0" class="chart">
       <h2>Hosting Locations</h2>
-      <pie-chart :chart-data="projectHosting" />
+      <ChartsPie :chart-data="projectHosting" />
     </section>
   </main>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import PieChart from '../charts/PieChart'
 
 export default {
-  name: 'ClientStatusGraphs',
-  components: {
-    PieChart
-  },
   computed: {
     ...mapState([
       'filteredProjects',

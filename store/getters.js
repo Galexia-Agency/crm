@@ -1,4 +1,4 @@
-import { getItemById, getListById, getListByItemId } from '~/utils/board'
+import { getCardById, getListById, getListByCardId } from '~/utils/board'
 
 const getters = {
   getProjectById: (state) => (id) => {
@@ -29,12 +29,12 @@ const getters = {
     return getListById(state.projects.find((project) => project.id === projectId).lists, listId)
   },
 
-  getListByItemId: (state) => (projectId, itemId) => {
-    return getListByItemId(state.projects.find((project) => project.id === projectId).lists, itemId)
+  getListByCardId: (state) => (projectId, cardId) => {
+    return getListByCardId(state.projects.find((project) => project.id === projectId).lists, cardId)
   },
 
-  getItemById: (state) => (projectId, itemId) => {
-    return getItemById(state.projects.find((project) => project.id === projectId).lists, itemId)
+  getCardById: (state) => (projectId, cardId) => {
+    return getCardById(state.projects.find((project) => project.id === projectId).lists, cardId)
   }
 }
 

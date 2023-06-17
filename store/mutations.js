@@ -1,5 +1,6 @@
-import { makeItem, makeList } from '~/utils/data'
-import { getItemById, getListById, getListByItemId } from '~/utils/board'
+import { makeCard, makeList } from '~/utils/data'
+import { getCardById, getListById, getListByCardId } from '~/utils/board'
+import { isJsonString } from '~/plugins/mixins/json'
 
 const mutations = {
   loading (state, bool) {
@@ -33,7 +34,26 @@ const mutations = {
   conflicts (state, data) {
     Object.assign(state.conflicts, data)
   },
+  confirm (state, data) {
+    Object.assign(state.confirm, data)
+  },
+  updateDragScroll (state, data) {
+    state.allowDragScroll = data
+  },
   clients (state, data) {
+    data.sort(function (a, b) {
+      const textA = a.business_shortname.toUpperCase()
+      const textB = b.business_shortname.toUpperCase()
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
+    })
+    data.forEach((client, index) => {
+      if (isJsonString(client.address)) {
+        data[index].address = JSON.parse(client.address)
+      }
+      if (isJsonString(client.projects)) {
+        data[index].projects = JSON.parse(client.projects)
+      }
+    })
     state.clients = data
   },
   contacts (state, data) {
@@ -43,6 +63,9 @@ const mutations = {
     state.domains = data
   },
   projects (state, data) {
+    data.forEach((project, index) => {
+      data[index].ongoing = Boolean(project.ongoing)
+    })
     state.projects = data
   },
   filteredProjects (state, data) {
@@ -60,7 +83,7 @@ const mutations = {
     }
     state.projects.find((project) => project.id === projectId).lists.push(makeList(title))
   },
-  editList (state, { projectId, title, id }) {
+  updateList (state, { projectId, title, id }) {
     state.projects.find((project) => project.id === projectId).lists.find((list) => list.id === id).title = title
   },
   moveList (state, [projectId, fromIndex, toIndex]) {
@@ -88,19 +111,19 @@ const mutations = {
   removeList (state, { projectId, listId }) {
     state.projects.find((project) => project.id === projectId).lists = state.projects.find((project) => project.id === projectId).lists.filter((i) => i.id !== listId)
   },
-  addItem (state, { projectId, listId, title, description, date, dateUNIX, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }) {
+  addCard (state, { projectId, listId, title, description, date, clientName, clientShortName, updatedBy, assignee }) {
     const list = getListById(state.projects.find((project) => project.id === projectId).lists, listId)
     const createdDate = Date.now()
     const updatedDate = Date.now()
-    list.items.push(makeItem({ title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }))
+    list.items.push(makeCard({ title, description, date, createdDate, updatedDate, clientName, clientShortName, updatedBy, assignee }))
   },
-  updateItem (state, { projectId, itemId, title, description, date, dateUNIX, createdDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }) {
+  updateCard (state, { projectId, cardId, title, description, date, createdDate, clientName, clientShortName, updatedBy, assignee }) {
     const updatedDate = Date.now()
-    const updatedItem = makeItem({ title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee, id: itemId })
-    const item = getItemById(state.projects.find((project) => project.id === projectId).lists, itemId)
-    Object.assign(item, updatedItem)
+    const updatedCard = makeCard({ title, description, date, createdDate, updatedDate, clientName, clientShortName, updatedBy, assignee, id: cardId })
+    const card = getCardById(state.projects.find((project) => project.id === projectId).lists, cardId)
+    Object.assign(card, updatedCard)
   },
-  moveItem (state, [projectId, fromListRef, fromIndex, toListRef, toIndex]) {
+  moveCard (state, [projectId, fromListRef, fromIndex, toListRef, toIndex]) {
     const fromList = typeof fromListRef === 'number'
       ? state.projects.find((project) => project.id === projectId).lists[fromListRef].items
       : getListById(projectId, fromListRef)
@@ -109,26 +132,31 @@ const mutations = {
       : getListById(projectId, toListRef)
     toList.splice(toIndex, 0, fromList.splice(fromIndex, 1)[0])
   },
-  archiveItem (state, { projectId, itemId }) {
-    const list = getListByItemId(state.projects.find((project) => project.id === projectId).lists, itemId)
-    const item = list.items.find((item) => item.id === itemId)
+  archiveCard (state, { projectId, cardId }) {
+    const list = getListByCardId(state.projects.find((project) => project.id === projectId).lists, cardId)
+    const item = list.items.find((item) => item.id === cardId)
     item.archived = true
     item.date = null
   },
-  unarchiveItem (state, { projectId, itemId }) {
-    const list = getListByItemId(state.projects.find((project) => project.id === projectId).lists, itemId)
-    const item = list.items.find((item) => item.id === itemId)
+  unarchiveCard (state, { projectId, cardId }) {
+    const list = getListByCardId(state.projects.find((project) => project.id === projectId).lists, cardId)
+    const item = list.items.find((item) => item.id === cardId)
     item.archived = false
   },
-  removeItem (state, { projectId, itemId }) {
-    const list = getListByItemId(state.projects.find((project) => project.id === projectId).lists, itemId)
-    list.items.splice(list.items.findIndex((item) => item.id === itemId), 1)
+  removeCard (state, { projectId, cardId }) {
+    const list = getListByCardId(state.projects.find((project) => project.id === projectId).lists, cardId)
+    list.items.splice(list.items.findIndex((item) => item.id === cardId), 1)
   },
   updateProject (state, data) {
     const item = state.projects.find((project) => project.id === data.id)
+    data.ongoing = Boolean(data.ongoing)
     if (item) {
       Object.assign(item, data)
     }
+  },
+  moveProjectForClient (state, [clientId, fromIndex, toIndex]) {
+    const projects = state.clients.find((client) => client.id === clientId).projects
+    projects.splice(toIndex, 0, projects.splice(fromIndex, 1)[0])
   },
   updateContact (state, data) {
     const item = state.contacts.find((contact) => contact.id === data.id)
@@ -137,6 +165,12 @@ const mutations = {
     }
   },
   updateClient (state, data) {
+    if (isJsonString(data.address)) {
+      data.address = JSON.parse(data.address)
+    }
+    if (isJsonString(data.projects)) {
+      data.projects = JSON.parse(data.projects)
+    }
     const item = state.clients.find((client) => client.id === data.id)
     if (item) {
       Object.assign(item, data)

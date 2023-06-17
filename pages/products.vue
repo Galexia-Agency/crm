@@ -27,29 +27,21 @@
       </thead>
       <tbody>
         <template v-for="(product, index) in productsValues">
-          <Product :key="`product_${index}`" :product="product" @updateProduct="showModal" />
+          <Product :key="`product_${index}`" :product="product" @update-product="showProductModal" />
         </template>
       </tbody>
     </table>
     <div v-if="userInfo.groups.includes('admin')">
-      <button type="button" class="button primary" @click="showModal">
+      <button type="button" class="button primary" @click="showProductModal">
         New Product
       </button>
     </div>
-    <ui-modal
-      ref="modal"
-      :active="modal"
-      @close="hideModal"
-    >
-      <Modal ref="product_modal" @submit="submitProduct" @cancel="hideModal" />
-    </ui-modal>
+    <ModalsUpdateProduct :key="`product_modal_${JSON.stringify(productToEdit)}`" :active="modalsProductActive" :product="productToEdit" @submit="submitProduct" @cancel="hideProductModal" />
   </main>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Modal from '../components/modals/update/productModal'
-import Product from '../components/ui/product'
 
 export default {
   name: 'Products',
@@ -58,13 +50,10 @@ export default {
       title: 'Products'
     }
   },
-  components: {
-    Product,
-    Modal
-  },
   data () {
     return {
-      modal: false,
+      modalsProductActive: false,
+      productToEdit: null,
       sort: '',
       reverse: false
     }
@@ -112,22 +101,22 @@ export default {
     }
   },
   methods: {
-    async submitProduct (product) {
-      this.hideModal()
-      if (product.id) {
-        await this.$store.dispatch('updateProduct', product)
-      } else {
-        await this.$store.dispatch('addProduct', product)
+    showProductModal (product) {
+      this.modalsProductActive = true
+      if (product) {
+        this.productToEdit = product
       }
     },
-    showModal (product) {
-      this.modal = true
-      this.$nextTick(() => {
-        this.$refs.product_modal.show(product)
-      })
+    hideProductModal () {
+      this.modalsProductActive = false
     },
-    hideModal () {
-      this.modal = false
+    submitProduct (product) {
+      this.hideProductModal()
+      if (product.id) {
+        this.$store.dispatch('updateProduct', product)
+      } else {
+        this.$store.dispatch('addProduct', product)
+      }
     }
   }
 }

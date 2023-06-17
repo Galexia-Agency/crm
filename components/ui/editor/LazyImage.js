@@ -7,7 +7,7 @@ import {
 const inputRegex = /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)/
 
 export default Node.create({
-  name: 'image',
+  name: 'LazyImage',
 
   addOptions: {
     inline: false,

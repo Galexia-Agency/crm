@@ -4,9 +4,9 @@
     <td v-text="product.type" />
     <td v-text="`£${product.price}`" />
     <td>
-      <a href="javascript:void(0)" @click="$emit('updateProduct', product)">
-        <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
-      </a>
+      <button @click="$emit('update-product', product)">
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-edit']" />
+      </button>
     </td>
   </tr>
 </template>
@@ -14,7 +14,6 @@
 <script>
 
 export default {
-  name: 'Product',
   props: {
     product: {
       type: Object,

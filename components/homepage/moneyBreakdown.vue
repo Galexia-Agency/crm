@@ -67,19 +67,14 @@
         </tbody>
       </table>
     </section>
-    <ClientCompletion />
+    <HomepageClientCompletion />
   </main>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import ClientCompletion from './clientCompletion'
 
 export default {
-  name: 'MoneyBreakdown',
-  components: {
-    ClientCompletion
-  },
   computed: {
     ...mapState([
       'projects',

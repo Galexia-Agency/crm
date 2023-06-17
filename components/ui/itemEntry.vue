@@ -1,12 +1,12 @@
 
 <style lang="scss">
-  .ui-item-entry {
+  .ui-card-entry {
     margin: 5px
   }
 </style>
 
 <template>
-  <form class="ui-item-entry field has-addons" @submit.prevent="emit(false)">
+  <form class="ui-card-entry field has-addons" @submit.prevent="emit(false)">
     <div class="control is-expanded">
       <input
         v-model="input"
@@ -19,7 +19,7 @@
     <div v-if="icon" class="control">
       <button type="button" class="button is-primary" :disabled="input.length === 0" @click.prevent="emit(true)">
         <span class="icon is-small">
-          <font-awesome-icon :icon="['fa-solid', `fa-${icon}`]" />
+          <FontAwesomeIcon :icon="['fa-solid', `fa-${icon}`]" />
         </span>
       </button>
     </div>
@@ -54,7 +54,7 @@ export default {
     emit (more) {
       if (this.input) {
         this.$emit('enter', {
-          id: this.listId,
+          listId: this.listId,
           text: this.input,
           more
         })

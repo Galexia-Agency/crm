@@ -24,13 +24,21 @@
 </template>
 
 <script>
-
 export default {
   props: {
     active: Boolean,
     cancellable: {
       type: [Number, Boolean],
       default: true
+    }
+  },
+  // Keep drag scroll value in sync with whether the modal is open or not
+  watch: {
+    active: {
+      handler (value) {
+        this.$store.commit('updateDragScroll', !value)
+      },
+      immediate: true
     }
   },
   mounted () {

@@ -28,7 +28,9 @@
           <template v-for="client in clientsValue ? clientsValue : clients">
             <tr v-if="client.profit" :key="`client_profit_loss_${client.business_name}`">
               <td>
-                <nuxt-link :to="`/client/${client.business_shortname}`" style="color: black" v-text="client.business_name" />
+                <NuxtLink :to="`/client/${client.business_shortname}`" style="color: black">
+                  {{ client.business_name }}
+                </NuxtLink>
               </td>
               <td v-if="client.revenue >= 0" v-text="`£${client.revenue.toFixed(2)}`" />
               <td v-else v-text="`-£${Math.abs(client.revenue).toFixed(2)}`" />
@@ -52,7 +54,6 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'ClientProfitLoss',
   data () {
     return {
       sort: '',

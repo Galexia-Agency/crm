@@ -4,38 +4,33 @@
       <h2>
         Sales Performance
       </h2>
-      <bar-chart :chart-data="salesData" />
+      <ChartsBar :chart-data="salesData" />
     </section>
     <section class="span-3">
       <h2>
         Expenses Performance
       </h2>
-      <bar-chart :chart-data="expensesData" />
+      <ChartsBar :chart-data="expensesData" />
     </section>
     <section class="span-3">
       <h2>
         Profit &amp; Loss Performance
       </h2>
-      <bar-chart :chart-data="profitLossData" />
+      <ChartsBar :chart-data="profitLossData" />
     </section>
     <section class="span-3">
       <h2>
         Cash Flow
       </h2>
-      <bar-chart :chart-data="cashFlowData" />
+      <ChartsBar :chart-data="cashFlowData" />
     </section>
   </main>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import BarChart from '../charts/BarChart'
 
 export default {
-  name: 'MonthlyCharts',
-  components: {
-    BarChart
-  },
   computed: {
     ...mapState([
       'pandle'

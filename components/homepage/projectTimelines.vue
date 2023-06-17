@@ -28,7 +28,9 @@
           <template v-for="project, index in projectsTimelinesValue">
             <tr v-if="project.enquiry_date && project.start_date" :key="`project_timelines_${index}`">
               <td>
-                <nuxt-link :to="project.link" style="color: black" v-text="`${project.client_name} - ${project.name}`" />
+                <NuxtLink :to="project.link" style="color: black">
+                  {{ `${project.client_name} - ${project.name}` }}
+                </NuxtLink>
               </td>
               <td v-text="humanReadableDate(project.enquiry_date)" />
               <td v-text="project.daysToStart" />
@@ -52,7 +54,6 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'ProjectTimelines',
   data () {
     return {
       sort: '',

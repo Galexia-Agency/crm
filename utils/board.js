@@ -2,13 +2,13 @@ export function getListById (lists, listId) {
   return lists.find((list) => list.id === listId)
 }
 
-export function getListByItemId (lists, itemId) {
-  return lists.find((list) => list.items.find((item) => item.id === itemId))
+export function getListByCardId (lists, cardId) {
+  return lists.find((list) => list.items.find((card) => card.id === cardId))
 }
 
-export function getItemById (lists, itemId) {
-  const list = lists.find((list) => list.items.find((item) => item.id === itemId))
+export function getCardById (lists, cardId) {
+  const list = lists.find((list) => list.items.find((card) => card.id === cardId))
   if (list) {
-    return list.items.find((item) => item.id === itemId)
+    return list.items.find((card) => card.id === cardId)
   }
 }

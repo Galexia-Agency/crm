@@ -75,7 +75,7 @@
         margin: 1rem 0;
         padding: .5rem;
         font-size: 1rem;
-        font-family: Open Sans, sans-serif;
+        font-family: sans-serif;
         line-height: 1.75rem;
         background: linear-gradient(180deg, rgb(83 75 174 / 15%) 0%, rgb(26 35 126 / 15%) 100%);
         border: none;
@@ -107,18 +107,13 @@
       </a>
     </h1>
     <div id="okta-signin-container" />
-    <Refresh />
+    <LayoutRefresh />
   </div>
 </template>
 
 <script>
-import Refresh from '~/components/global/refresh'
-
 export default {
   name: 'Login',
-  components: {
-    Refresh
-  },
   layout: 'login',
   async mounted () {
     let OktaSignIn

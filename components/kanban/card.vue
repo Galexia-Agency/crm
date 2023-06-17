@@ -17,7 +17,7 @@
       .icons {
         display: none
       }
-      .item-title {
+      .card-title {
         max-width: 100%
       }
     }
@@ -45,7 +45,7 @@
   .is-overdue {
     color: red;
     border: 1px solid red;
-    .item-date {
+    .card-date {
       color: red
     }
   }
@@ -65,35 +65,38 @@
 </style>
 
 <template>
-  <div class="card" :class="classes" :data-id="item.id" @click="edit">
+  <div class="card" :class="classes" :data-id="card.id" @click="openUpdateModal">
     <div class="icons">
       <template v-if="icons && (project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))">
-        <template v-if="item.archived">
-          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="unarchive" />
-          <font-awesome-icon v-if="project.admin.includes(userInfo.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click.stop="remove" />
+        <template v-if="card.archived">
+          <FontAwesomeIcon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="unarchive" />
+          <FontAwesomeIcon v-if="project.admin.includes(userInfo.email)" :icon="['fa-solid', 'fa-trash-can']" class="icon icon-edit" @click.stop="remove" />
         </template>
         <template v-else>
-          <font-awesome-icon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="archive" />
+          <FontAwesomeIcon :icon="['fa-solid', 'fa-box-archive']" class="icon icon-edit" @click.stop="archive" />
         </template>
       </template>
     </div>
-    <div v-if="item">
+    <div v-if="card">
       <!-- Only put the first word through as a URL -->
-      <p v-if="validURL(item.title.split(' ')[0])" class="item-title">
-        <a target="_blank" :href="item.title.split(' ')[0]" v-text="formatURL(item.title.split(' ')[0])" />
-        <span v-text="item.title.split(' ').slice(1).join(' ')" />
+      <p v-if="validURL(card.title.split(' ')[0])" class="card-title">
+        <a target="_blank" :href="card.title.split(' ')[0]" v-text="formatURL(card.title.split(' ')[0])" />
+        <!-- deepcode ignore PureMethodReturnValueIgnored: Value is returned as it is in v-text -->
+        <span v-text="card.title.split(' ').slice(1).join(' ')" />
       </p>
-      <p v-else class="item-title" v-text="item.title" />
-      <p v-if="item.description && item.description !== '<p></p>' && item.description !== ' '">
-        <font-awesome-icon :icon="['fa-solid', 'fa-bars']" />
+      <p v-else class="card-title" v-text="card.title" />
+      <p
+        v-if="card.description && card.description !== '<p></p>' && card.description !== ' '"
+      >
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-bars']" />
       </p>
-      <p v-if="item.date" class="item-date">
-        <font-awesome-icon :icon="['fa-solid', 'fa-calendar-alt']" />
-        {{ item.day + ' ' + item.dayNo + ' ' + item.month + ' - ' + daysRemaining(item.dateUNIX) }}
+      <p v-if="card.date" class="card-date">
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
+        {{ card.day + ' ' + card.dayNo + ' ' + card.month + ' - ' + daysRemaining(card.dateUNIX) }}
       </p>
-      <p v-if="item.assignee && item.assignee !== userInfo.email" class="item-date">
-        <font-awesome-icon :icon="['fa-solid', 'fa-user']" />
-        {{ item.assignee }}
+      <p v-if="card.assignee && card.assignee !== userInfo.email" class="card-date">
+        <FontAwesomeIcon :icon="['fa-solid', 'fa-user']" />
+        {{ card.assignee }}
       </p>
     </div>
   </div>
@@ -104,9 +107,9 @@ import { mapState } from 'vuex'
 
 export default {
   props: {
-    item: {
+    card: {
       type: Object,
-      default: null
+      required: true
     },
     icons: {
       type: Boolean,
@@ -121,43 +124,39 @@ export default {
     ...mapState([
       'userInfo'
     ]),
-
     classes () {
       return {
         'is-due': this.isDue,
         'is-overdue': this.isOverdue,
         icons_draggable: !this.icons,
-        archived: this.item.archived,
+        archived: this.card.archived,
         isnt_draggable: this.icons && !(this.project.admin.includes(this.userInfo.email) || (this.project.contributor && this.project.contributor.includes(this.userInfo.email)))
       }
     },
-
     isOverdue () {
-      return this.item.dateUNIX && this.item.dateUNIX < Date.now()
+      return this.card.dateUNIX && this.card.dateUNIX < Date.now()
     },
-
     isDue () {
-      const date = this.item.dateUNIX
+      const date = this.card.dateUNIX
       const due = date - (1000 * 60 * 60 * 24) * 3
       const now = Date.now()
       return date > now && now > due
     }
   },
-
   methods: {
-    edit () {
-      if (!this.item.archived) {
-        this.$emit('edit', this.item)
+    openUpdateModal () {
+      if (!this.card.archived) {
+        this.$emit('openUpdateModal', { card: this.card })
       }
     },
     unarchive () {
-      this.$emit('unarchive', this.item)
+      this.$emit('unarchive', this.card)
     },
     archive () {
-      this.$emit('archive', this.item)
+      this.$emit('archive', this.card)
     },
     remove () {
-      this.$emit('remove', this.item)
+      this.$emit('remove', this.card)
     }
   }
 }

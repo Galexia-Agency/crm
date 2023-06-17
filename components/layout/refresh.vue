@@ -20,7 +20,7 @@
 
 <template>
   <button type="button" class="refresh" :class="{clicked: refreshed}" @click="refresh">
-    <font-awesome-icon :icon="['fa-solid', 'fa-sync']" />
+    <FontAwesomeIcon :icon="['fa-solid', 'fa-sync']" />
   </button>
 </template>
 
