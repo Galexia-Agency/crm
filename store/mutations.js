@@ -68,9 +68,6 @@ const mutations = {
     })
     state.projects = data
   },
-  filteredProjects (state, data) {
-    state.filteredProjects = data
-  },
   products (state, data) {
     state.products = data
   },

@@ -11,7 +11,6 @@ export const state = () => ({
   contacts: [],
   domains: [],
   projects: [],
-  filteredProjects: {},
   products: [],
   error: {
     active: false
@@ -88,7 +87,6 @@ export const actions = {
         commit('pandleDashboard', response[5])
         dispatch('projectDatesHelper')
         dispatch('updateClientPandleDataHelper')
-        dispatch('filteredProjectsHelper')
         commit('isClientLoaded', true)
         commit('loading', false)
         // eslint-disable-next-line no-console

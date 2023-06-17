@@ -15,7 +15,6 @@ export default {
       // Don't update lists
       delete response[0].lists
       await commit('updateProject', response[0])
-      await dispatch('filteredProjectsHelper')
       await dispatch('projectDatesHelper')
       return await dispatch('updateClientPandleDataHelper')
     } catch (e) {
@@ -218,7 +217,6 @@ export default {
           // Don't update lists
           delete response[0].lists
           await commit('updateProject', response[0])
-          await dispatch('filteredProjectsHelper')
           await dispatch('projectDatesHelper')
           return await dispatch('updateClientPandleDataHelper')
         } catch (e) {

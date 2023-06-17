@@ -24,7 +24,6 @@ export default {
       return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
     }))
     await dispatch('updateClientPandleDataHelper')
-    return await dispatch('filteredProjectsHelper')
   },
   async updateClient ({ commit, dispatch, getters }, data) {
     await commit('updateClient', data)

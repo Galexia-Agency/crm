@@ -18,7 +18,6 @@ export default {
     })
     await commit('projects', response)
     await dispatch('projectDatesHelper')
-    await dispatch('filteredProjectsHelper')
     return response
   }
 }

@@ -16,15 +16,20 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   computed: {
     ...mapState([
-      'filteredProjects',
       'projects',
       'clients'
     ]),
+    ...mapGetters([
+      'getFilteredProjects'
+    ]),
+    filteredProjects () {
+      return this.getFilteredProjects()
+    },
     projectStatus () {
       if (Object.keys(this.filteredProjects).length > 0) {
         const leads = this.filteredProjects['Hot Lead'].concat(this.filteredProjects['Cold Lead']).filter((thing, index, self) =>

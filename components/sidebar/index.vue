@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import Hamburger from 'vue-hamburger/hamburger.vue'
 
 export default {
@@ -86,10 +86,15 @@ export default {
   },
   computed: {
     ...mapState([
-      'filteredProjects',
       'clients',
       'userInfo'
-    ])
+    ]),
+    ...mapGetters([
+      'getFilteredProjects'
+    ]),
+    filteredProjects () {
+      return this.getFilteredProjects()
+    }
   }
 }
 </script>
