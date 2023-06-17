@@ -1,4 +1,4 @@
-import { getItemById, getListById, getListByItemId } from '~/utils/board'
+import { getCardById, getListById, getListByCardId } from '~/utils/board'
 
 const getters = {
   getProjectById: (state) => (id) => {
@@ -29,12 +29,24 @@ const getters = {
     return getListById(state.projects.find((project) => project.id === projectId).lists, listId)
   },
 
-  getListByItemId: (state) => (projectId, itemId) => {
-    return getListByItemId(state.projects.find((project) => project.id === projectId).lists, itemId)
+  getListByCardId: (state) => (projectId, cardId) => {
+    return getListByCardId(state.projects.find((project) => project.id === projectId).lists, cardId)
   },
 
-  getItemById: (state) => (projectId, itemId) => {
-    return getItemById(state.projects.find((project) => project.id === projectId).lists, itemId)
+  getCardById: (state) => (projectId, cardId) => {
+    return getCardById(state.projects.find((project) => project.id === projectId).lists, cardId)
+  },
+
+  getProjectsForClient: (state) => (client) => {
+    // Get the project ids of each project associated with the client
+    let projectIds = state.projects.filter((project) => project.client_id === client.id).map((project) => {
+      return project.id
+    })
+    // Combine the current project ids (if they've already been set), with those from the database. Set creates an array of unique values
+    if (Array.isArray(client.projects)) {
+      projectIds = [...new Set([...client.projects, ...projectIds])]
+    }
+    return projectIds
   }
 }
 

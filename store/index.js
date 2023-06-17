@@ -5,6 +5,7 @@ export const state = () => ({
   isClientLoaded: false,
   isRenewingTokens: false,
   isAuthenticated: false,
+  allowDragScroll: true,
   userInfo: [],
   clients: [],
   contacts: [],
@@ -14,6 +15,12 @@ export const state = () => ({
   products: [],
   error: {
     active: false
+  },
+  confirm: {
+    promise: null,
+    resolvePromise: null,
+    text: '',
+    reveal: false
   },
   conflicts: {
     promise: null,
@@ -34,6 +41,7 @@ export const state = () => ({
 
 export const actions = {
   async nuxtClientInit ({ commit, dispatch, state }, { route, $auth, $axios, app }) {
+    commit('loading', true)
     commit('isClientLoaded', false)
     if (await $auth.manuallyRenewTokens()) {
       if (
@@ -72,11 +80,7 @@ export const actions = {
             response[3][index].ongoing = Boolean(project.ongoing)
           }
         })
-        commit('clients', response[0].sort(function (a, b) {
-          const textA = a.business_shortname.toUpperCase()
-          const textB = b.business_shortname.toUpperCase()
-          return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
-        }))
+        commit('clients', response[0])
         commit('contacts', response[1])
         commit('domains', response[2])
         commit('projects', response[3])
@@ -86,6 +90,7 @@ export const actions = {
         dispatch('updateClientPandleDataHelper')
         dispatch('filteredProjectsHelper')
         commit('isClientLoaded', true)
+        commit('loading', false)
         // eslint-disable-next-line no-console
         console.log('Initial get has completed')
       }).catch(function (e) {

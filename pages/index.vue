@@ -48,45 +48,25 @@
 
 <template>
   <div class="home">
-    <template>
-      <h1>Welcome back {{ userInfo.name }}</h1>
-      <ToDoLists />
-      <NetData />
-      <ClientStatusGraphs />
-      <template v-if="userInfo.groups.includes('billing')">
-        <MoneyBreakdown />
-        <MonthlyCharts />
-        <ProjectTimelines />
-        <ClientProfitLoss />
-        <RefreshData />
-      </template>
+    <h1>Welcome back {{ userInfo.name }}</h1>
+    <HomepageToDoLists />
+    <HomepageNetData />
+    <HomepageClientStatusGraphs />
+    <template v-if="userInfo.groups.includes('billing')">
+      <HomepageMoneyBreakdown />
+      <HomepageMonthlyCharts />
+      <HomepageProjectTimelines />
+      <HomepageClientProfitLoss />
+      <HomepageRefreshData />
     </template>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import ToDoLists from '~/components/homepage/toDoLists'
-import NetData from '~/components/homepage/netData'
-import ClientStatusGraphs from '~/components/homepage/clientStatusGraphs'
-import MoneyBreakdown from '~/components/homepage/moneyBreakdown'
-import MonthlyCharts from '~/components/homepage/monthlyCharts'
-import ProjectTimelines from '~/components/homepage/projectTimelines'
-import ClientProfitLoss from '~/components/homepage/clientProfitLoss'
-import RefreshData from '~/components/homepage/refreshData'
 
 export default {
   name: 'Home',
-  components: {
-    ToDoLists,
-    NetData,
-    ClientStatusGraphs,
-    MoneyBreakdown,
-    MonthlyCharts,
-    ProjectTimelines,
-    ClientProfitLoss,
-    RefreshData
-  },
   computed: {
     ...mapState([
       'userInfo'

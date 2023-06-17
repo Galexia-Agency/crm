@@ -3,8 +3,6 @@
     --primaryColor: #1A237E;
     --secondaryColor: #212121;
     --tertiaryColor: white;
-    --primaryFont: 'Montserrat', serif;
-    --secondaryFont: 'Open Sans', sans-serif;
     --borderRadius: 0;
     --fontSize: 16px;
     --scrollbarBG: #F3F3F3;
@@ -13,7 +11,8 @@
     overflow: hidden
   }
   body {
-    overflow: hidden
+    overflow: hidden;
+    font-family: sans-serif
   }
 
   /* Scrollbars */
@@ -35,19 +34,17 @@
   }
 
   /* Content */
-  .contentWrapper {
+  .contentWrapper, .modal {
     display: grid;
     grid-template-columns: 300px 1fr;
     margin: 0;
     color: var(--secondaryColor);
     font-weight: 400;
     font-size: 1rem;
-    font-family: var(--secondaryFont);
     h1, h2, h3, h4, h5, h6 {
       margin: 0 0 1em;
       color: var(--primaryColor);
-      font-weight: 400;
-      font-family: var(--primaryFont)
+      font-weight: 400
     }
     h1 {
       font-size: 1.66em
@@ -87,7 +84,7 @@
     }
     input[type='date'] {
       display: inline-block;
-      max-width: calc(100% - 49px)
+      max-width: calc(100% - 50px)
     }
   }
   svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
@@ -123,16 +120,16 @@
   }
 
   /* Card */
-  .item-description {
+  .card-description {
     font-weight: 100
   }
-  .item-title, .item-date {
+  .card-title, .card-date {
     max-width: 82%;
     font-size: .9rem;
     text-wrap: initial;
     overflow-wrap: break-word
   }
-  .item-date, .item-assignee {
+  .card-date, .card-assignee {
     color: var(--primaryColor);
     opacity: .6
   }
@@ -200,34 +197,29 @@
   }
 
   $column-width: 320px;
-  .smooth-dnd-container.horizontal {
-    display: initial!important
-  }
-  .smooth-dnd-container:empty {
-    display: none
-  }
-  .smooth-dnd-draggable-wrapper .list-container {
+  .board-container .smooth-dnd-draggable-wrapper .list-container {
     padding-bottom: 0
+  }
+  .smooth-dnd-container.horizontal > * {
+    display: table-cell
+  }
+  .smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
+    /* stylelint-disable-next-line declaration-no-important */
+    overflow: visible!important
   }
   .list-container {
     width: $column-width;
     max-height: 60vh;
-    margin: 5px 20px 5px 5px;
+    margin: 0 20px 0 0;
     padding: 10px;
     overflow: auto;
     background-color: #F3F3F3;
     box-shadow: 0 1px 1px rgba(0 0 0 / 12%), 0 1px 1px rgba(0 0 0 / 24%);
-    > .item-entry {
+    > .card-entry {
       position: sticky;
       bottom: -1px;
       padding-bottom: 10px;
       background-color: #F3F3F3
-    }
-  }
-  .lists-container {
-    > * {
-      display: inline-block;
-      vertical-align: top
     }
   }
   .list-header {
@@ -293,14 +285,14 @@
   .list-delete {
     cursor: pointer
   }
-  .item-entry {
+  .card-entry {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #DDDDDD
   }
   .new-list {
     width: $column-width;
-    margin-left: -10px
+    margin-left: -5px
   }
   .clear-button {
     position: absolute;
@@ -311,15 +303,6 @@
     .list-header .list-delete {
       display: inline
     }
-  }
-
-  /* Error */
-  .error {
-    display: grid;
-    gap: 1rem;
-    padding: 30px;
-    background-color: white;
-    place-content: center
   }
 
   /* NavLink */
@@ -409,62 +392,31 @@
 
 <template>
   <div>
-    <Loading />
+    <LayoutLoading />
     <div v-if="isAuthenticated && isClientLoaded" class="contentWrapper">
-      <ui-modal
-        ref="modal"
-        :active="error.active"
-        @close="$store.commit('error', { active: false })"
-      >
-        <div class="error">
-          <h1>Uh oh! An error has occured</h1>
-          <h2>{{ error.description }}</h2>
-          <template v-if="error.data">
-            <p>Please copy the below information so as to not lose your changes</p>
-            <textarea :value="JSON.stringify(error.data)" rows="10" />
-          </template>
-        </div>
-      </ui-modal>
-      <Sidebar />
-      <nuxt />
-      <ui-modal
-        ref="modal"
-        :active="modal.client"
-        @close="hideClientModal"
-      >
-        <clientModal ref="newClient" @add="newClient" @cancel="hideClientModal" />
-      </ui-modal>
+      <Sidebar @show-client-modal="showClientModal()" />
+      <Nuxt />
+      <ModalsUpdateClient :active="modalsClientActive" @submit="newClient" @cancel="hideClientModal" />
+      <ModalsDisplayError />
       <ConflictsModal v-if="conflicts.reveal" ref="conflicts" />
+      <UiConfirm ref="confirm" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Sidebar from '~/components/sidebar'
-import clientModal from '~/components/modals/update/clientModal'
-import ConflictsModal from '~/components/modals/conflictModal'
-import Loading from '~/components/global/loading'
 import { safeURL } from '~/plugins/mixins/urls'
 
 export default {
   name: 'DefaultLayout',
-  components: {
-    Loading,
-    Sidebar,
-    clientModal,
-    ConflictsModal
-  },
   data () {
     return {
-      modal: {
-        client: false
-      }
+      modalsClientActive: false
     }
   },
   computed: {
     ...mapState([
-      'error',
       'isAuthenticated',
       'conflicts',
       'isClientLoaded'
@@ -488,32 +440,22 @@ export default {
         this.$auth.manuallyRenewTokens()
       }
     },
-    showClientModal (data) {
-      this.modal.client = true
+    showClientModal () {
+      this.modalsClientActive = true
       const self = this
       document.documentElement.classList.remove('nav_open')
       setTimeout(function () {
         document.documentElement.classList.add('nav_close')
         self.expanded = false
       }, 500)
-      this.$nextTick(() => {
-        this.$refs.newClient.show(data)
-      })
     },
     hideClientModal () {
-      this.modal.client = false
+      this.modalsClientActive = false
     },
-    async newClient (data) {
+    async newClient (newClient) {
       this.hideClientModal()
-      try {
-        await this.$store.dispatch('addClient', data)
-        this.$router.push('/client/' + safeURL(data.business_shortname))
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
-      }
+      await this.$store.dispatch('addClient', newClient)
+      this.$router.push('/client/' + safeURL(newClient.business_shortname))
     }
   }
 }

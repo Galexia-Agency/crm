@@ -140,13 +140,23 @@
 </template>
 
 <script>
-import field from '../mixins/field'
 /**
  * @emits {KeyboardEvent} enter
  */
 export default {
-  extends: field,
   props: {
+    name: {
+      type: String,
+      required: true
+    },
+    value: {
+      type: [String, Number, Boolean],
+      required: true
+    },
+    label: {
+      type: String,
+      required: true
+    },
     type: {
       type: [String, Number],
       default: 'text'
@@ -184,6 +194,17 @@ export default {
     prefix: {
       type: String,
       default: null
+    }
+  },
+  computed: {
+    input: {
+      get () {
+        return this.value
+      },
+
+      set (value) {
+        this.$emit('input', value)
+      }
     }
   },
   mounted () {

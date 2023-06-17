@@ -1,5 +1,5 @@
 <style scoped lang="scss">
-  .card-modal-buttons-container {
+  .card-modal-buttons-container.field.is-grouped {
     flex-direction: initial;
     justify-content: space-between;
     > div {
@@ -10,109 +10,132 @@
 </style>
 
 <template>
-  <form class="query-form card" @submit.prevent="submit">
-    <div class="card-content">
-      <ui-input
-        v-model="title"
-        name="title"
-        label="Title"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
-        :autofocus="true"
-        :required="true"
-      />
-      <Editor
-        v-if="title"
-        v-model="description"
-        label="Description"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
-        @editorUpdateShim="editorUpdateShim"
-      />
-      <ui-input
-        v-model="date"
-        name="date"
-        type="date"
-        label="Date"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
-      />
-      <ui-input
-        v-model="assignee"
-        name="assignee"
-        type="text"
-        label="Assignee"
-        help="Email Address"
-        :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))"
-      />
-      <div v-if="id" class="field last-updated">
-        Last updated by <strong>{{ updatedBy }}</strong> at <strong>{{ (new Date(updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedDate)).toLocaleDateString("en-GB") }}</strong>
-      </div>
-      <div class="field is-grouped card-modal-buttons-container">
-        <ui-button v-if="id" style-type="archive" @click="archive">
-          Archive
-        </ui-button>
-        <div>
-          <ui-button style-type="text" @click="cancel">
-            Cancel
-          </ui-button>
-          <ui-button type="submit" style-type="primary" :disabled="!($parent.$parent.$parent.project.admin.includes(userInfo.email) || ($parent.$parent.$parent.project.contributor && $parent.$parent.$parent.project.contributor.includes(userInfo.email)))">
-            {{ id ? 'Update' : 'Add' }}
-          </ui-button>
+  <UiModal
+    :active="active"
+    @close="cancel"
+  >
+    <form class="query-form card" @submit.prevent="submit">
+      <div class="card-content">
+        <UiInput
+          v-model="updatedCard.title"
+          name="title"
+          label="Title"
+          :disabled="!(project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))"
+          :autofocus="true"
+          :required="true"
+        />
+        <UiEditor
+          v-if="updatedCard.title"
+          v-model="updatedCard.description"
+          label="Description"
+          :disabled="!(project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))"
+          @editorUpdateShim="editorUpdateShim"
+        />
+        <UiInput
+          v-model="updatedCard.date"
+          name="date"
+          type="date"
+          label="Date"
+          :disabled="!(project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))"
+        />
+        <UiInput
+          v-model="updatedCard.assignee"
+          name="assignee"
+          type="text"
+          label="Assignee"
+          help="Email Address"
+          :disabled="!(project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))"
+        />
+        <div v-if="updatedCard.id" class="field last-updated">
+          Last updated by <strong>{{ updatedCard.updatedBy }}</strong> at <strong>{{ (new Date(updatedCard.updatedDate)).toLocaleTimeString("en-GB") }}</strong> on <strong>{{ (new Date(updatedCard.updatedDate)).toLocaleDateString("en-GB") }}</strong>
+        </div>
+        <div class="field is-grouped card-modal-buttons-container">
+          <UiButton v-if="updatedCard.id" style-type="archive" @click="archive">
+            Archive
+          </UiButton>
+          <div>
+            <UiButton style-type="text" @click="cancel">
+              Cancel
+            </UiButton>
+            <UiButton type="submit" style-type="primary" :disabled="!(project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))">
+              {{ updatedCard.id ? 'Update' : 'Add' }}
+            </UiButton>
+          </div>
         </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </UiModal>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Editor from '../editor/Editor'
-function data () {
-  return {
-    id: null,
-    title: '',
-    description: ' ',
-    date: null,
-    dayNo: null,
-    day: null,
-    month: null,
-    message: '',
-    createdDate: null,
-    updatedDate: null,
-    clientName: null,
-    clientShortName: null,
-    updatedBy: null,
-    assignee: 'joe@galexia.agency',
 
-    // Images
-    cloudinaryImages: {
-      startingWith: [],
-      endingWith: []
-    }
-  }
+const cardDefault = {
+  id: null,
+  title: '',
+  description: ' ',
+  date: null,
+  dayNo: null,
+  day: null,
+  month: null,
+  message: '',
+  createdDate: null,
+  updatedDate: null,
+  clientName: null,
+  clientShortName: null,
+  updatedBy: null,
+  assignee: 'joe@galexia.agency'
 }
+
 export default {
-  components: {
-    Editor
+  props: {
+    active: {
+      type: Boolean,
+      required: true
+    },
+    card: {
+      type: Object,
+      default () {
+        return cardDefault
+      }
+    },
+    project: {
+      type: Object,
+      required: true
+    }
   },
   data () {
-    return data()
+    return {
+      updatedCard: { ...cardDefault, ...this.card },
+      cloudinaryImages: {
+        startingWith: [],
+        endingWith: []
+      }
+    }
   },
   computed: {
     ...mapState([
       'userInfo'
-    ]),
-    values () {
-      return this.$data
+    ])
+  },
+  watch: {
+    // Watch when the modal is opened so we can update the admins
+    'card.description': {
+      handler (value) {
+        if (value) {
+          this.findImages()
+        }
+      },
+      immediate: true
     }
   },
   methods: {
     editorUpdateShim (value) {
-      this.description = value.getHTML()
+      this.updatedCard.description = value.getHTML()
     },
-    async show (data) {
-      this.reset()
-      Object.assign(this, data)
+    async findImages () {
       // Search for images in the editor
-      const FOUND_IMGS = await this.imgFinder(this.description)
+      const FOUND_IMGS = await this.imgFinder(this.updatedCard.description)
       this.cloudinaryImages.startingWith = FOUND_IMGS
       this.cloudinaryImages.endingWith = FOUND_IMGS
     },
@@ -123,10 +146,10 @@ export default {
         startingWith: [],
         endingWith: []
       }
-      this.$emit('submit', this.values)
+      this.$emit('submit', { card: this.updatedCard })
     },
     cancel () {
-      this.$emit('cancel', this.values)
+      this.$emit('cancel')
     },
     async archive () {
       this.cloudinaryImages.endingWith = await this.imgFinder(this.description)
@@ -136,9 +159,6 @@ export default {
         endingWith: []
       }
       this.$emit('archive', this.values)
-    },
-    reset () {
-      Object.assign(this, data())
     },
     /**
      * Finds all the images in the html.

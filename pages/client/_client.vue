@@ -31,15 +31,18 @@
     flex-wrap: wrap;
     gap: 1em
   }
+  .project {
+    margin-bottom: 2rem
+  }
 </style>
 
 <template>
-  <main v-if="client" v-dragscroll.x.nomiddle.noright.noback.noforward="!dragging && !hover" class="client" :class="{blossomTreePhoto}">
+  <main v-if="client" v-dragscroll.x.nomiddle.noright.noback.noforward="allowDragScroll && hasFinePointerControl" class="client" :class="{blossomTreePhoto}">
     <div class="fixed">
       <h1>
         {{ client.business_name }}
-        <a v-if="userInfo.groups.includes('admin')" @click="showClientModal(client)">
-          <font-awesome-icon :icon="['fa-solid', 'fa-edit']" />
+        <a v-if="userInfo.groups.includes('admin')" @click="showUpdateClientModal()">
+          <FontAwesomeIcon :icon="['fa-solid', 'fa-edit']" />
         </a>
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
@@ -57,50 +60,46 @@
           <span :key="contact.id + 'i'" style="display: none">
             {{ contact.org = client.business_name }}
           </span>
-          <button :key="contact.id" type="button" class="list-container" @click="showContactModal(contact)">
-            <font-awesome-icon :icon="['fa-solid', 'fa-address-card']" />
+          <button :key="contact.id" type="button" class="list-container" @click="showDisplayContactModal(contact)">
+            <FontAwesomeIcon :icon="['fa-solid', 'fa-address-card']" />
             <span v-text="contact.f_name" />
           </button>
         </template>
-        <button type="button" class="list-container" @click="showEditContactModal({client_id: client.id})">
-          <font-awesome-icon :icon="['fa-solid', 'fa-plus']" />
+        <button type="button" class="list-container" @click="showUpdateContactModal({client_id: client.id})">
+          <FontAwesomeIcon :icon="['fa-solid', 'fa-plus']" />
           <span>New Contact</span>
         </button>
       </div>
     </div>
-    <template v-for="(project, index) in projectsForClient">
-      <project :id="safeURL(project.name)" :key="project.id" :project-id="project.id" :index="index" class="project container" />
-    </template>
-    <ui-modal
-      ref="modal"
-      :active="modal.contact"
-      @close="hideContactModal"
+    <DraggableContainer
+      class="container"
+      drag-class="project-ghost"
+      drop-class="project-ghost-drop"
+      lock-axis="y"
+      drag-handle-selector=".project-drag-handle"
+      :animation-duration="100"
+      @drag-start="dragStartHandler()"
+      @drag-end="dragEndHandler()"
+      @drop="onProjectDrop"
     >
-      <contact ref="contact" @cancel="hideContactModal" @edit="showEditContactModal" />
-    </ui-modal>
-    <ui-modal
-      ref="modal"
-      :active="modal.editContact"
-      @close="hideEditContactModal(), hideContactModal()"
-    >
-      <contactModal ref="editContact" @cancel="hideEditContactModal(), hideContactModal()" @submit="editContact" @add="addContact" />
-    </ui-modal>
-    <ui-modal
-      ref="modal"
-      :active="modal.newProject"
-      @close="hideNewProjectModal"
-    >
-      <projectModal ref="newProject" @submit="addProject" @cancel="hideNewProjectModal" />
-    </ui-modal>
-    <ui-modal
-      ref="modal"
-      :active="modal.client"
-      @close="hideClientModal"
-    >
-      <clientModal ref="client" @submit="editClient" @cancel="hideClientModal" />
-    </ui-modal>
+      <template v-for="(project, index) in projectsForClient">
+        <Draggable :key="project.id">
+          <Project
+            :id="safeURL(project.name)"
+            :project-id="project.id"
+            :index="index"
+            class="project"
+          />
+        </Draggable>
+      </template>
+    </DraggableContainer>
+    <ModalsDisplayContact :display="modalsContactToDisplay" @cancel="hideDisplayContactModal" @submit="showUpdateContactModal" />
+    <!-- The key here ensures that the component is updated when the contact prop updates -->
+    <ModalsUpdateContact :key="`contact_modal_${JSON.stringify(contactToUpdate)}`" :active="modalsUpdateContactActive" :contact="contactToUpdate" @cancel="hideUpdateContactModal" @submit="updateOrAddContact" />
+    <ModalsUpdateProject :key="`project_modal_${JSON.stringify(projectToUpdate)}`" :active="modalsUpdateProjectActive" :project="projectToUpdate" @cancel="hideUpdateProjectModal" @submit="addProject" />
+    <ModalsUpdateClient :key="`project_modal_${JSON.stringify(client)}`" :active="modalsUpdateClientActive" :client="client" @cancel="hideUpdateClientModal" @submit="updateClient" />
     <div v-if="userInfo.groups.includes('admin')" class="fixed">
-      <button type="button" class="button primary" @click="showNewProjectModal({client_id: client.id})">
+      <button type="button" class="button primary" @click="showUpdateProjectModal({client_id: client.id})">
         New Project
       </button>
     </div>
@@ -108,13 +107,10 @@
 </template>
 
 <script>
+import { Container as DraggableContainer, Draggable } from 'vue-smooth-dnd'
 import { mapState, mapGetters } from 'vuex'
 import { dragscroll } from 'vue-dragscroll'
-import Contact from '~/components/modals/display/contactModal'
-import contactModal from '~/components/modals/update/contactModal'
-import Project from '~/components/project'
-import projectModal from '~/components/modals/update/projectModal'
-import clientModal from '~/components/modals/update/clientModal'
+import { makeDropHandler } from '~/utils/plugins'
 
 export default {
   name: 'Client',
@@ -124,34 +120,33 @@ export default {
     }
   },
   components: {
-    Contact,
-    contactModal,
-    Project,
-    projectModal,
-    clientModal
+    DraggableContainer,
+    Draggable
   },
   directives: {
     dragscroll
   },
   data () {
     return {
-      modal: {
-        contact: false,
-        newProject: false,
-        editContact: false,
-        client: false
-      },
-      dragging: false
+      modalsContactToDisplay: false,
+      modalsUpdateContactActive: false,
+      modalsUpdateProjectActive: false,
+      modalsUpdateClientActive: false,
+      contactToUpdate: null,
+      projectToUpdate: null
     }
   },
   computed: {
     ...mapState([
       'userInfo',
       'contacts',
-      'projects'
+      'projects',
+      'allowDragScroll'
     ]),
     ...mapGetters([
-      'getClientByShortname'
+      'getClientByShortname',
+      'getProjectById',
+      'getProjectsForClient'
     ]),
     client () {
       return this.getClientByShortname(this.$route.params.client)
@@ -160,29 +155,26 @@ export default {
       return this.client ? this.contacts.filter((contact) => contact.client_id === this.client.id) : null
     },
     projectsForClient () {
-      return this.client ? this.projects.filter((project) => project.client_id === this.client.id) : null
+      if (!this.client) {
+        return []
+      }
+      const projects = []
+      this.getProjectsForClient(this.client).forEach((projectId) => {
+        projects.push(this.getProjectById(projectId))
+      })
+      return projects
     },
-    hover () {
-      return window.matchMedia('(hover: none)').matches
+    hasFinePointerControl () {
+      return window.matchMedia('(pointer: fine)').matches
     },
     blossomTreePhoto () {
-      for (const project in this.projectsForClient) {
-        if (this.projectsForClient[project].admin.includes('chelsea@galexia.agency')) {
-          return true
-        }
+      if (!this.projectsForClient) {
+        return null
       }
-      return false
+      return Object.values(this.projectsForClient).some((project) => project.admin.includes('chelsea@galexia.agency'))
     },
     addressForContact () {
-      let address
-      if (this.client.address) {
-        if (this.isJsonString(this.client.address)) {
-          address = this.client.address
-        } else {
-          address = JSON.stringify(this.client.address)
-        }
-      }
-      return address
+      return JSON.stringify(this.client.address)
     }
   },
   created () {
@@ -196,130 +188,88 @@ export default {
     }
   },
   methods: {
-    showContactModal (data) {
-      this.dragging = true
-      this.modal.contact = true
-      this.$nextTick(() => {
-        this.$refs.contact.show(data)
-      })
+    onProjectDrop: makeDropHandler('onProjectDropComplete'),
+    async onProjectDropComplete (src, trg) {
+      await this.$store.dispatch('moveProject', [
+        this.client.id,
+        src.index,
+        trg.index
+      ])
     },
-    showEditContactModal (data) {
-      this.dragging = true
-      this.modal.editContact = true
-      this.$nextTick(() => {
-        this.$refs.editContact.show(data)
-      })
+    // Display Contact Modal
+    showDisplayContactModal (contact) {
+      this.modalsContactToDisplay = contact
     },
-    showNewProjectModal (data) {
-      this.dragging = true
-      this.modal.newProject = true
-      this.$nextTick(() => {
-        this.$refs.newProject.show(data)
-      })
+    hideDisplayContactModal () {
+      this.modalsContactToDisplay = false
     },
-    showClientModal (data) {
-      this.dragging = true
-      this.modal.client = true
-      this.$nextTick(() => {
-        this.$refs.client.show(data)
-      })
+    // Update Contact Modal
+    showUpdateContactModal (contact) {
+      this.contactToUpdate = contact
+      this.modalsUpdateContactActive = true
+      this.hideDisplayContactModal()
     },
-    hideContactModal () {
-      this.dragging = false
-      this.modal.contact = false
+    hideUpdateContactModal () {
+      this.modalsUpdateContactActive = false
+      this.contactToUpdate = null
     },
-    hideNewProjectModal () {
-      this.dragging = false
-      this.modal.newProject = false
+    updateOrAddContact (contact) {
+      if (contact.id) {
+        this.$store.dispatch('updateContact', { ...contact, address: this.addressForContact })
+      } else {
+        this.$store.dispatch('addContact', { ...contact, address: this.addressForContact })
+      }
+      this.hideUpdateContactModal()
     },
-    hideEditContactModal () {
-      this.dragging = false
-      this.modal.editContact = false
+    // Update Project Modal
+    showUpdateProjectModal (project) {
+      this.modalsUpdateProjectActive = true
+      this.projectToUpdate = project
     },
-    hideClientModal () {
-      this.dragging = false
-      this.modal.client = false
+    hideUpdateProjectModal () {
+      this.modalsUpdateProjectActive = false
+      this.projectToUpdate = null
     },
-    async addProject (data) {
-      this.hideNewProjectModal()
-      try {
-        await this.$store.dispatch('addProject', data)
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
+    addProject (project) {
+      this.hideUpdateProjectModal()
+      this.$store.dispatch('addProject', project)
+    },
+    // Update Client Modal
+    showUpdateClientModal () {
+      this.modalsUpdateClientActive = true
+    },
+    hideUpdateClientModal () {
+      this.modalsUpdateClientActive = false
+    },
+    async updateClient (client) {
+      this.hideUpdateClientModal()
+      await this.$store.dispatch('updateClient', client)
+      if (this.$route.params.client !== client.business_shortname.toLowerCase()) {
+        this.$router.push('/client/' + client.business_shortname.toLowerCase())
       }
     },
-    async editContact (data) {
-      this.hideContactModal()
-      this.hideEditContactModal()
-      try {
-        await this.$store.dispatch('updateContact', { ...data, address: this.addressForContact })
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
-      }
-    },
-    async addContact (data) {
-      this.hideEditContactModal()
-      try {
-        await this.$store.dispatch('addContact', { ...data, address: this.addressForContact })
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
-      }
-    },
-    async editClient (data) {
-      this.hideClientModal()
-      try {
-        await this.$store.dispatch('updateClient', data)
-        if (this.$route.params.client !== data.business_shortname.toLowerCase()) {
-          this.$router.push('/client/' + data.business_shortname.toLowerCase())
-        }
-      } catch (e) {
-        const error = {}
-        error.description = e
-        error.data = data
-        this.$store.commit('error', error)
-      }
-    },
-    async addClientPandle () {
-      const data = {}
-      Object.assign(data, this.client)
+    addClientPandle () {
       const error = {}
-      data.address = JSON.parse(data.address)
-      if (!data.billing_email) {
+      if (!this.client.billing_email) {
         error.description = 'This client needs a Billing Email before they can be added to Pandle'
         this.$store.commit('error', error)
-      } else if (!data.address.line1) {
+      } else if (!this.client.address.line1) {
         error.description = 'This client needs an Address Line 1 before they can be added to Pandle'
         this.$store.commit('error', error)
-      } else if (!data.address.town) {
+      } else if (!this.client.address.town) {
         error.description = 'This client needs a Town / City before they can be added to Pandle'
         this.$store.commit('error', error)
-      } else if (!data.address.county) {
+      } else if (!this.client.address.county) {
         error.description = 'This client needs a County before they can be added to Pandle'
         this.$store.commit('error', error)
-      } else if (!data.address.postcode) {
+      } else if (!this.client.address.postcode) {
         error.description = 'This client needs a Postcode before they can be added to Pandle'
         this.$store.commit('error', error)
-      } else if (!data.address.country) {
+      } else if (!this.client.address.country) {
         error.description = 'This client needs a Country before they can be added to Pandle'
         this.$store.commit('error', error)
       } else {
-        try {
-          await this.$store.dispatch('addClientPandle', data)
-        } catch (e) {
-          const error = {}
-          error.description = e
-          error.data = data
-          this.$store.commit('error', error)
-        }
+        this.$store.dispatch('addClientPandle', this.client)
       }
     }
   }

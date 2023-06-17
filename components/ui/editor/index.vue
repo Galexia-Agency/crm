@@ -182,7 +182,7 @@ div#rich_editor {
             title="Bold"
             @click="editor.chain().focus().toggleBold().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/bold.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/bold.svg')" />
           </button>
           <button
             type="button"
@@ -191,7 +191,7 @@ div#rich_editor {
             title="Italic"
             @click="editor.chain().focus().toggleItalic().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/italic.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/italic.svg')" />
           </button>
           <button
             type="button"
@@ -200,7 +200,7 @@ div#rich_editor {
             title="Underline"
             @click="editor.chain().focus().toggleUnderline().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/underline.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/underline.svg')" />
           </button>
           <button
             type="button"
@@ -209,7 +209,7 @@ div#rich_editor {
             title="Ordered list"
             @click="editor.chain().focus().toggleOrderedList().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/ol.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/ol.svg')" />
           </button>
           <button
             type="button"
@@ -218,7 +218,7 @@ div#rich_editor {
             title="Bullet list"
             @click="editor.chain().focus().toggleBulletList().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/ul.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/ul.svg')" />
           </button>
           <button
             type="button"
@@ -227,7 +227,7 @@ div#rich_editor {
             title="Checklist"
             @click="editor.chain().focus().toggleTaskList().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/checklist.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/checklist.svg')" />
           </button>
           <button
             type="button"
@@ -236,7 +236,7 @@ div#rich_editor {
             title="Horizontal line"
             @click="editor.chain().focus().setHorizontalRule().run()"
           >
-            <inline-svg
+            <InlineSvg
               :src="require('~/assets/svg/editor/horizontal-rule.svg')"
             />
           </button>
@@ -251,7 +251,7 @@ div#rich_editor {
                 : setLinkUrl()
             "
           >
-            <inline-svg :src="require('~/assets/svg/editor/link.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/link.svg')" />
           </button>
           <button
             type="button"
@@ -265,7 +265,7 @@ div#rich_editor {
                 )
             "
           >
-            <inline-svg :src="require('~/assets/svg/editor/image.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/image.svg')" />
           </button>
           <button
             type="button"
@@ -273,7 +273,7 @@ div#rich_editor {
             title="Undo"
             @click="editor.chain().focus().undo().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/undo.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/undo.svg')" />
           </button>
           <button
             type="button"
@@ -281,12 +281,12 @@ div#rich_editor {
             title="Redo"
             @click="editor.chain().focus().redo().run()"
           >
-            <inline-svg :src="require('~/assets/svg/editor/redo.svg')" />
+            <InlineSvg :src="require('~/assets/svg/editor/redo.svg')" />
           </button>
         </div>
-        <ui-editor-input ref="ui_editor_input" />
+        <UiEditorInput ref="ui_editor_input" />
       </div>
-      <editor-content
+      <EditorContent
         id="rich_editor"
         :editor="editor"
         :class="{ editorFocused: caretInEditor }"
@@ -308,13 +308,11 @@ import Link from '@tiptap/extension-link'
 import TaskList from '@tiptap/extension-task-list'
 // eslint-disable-next-line import/no-named-as-default
 import TaskItem from '@tiptap/extension-task-item'
-import UiEditorInput from './Input'
 import LazyImage from './LazyImage'
 
 export default {
   components: {
-    EditorContent,
-    UiEditorInput
+    EditorContent
   },
   props: {
     // eslint-disable-next-line vue/require-default-prop

@@ -13,5 +13,13 @@ export default {
   ...projectDatesHelper,
   ...filteredProjectsHelper,
   ...lists,
-  ...cards
+  ...cards,
+  async moveProject ({ dispatch, getters }, [clientId, fromIndex, toIndex]) {
+    const client = getters.getClientById(clientId)
+    const updatedClient = { ...client }
+    const projects = getters.getProjectsForClient(client)
+    projects.splice(toIndex, 0, projects.splice(fromIndex, 1)[0])
+    updatedClient.projects = projects
+    return await dispatch('updateClient', updatedClient)
+  }
 }

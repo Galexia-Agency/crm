@@ -15,7 +15,9 @@
         <template v-for="client, index in clients">
           <tr v-if="client.completion_amount" :key="`client_completion_${index}`">
             <td>
-              <nuxt-link :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black" v-text="client.business_name" />
+              <NuxtLink :to="`/client/${client.business_shortname.toLowerCase()}`" style="color: black">
+                {{ client.business_name }}
+              </NuxtLink>
             </td>
             <td v-text="`£${client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`" />
           </tr>
@@ -29,7 +31,6 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'ClientCompletion',
   computed: {
     ...mapState([
       'clients'

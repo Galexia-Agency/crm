@@ -19,52 +19,43 @@
 </style>
 
 <template>
-  <main v-if="overdueItems.length > 0 || dueItems.length > 0">
+  <main v-if="overdueCards.length > 0 || dueCards.length > 0">
     <div class="toggle-container">
       Show in house tasks
-      <Toggle :model="showInHouseItems" label="Show In House Items" :class="{toggled: showInHouseItems}" @input="toggleShowInHouseItems" />
+      <UiToggle :model="showInHouseItems" label="Show In House Items" :class="{toggled: showInHouseItems}" @input="toggleShowInHouseItems" />
     </div>
-    <section v-if="overdueItems.length > 0">
+    <section v-if="overdueCards.length > 0">
       <h2>
         Overdue
-        <span class="card-count" v-html="`(${showInHouseItems ? '' : overdueItemsWithoutInHouse.length !== overdueItems.length ? overdueItemsWithoutInHouse.length + '/' : ''}${overdueItems.length} tasks total)`" />
+        <span class="card-count" v-html="`(${showInHouseItems ? '' : overdueCardsWithoutInHouse.length !== overdueCards.length ? overdueCardsWithoutInHouse.length + '/' : ''}${overdueCards.length} tasks total)`" />
       </h2>
       <section class="list-container">
-        <nuxt-link v-for="(item, index) in overdueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${safeURL(item.projectName)}`" class="home-card-container">
-          <h6 v-if="(showInHouseItems || (!showInHouseItems && item.projectStatus !== 'In House')) && (index === 0 || overdueItems[index - 1].clientName !== item.clientName || overdueItems[index - 1].projectName !== item.projectName)" v-text="`${item.clientName} - ${item.projectName}`" />
-          <Card v-if="showInHouseItems || (!showInHouseItems && item.projectStatus !== 'In House')" :item="item" :icons="false" />
-        </nuxt-link>
+        <NuxtLink v-for="(card, index) in overdueCards" :key="card.id" :to="`/client/${card.clientShortName.toLowerCase()}/#${safeURL(card.projectName)}`" class="home-card-container">
+          <h6 v-if="(showInHouseItems || (!showInHouseItems && card.projectStatus !== 'In House')) && (index === 0 || overdueCards[index - 1].clientName !== card.clientName || overdueCards[index - 1].projectName !== card.projectName)" v-text="`${card.clientName} - ${card.projectName}`" />
+          <KanbanCard v-if="showInHouseItems || (!showInHouseItems && card.projectStatus !== 'In House')" :card="card" :icons="false" />
+        </NuxtLink>
       </section>
     </section>
-    <section v-if="dueItems.length > 0">
+    <section v-if="dueCards.length > 0">
       <h2>
         To Do
-        <span class="card-count" v-html="`(${showInHouseItems ? '' : dueItemsWithoutInHouse.length !== dueItems.length ? dueItemsWithoutInHouse.length + '/' : ''}${dueItems.length} tasks total)`" />
+        <span class="card-count" v-html="`(${showInHouseItems ? '' : dueCardsWithoutInHouse.length !== dueCards.length ? dueCardsWithoutInHouse.length + '/' : ''}${dueCards.length} tasks total)`" />
       </h2>
       <section class="list-container">
-        <nuxt-link v-for="(item, index) in dueItems" :key="item.id" :to="`/client/${item.clientShortName.toLowerCase()}/#${safeURL(item.projectName)}`" class="home-card-container">
-          <h6 v-if="(showInHouseItems || (!showInHouseItems && item.projectStatus !== 'In House')) && (index === 0 || dueItems[index - 1].clientName !== item.clientName || dueItems[index - 1].projectName !== item.projectName)" v-text="`${item.clientName} - ${item.projectName}`" />
-          <Card v-if="showInHouseItems || (!showInHouseItems && item.projectStatus !== 'In House')" :item="item" :icons="false" />
-        </nuxt-link>
+        <NuxtLink v-for="(card, index) in dueCards" :key="card.id" :to="`/client/${card.clientShortName.toLowerCase()}/#${safeURL(card.projectName)}`" class="home-card-container">
+          <h6 v-if="(showInHouseItems || (!showInHouseItems && card.projectStatus !== 'In House')) && (index === 0 || dueCards[index - 1].clientName !== card.clientName || dueCards[index - 1].projectName !== card.projectName)" v-text="`${card.clientName} - ${card.projectName}`" />
+          <KanbanCard v-if="showInHouseItems || (!showInHouseItems && card.projectStatus !== 'In House')" :card="card" :icons="false" />
+        </NuxtLink>
       </section>
     </section>
-    <ProjectPHP />
+    <HomepageProjectPHP />
   </main>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Card from '../Card'
-import ProjectPHP from './projectPHP'
-import Toggle from '~/components/ui/UiToggle.vue'
 
 export default {
-  name: 'ToDoLists',
-  components: {
-    Card,
-    ProjectPHP,
-    Toggle
-  },
   data () {
     return {
       showInHouseItems: true
@@ -75,17 +66,17 @@ export default {
       'projects',
       'userInfo'
     ]),
-    dueItems () {
+    dueCards () {
       return this.getLists('due')
     },
-    dueItemsWithoutInHouse () {
-      return this.dueItems.filter((obj) => obj.projectStatus !== 'In House')
+    dueCardsWithoutInHouse () {
+      return this.dueCards.filter((obj) => obj.projectStatus !== 'In House')
     },
-    overdueItems () {
+    overdueCards () {
       return this.getLists('overdue')
     },
-    overdueItemsWithoutInHouse () {
-      return this.overdueItems.filter((obj) => obj.projectStatus !== 'In House')
+    overdueCardsWithoutInHouse () {
+      return this.overdueCards.filter((obj) => obj.projectStatus !== 'In House')
     }
   },
   mounted () {
@@ -111,16 +102,20 @@ export default {
       this.projects.forEach((project) => {
         if (project.lists) {
           project.lists.forEach((list) => {
-            list.items.forEach((item) => {
-              if (item.assignee === this.userInfo.email || (this.userInfo.email === 'joe@galexia.agency' && !item.assignee) || (this.userInfo.email === 'joe@galexia.agency' && item.assignee !== this.userInfo.email)) {
-                if (item.date) {
-                  if (item.dateUNIX && due(item.dateUNIX)) {
-                    const newItem = { ...item }
-                    newItem.projectName = project.name
-                    newItem.projectStatus = project.status
-                    toDos.push(newItem)
-                  }
-                }
+            list.items.forEach((card) => {
+              if (
+                (
+                  card.assignee === this.userInfo.email ||
+                  (this.userInfo.email === 'joe@galexia.agency' && !card.assignee) ||
+                  (this.userInfo.email === 'joe@galexia.agency' && card.assignee !== this.userInfo.email)
+                ) &&
+                card.date &&
+                card.dateUNIX && due(card.dateUNIX)
+              ) {
+                const newCard = { ...card }
+                newCard.projectName = project.name
+                newCard.projectStatus = project.status
+                toDos.push(newCard)
               }
             })
           })

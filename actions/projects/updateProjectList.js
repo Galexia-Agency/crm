@@ -85,7 +85,11 @@ export default {
                       // Loop through the items in the list
                       for (const item of Object.keys(projectList[list].items)) {
                         // If our item is not at the source, then add it to our force push
-                        if (!sourceOfTruth[list].items[item] || projectList[list].items[item].id !== sourceOfTruth[list].items[item].id) {
+                        if (
+                          sourceOfTruth[list].items.find((sourceItem) => {
+                            return sourceItem.id === projectList[list].items[item].id
+                          })
+                        ) {
                           whatToForcePush[list].items.push(projectList[list].items[item])
                         } else {
                           // If the titles don't match, open the conflict resolution modal

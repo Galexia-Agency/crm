@@ -1,55 +1,44 @@
 export default {
-  async addItem ({ state, commit, dispatch, getters }, { projectId, listId, title, description, date, assignee }) {
+  async addCard ({ state, commit, dispatch, getters }, { projectId, listId, title, description = '', date = '', assignee = '' }) {
     assignee = assignee || state.userInfo.email
-    let dayNo, day, month, dateUNIX
-    if (date) {
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-      const JSdate = new Date(date)
-      dayNo = JSdate.getDate()
-      day = days[JSdate.getDay()]
-      month = months[JSdate.getMonth()]
-      dateUNIX = Number(new Date(date))
-    }
     const clientName = getters.getClientById(getters.getProjectById(projectId).client_id).business_name
     const clientShortName = getters.getClientById(getters.getProjectById(projectId).client_id).business_shortname
     const updatedBy = state.userInfo.email
 
-    await commit('addItem', { projectId, listId, title, description, date, dateUNIX, dayNo, day, month, clientName, clientShortName, updatedBy, assignee })
+    await commit('addCard', { projectId, listId, title, description, date, clientName, clientShortName, updatedBy, assignee })
     return await dispatch('updateProjectList', projectId)
   },
-  async updateItem ({ state, commit, dispatch, getters }, { projectId, itemId, title, description, date, createdDate, clientName, clientShortName, assignee }) {
+  async updateCard ({ state, commit, dispatch, getters }, { projectId, cardId, title, description, date, createdDate, clientName, clientShortName, assignee }) {
     assignee = assignee || state.userInfo.email
     clientName = clientName || getters.getClientById(getters.getProjectById(projectId).client_id).business_name
     clientShortName = clientShortName || getters.getClientById(getters.getProjectById(projectId).client_id).business_shortname
     const updatedBy = state.userInfo.email
-    let dayNo, day, month, dateUNIX
-    if (date) {
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-      const JSdate = new Date(date)
-      dayNo = JSdate.getDate()
-      day = days[JSdate.getDay()]
-      month = months[JSdate.getMonth()]
-      dateUNIX = Number(new Date(date))
+    await commit('updateCard', { projectId, cardId, title, description, date, createdDate, clientName, clientShortName, updatedBy, assignee })
+    return await dispatch('updateProjectList', projectId)
+  },
+  async moveCard ({ commit, dispatch }, [projectId, fromListRef, fromIndex, toListRef, toIndex]) {
+    await commit('moveCard', [projectId, fromListRef, fromIndex, toListRef, toIndex])
+    return await dispatch('updateProjectList', projectId)
+  },
+  async archiveCard ({ commit, dispatch }, { projectId, cardId }) {
+    if (!(await dispatch('confirm', 'Are you sure you want to archive this item?'))) {
+      return
     }
-    await commit('updateItem', { projectId, itemId, title, description, date, dateUNIX, dayNo, day, month, createdDate, clientName, clientShortName, updatedBy, assignee })
+    await commit('archiveCard', { projectId, cardId })
     return await dispatch('updateProjectList', projectId)
   },
-  async moveItem ({ commit, dispatch }, [projectId, fromListRef, fromIndex, toListRef, toIndex]) {
-    await commit('moveItem', [projectId, fromListRef, fromIndex, toListRef, toIndex])
+  async unarchiveCard ({ commit, dispatch }, { projectId, cardId }) {
+    if (!(await dispatch('confirm', 'Are you sure you want to unarchive this item?'))) {
+      return
+    }
+    await commit('unarchiveCard', { projectId, cardId })
     return await dispatch('updateProjectList', projectId)
   },
-  async archiveItem ({ commit, dispatch }, { projectId, itemId }) {
-    await commit('archiveItem', { projectId, itemId })
-    return await dispatch('updateProjectList', projectId)
-  },
-  async unarchiveItem ({ commit, dispatch }, { projectId, itemId }) {
-    await commit('unarchiveItem', { projectId, itemId })
-    return await dispatch('updateProjectList', projectId)
-  },
-  async removeItem ({ commit, dispatch }, { projectId, itemId }) {
-    await commit('removeItem', { projectId, itemId })
+  async removeCard ({ commit, dispatch }, { projectId, cardId }) {
+    if (!(await dispatch('confirm', 'Are you sure you want to delete this item?'))) {
+      return
+    }
+    await commit('removeCard', { projectId, cardId })
     return await dispatch('updateProjectList', projectId)
   }
 }

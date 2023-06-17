@@ -25,13 +25,20 @@
 
 <script>
 export default {
-  name: 'NetData',
+  data () {
+    return {
+      eventListener: null
+    }
+  },
   mounted () {
-    window.addEventListener('message', (event) => {
+    this.eventListener = window.addEventListener('message', (event) => {
       if (event.origin === 'https://netdata.galexia.agency') {
         this.$el.querySelector('.netdata iframe').style.height = `${event.data}px`
       }
     }, false)
+  },
+  destroy () {
+    window.removeEventListener(this.eventListener, false)
   }
 }
 </script>

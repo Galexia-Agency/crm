@@ -9,11 +9,7 @@
   }
 </style>
 <template>
-  <ui-modal
-    ref="modal"
-    :active="conflicts.reveal"
-    :cancellable="false"
-  >
+  <UiModal :active="conflicts.reveal" :cancellable="false">
     <div class="query-form card">
       <form class="card-content" @submit.prevent="submit">
         <h2>
@@ -27,18 +23,18 @@
         </p>
         <template v-if="conflicts.type === 'editor'">
           <div class="before-after">
-            <Editor
+            <UiEditor
               v-model="before"
               label="Content from the database"
               :disabled="true"
             />
-            <Editor
+            <UiEditor
               v-model="after"
               label="Your content"
               :disabled="true"
             />
           </div>
-          <Editor
+          <UiEditor
             v-model="updated"
             label="Your updated content"
             @editorUpdateShim="editorUpdateShim"
@@ -46,7 +42,7 @@
         </template>
         <template v-else>
           <div class="before-after">
-            <ui-input
+            <UiInput
               v-model="before"
               :type="conflicts.type"
               :options="conflicts.options"
@@ -54,7 +50,7 @@
               label="Content from the database"
               :disabled="true"
             />
-            <ui-input
+            <UiInput
               v-model="after"
               :type="conflicts.type"
               :options="conflicts.options"
@@ -62,7 +58,7 @@
               label="Your content"
               :disabled="true"
             />
-            <ui-input
+            <UiInput
               v-model="updated"
               name="updated"
               label="Your updated content"
@@ -75,25 +71,21 @@
             />
           </div>
         </template>
-        <ui-button style-type="primary" type="submit" style="margin-top: 1rem">
+        <UiButton style-type="primary" type="submit" style="margin-top: 1rem">
           Resolve
-        </ui-button>
+        </UiButton>
         <p style=" margin-top: .5rem; font-weight: 700;font-size: .8em">
           Please note, once you click resolve, all previous data will be lost
         </p>
       </form>
     </div>
-  </ui-modal>
+  </UiModal>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import Editor from '../editor/Editor'
 
 export default {
-  components: {
-    Editor
-  },
   data () {
     return {
       before: '',
