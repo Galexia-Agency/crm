@@ -154,10 +154,6 @@ const mutations = {
       Object.assign(item, data)
     }
   },
-  moveProjectForClient (state, [clientId, fromIndex, toIndex]) {
-    const projects = state.clients.find((client) => client.id === clientId).projects
-    projects.splice(toIndex, 0, projects.splice(fromIndex, 1)[0])
-  },
   updateContact (state, data) {
     const item = state.contacts.find((contact) => contact.id === data.id)
     if (item) {

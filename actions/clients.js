@@ -23,11 +23,11 @@ export default {
       const textB = b.business_shortname.toUpperCase()
       return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
     }))
-    await dispatch('projectsForClientHelper')
     await dispatch('updateClientPandleDataHelper')
     return await dispatch('filteredProjectsHelper')
   },
   async updateClient ({ commit, dispatch, getters }, data) {
+    await commit('updateClient', data)
     // Clone the data here so we can prepare it to send without impacting the existing data
     const client = {}
     Object.assign(client, data)

@@ -35,6 +35,18 @@ const getters = {
 
   getCardById: (state) => (projectId, cardId) => {
     return getCardById(state.projects.find((project) => project.id === projectId).lists, cardId)
+  },
+
+  getProjectsForClient: (state) => (client) => {
+    // Get the project ids of each project associated with the client
+    let projectIds = state.projects.filter((project) => project.client_id === client.id).map((project) => {
+      return project.id
+    })
+    // Combine the current project ids (if they've already been set), with those from the database. Set creates an array of unique values
+    if (Array.isArray(client.projects)) {
+      projectIds = [...new Set([...client.projects, ...projectIds])]
+    }
+    return projectIds
   }
 }
 

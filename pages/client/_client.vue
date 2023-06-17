@@ -145,7 +145,8 @@ export default {
     ]),
     ...mapGetters([
       'getClientByShortname',
-      'getProjectById'
+      'getProjectById',
+      'getProjectsForClient'
     ]),
     client () {
       return this.getClientByShortname(this.$route.params.client)
@@ -158,7 +159,7 @@ export default {
         return []
       }
       const projects = []
-      this.client.projects.forEach((projectId) => {
+      this.getProjectsForClient(this.client).forEach((projectId) => {
         projects.push(this.getProjectById(projectId))
       })
       return projects
