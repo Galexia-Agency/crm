@@ -15,7 +15,6 @@ export default {
       // Don't update lists
       delete response[0].lists
       await commit('updateProject', response[0])
-      await dispatch('projectDatesHelper')
       return await dispatch('updateClientPandleDataHelper')
     } catch (e) {
       if (await e.response && await e.response.status === 429) {
@@ -217,7 +216,6 @@ export default {
           // Don't update lists
           delete response[0].lists
           await commit('updateProject', response[0])
-          await dispatch('projectDatesHelper')
           return await dispatch('updateClientPandleDataHelper')
         } catch (e) {
           const error = {}

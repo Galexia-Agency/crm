@@ -28,8 +28,8 @@
           <template v-for="project, index in projectsTimelinesValue">
             <tr v-if="project.enquiry_date && project.start_date" :key="`project_timelines_${index}`">
               <td>
-                <NuxtLink :to="project.link" style="color: black">
-                  {{ `${project.client_name} - ${project.name}` }}
+                <NuxtLink :to="getProjectLink(project)" style="color: black">
+                  {{ `${getProjectClientName(project)} - ${project.name}` }}
                 </NuxtLink>
               </td>
               <td v-text="humanReadableDate(project.enquiry_date)" />
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -64,6 +64,10 @@ export default {
     ...mapState([
       'clients',
       'projects'
+    ]),
+    ...mapGetters([
+      'getProjectLink',
+      'getProjectClientName'
     ]),
     projectsTimelinesValue () {
       const clonedProjects = []

@@ -8,8 +8,8 @@
         <template v-for="project, index in projects">
           <tr v-if="project.php && project.status !== 'Completed' && project.status !== 'Cancelled'" :key="`project_php_${index}`">
             <td>
-              <NuxtLink :to="project.link" style="color: black">
-                {{ `${project.client_name} - ${project.name}` }}
+              <NuxtLink :to="getProjectLink(project)" style="color: black">
+                {{ `${getProjectClientName(project)} - ${project.name}` }}
               </NuxtLink>
             </td>
             <td v-text="project.php" />
@@ -21,12 +21,16 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   computed: {
     ...mapState([
       'projects'
+    ]),
+    ...mapGetters([
+      'getProjectLink',
+      'getProjectClientName'
     ])
   }
 }

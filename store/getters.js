@@ -1,3 +1,6 @@
+// file deepcode ignore ArrayMethodOnNonArray: false positive
+import { diffDays } from '~/plugins/mixins/dates'
+import { safeURL } from '~/plugins/mixins/urls'
 import { getCardById, getListById, getListByCardId } from '~/utils/board'
 
 const getters = {
@@ -74,6 +77,43 @@ const getters = {
       }
     })
     return filteredProjects
+  },
+  getProjectDaysToStart: (state) => (project) => {
+    let daysToStart = 0
+    if (project.enquiry_date) {
+      if (project.start_date) {
+        daysToStart = diffDays(project.enquiry_date, project.start_date)
+      } else {
+        daysToStart = diffDays(project.enquiry_date, null)
+      }
+    }
+    return daysToStart
+  },
+  getProjectDaysToComplete: (state) => (project) => {
+    let daysToComplete = 0
+    if (project.enquiry_date && project.start_date && !project.ongoing) {
+      if (project.completion_date) {
+        daysToComplete = diffDays(project.start_date, project.completion_date)
+      } else {
+        daysToComplete = diffDays(project.start_date, null) + '+'
+      }
+    }
+    return daysToComplete
+  },
+  getProjectDaysWithUs: (state) => (project) => {
+    let daysWithUs = 0
+    if (project.enquiry_date && project.start_date && project.status === 'On-Going') {
+      daysWithUs = diffDays(project.start_date, null)
+    }
+    return daysWithUs
+  },
+  getProjectClientName: (state, getters) => (project) => {
+    const client = getters.getClientById(project.client_id)
+    return client.business_name
+  },
+  getProjectLink: (state, getters) => (project) => {
+    const client = getters.getClientById(project.client_id)
+    return '/client/' + client.business_shortname.toLowerCase() + '#' + safeURL(project.name)
   }
 }
 

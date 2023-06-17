@@ -1,7 +1,6 @@
 import addProject from './addProject'
 import updateProject from './updateProject'
 import updateProjectList from './updateProjectList'
-import projectDatesHelper from './projectDatesHelper'
 import lists from './lists'
 import cards from './cards'
 
@@ -9,7 +8,6 @@ export default {
   ...addProject,
   ...updateProject,
   ...updateProjectList,
-  ...projectDatesHelper,
   ...lists,
   ...cards,
   async moveProject ({ dispatch, getters }, [clientId, fromIndex, toIndex]) {

@@ -85,7 +85,6 @@ export const actions = {
         commit('projects', response[3])
         commit('products', response[4])
         commit('pandleDashboard', response[5])
-        dispatch('projectDatesHelper')
         dispatch('updateClientPandleDataHelper')
         commit('isClientLoaded', true)
         commit('loading', false)

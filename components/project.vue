@@ -106,15 +106,15 @@
         <FontAwesomeIcon :icon="['fa-solid', 'fa-tasks']" />
         <span v-text="project.status" />
       </div>
-      <div v-if="project.start_date && !project.ongoing" class="list-container">
+      <div v-if="daysToStart" class="list-container">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToStart" />
       </div>
-      <div v-if="project.start_date && !project.ongoing" class="list-container">
+      <div v-if="daysToComplete" class="list-container">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysToComplete" />
       </div>
-      <div v-if="project.daysWithUs" class="list-container">
+      <div v-if="daysWithUs" class="list-container">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysWithUs" />
       </div>
@@ -187,7 +187,11 @@ export default {
     ]),
     ...mapGetters([
       'getProjectById',
-      'getClientById'
+      'getClientById',
+      'getProjectClientName',
+      'getProjectDaysToStart',
+      'getProjectDaysToComplete',
+      'getProjectDaysWithUs'
     ]),
     client () {
       return this.getClientById(this.project.client_id)
@@ -196,43 +200,47 @@ export default {
       return this.getProjectById(this.projectId)
     },
     daysToStart () {
-      if (!this.project.enquiry_date) {
+      const daysToStart = this.getProjectDaysToStart(this.project)
+      if (!daysToStart) {
         return null
       }
       if (this.project.start_date) {
-        if (this.project.daysToStart === 1) {
-          return `Project took ${this.project.daysToStart} day to start`
+        if (daysToStart === 1) {
+          return `Project took ${daysToStart} day to start`
         }
-        return `Project took ${this.project.daysToStart} days to start`
+        return `Project took ${daysToStart} days to start`
       }
-      if (this.project.daysToStart === 1) {
-        return `Project has been a lead for ${this.project.daysToStart} day`
+      if (daysToStart === 1) {
+        return `Project has been a lead for ${daysToStart} day`
       }
-      return `Project has been a lead for ${this.project.daysToStart} days`
+      return `Project has been a lead for ${daysToStart} days`
     },
     daysToComplete () {
+      const daysToComplete = this.getProjectDaysToComplete(this.project)
+      // If this is an ongoing project, then there is no end date really
       if (this.project.ongoing) {
         return null
       }
       if (this.project.completion_date) {
-        if (this.project.daysToComplete === 1) {
-          return `Project took ${this.project.daysToComplete} day to complete`
+        if (daysToComplete === 1) {
+          return `Project took ${daysToComplete} day to complete`
         }
-        return `Project took ${this.project.daysToComplete} days to complete`
+        return `Project took ${daysToComplete} days to complete`
       }
-      if (this.project.daysToComplete === 1) {
-        return `Project has taken ${this.project.daysToComplete} day`
+      if (daysToComplete === 1) {
+        return `Project has taken ${daysToComplete} day`
       }
-      return `Project has taken ${this.project.daysToComplete} days`
+      return `Project has taken ${daysToComplete} days`
     },
     daysWithUs () {
-      if (!this.project.daysWithUs) {
+      const daysWithUs = this.getProjectDaysWithUs(this.project)
+      if (!daysWithUs) {
         return null
       }
-      if (this.project.daysWithUs === 1) {
-        return `Project has been with us for ${this.project.daysWithUs} day`
+      if (daysWithUs === 1) {
+        return `Project has been with us for ${daysWithUs} day`
       }
-      return `Project has been with us for ${this.project.daysWithUs} days`
+      return `Project has been with us for ${daysWithUs} days`
     }
   },
   watch: {
@@ -253,7 +261,7 @@ export default {
   mounted () {
     this.sse_start()
     document.addEventListener('visibilitychange', this.visibleChange)
-    const projectVisibility = localStorage.getItem(`${this.project.client_name}_${this.project.name}_visibility`)
+    const projectVisibility = localStorage.getItem(`${this.getProjectClientName(this.project)}_${this.project.name}_visibility`)
     if (projectVisibility !== null) {
       this.show = JSON.parse(projectVisibility)
     }
@@ -266,7 +274,7 @@ export default {
   methods: {
     toggleProjectVisibility () {
       this.show = !this.show
-      localStorage.setItem(`${this.project.client_name}_${this.project.name}_visibility`, this.show)
+      localStorage.setItem(`${this.getProjectClientName(this.project)}_${this.project.name}_visibility`, this.show)
     },
     visibleChange () {
       if (document.visibilityState !== 'visible') {

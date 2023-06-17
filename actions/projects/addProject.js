@@ -17,7 +17,6 @@ export default {
       }
     })
     await commit('projects', response)
-    await dispatch('projectDatesHelper')
     return response
   }
 }
