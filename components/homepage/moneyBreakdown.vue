@@ -82,20 +82,22 @@ export default {
     ]),
     bb_projectsRevenue () {
       let a = 0
-      for (const project in this.projects) {
-        if (this.projects[project].bb_revenue) {
-          a += parseFloat(this.projects[project].bb_revenue)
+      this.projects.forEach((project) => {
+        const projectBbRevenue = parseFloat(project.bb_revenue)
+        if (projectBbRevenue) {
+          a += projectBbRevenue
         }
-      }
+      })
       return a
     },
     bb_projectExpenses () {
       let a = 0
-      for (const project in this.projects) {
-        if (this.projects[project].bb_expenses) {
-          a += parseFloat(this.projects[project].bb_expenses)
+      this.projects.forEach((project) => {
+        const projectBbExpenses = parseFloat(this.projects[project].bb_expenses)
+        if (projectBbExpenses) {
+          a += projectBbExpenses
         }
-      }
+      })
       return a
     },
     allTimeRevenue () {

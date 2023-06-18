@@ -123,9 +123,9 @@ const gettersToExport = {
       projects.push(getters.getProjectById(projectId))
     })
     if (projects.length > 0) {
-      for (const project in projects) {
-        const projectBbExpenses = parseFloat(projects[project].bb_expenses)
-        const projectPandleExpenses = parseFloat(projects[project].pandle_expenses)
+      projects.forEach((project) => {
+        const projectBbExpenses = parseFloat(project.bb_expenses)
+        const projectPandleExpenses = parseFloat(project.pandle_expenses)
         if (projectBbExpenses) {
           expenses += projectBbExpenses
         }
@@ -133,7 +133,7 @@ const gettersToExport = {
           // This is to get a positive number, as pandle returns expenses as negatives
           expenses += Math.abs(projectPandleExpenses)
         }
-      }
+      })
     }
     if (humanReadable) {
       if (expenses >= 0) {
@@ -150,16 +150,16 @@ const gettersToExport = {
       projects.push(getters.getProjectById(projectId))
     })
     if (projects.length > 0) {
-      for (const project in projects) {
-        const projectBbRevenue = parseFloat(projects[project].bb_revenue)
-        const projectPandleIncome = parseFloat(projects[project].pandle_income)
+      projects.forEach((project) => {
+        const projectBbRevenue = parseFloat(project.bb_revenue)
+        const projectPandleIncome = parseFloat(project.pandle_income)
         if (projectBbRevenue) {
           revenue += projectBbRevenue
         }
         if (projectPandleIncome) {
           revenue += projectPandleIncome
         }
-      }
+      })
     }
     if (humanReadable) {
       if (revenue >= 0) {
@@ -176,12 +176,12 @@ const gettersToExport = {
       projects.push(getters.getProjectById(projectId))
     })
     if (projects.length > 0) {
-      for (const project in projects) {
-        const projectCompletionAmount = parseFloat(projects[project].completion_amount)
+      projects.forEach((project) => {
+        const projectCompletionAmount = parseFloat(project.completion_amount)
         if (projectCompletionAmount) {
           completionAmount += projectCompletionAmount
         }
-      }
+      })
     }
     if (humanReadable) {
       if (completionAmount >= 0) {
