@@ -46,6 +46,7 @@ export default {
     '~plugins/mixins/urls',
     '~plugins/mixins/json',
     '~plugins/mixins/draggingHandler',
+    '~plugins/mixins/makeHumanReadableCurrency',
     '~plugins/inlineSVG',
     '~plugins/fontAwesome',
     '~plugins/axiosConcurrency',

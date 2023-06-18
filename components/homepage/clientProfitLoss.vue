@@ -26,22 +26,16 @@
         </thead>
         <tbody>
           <template v-for="client in clientsValue ? clientsValue : clients">
-            <tr v-if="client.profit" :key="`client_profit_loss_${client.business_name}`">
+            <tr v-if="getClientProfit(client)" :key="`client_profit_loss_${client.business_name}`">
               <td>
                 <NuxtLink :to="`/client/${client.business_shortname}`" style="color: black">
                   {{ client.business_name }}
                 </NuxtLink>
               </td>
-              <td v-if="client.revenue >= 0" v-text="`£${client.revenue.toFixed(2)}`" />
-              <td v-else v-text="`-£${Math.abs(client.revenue).toFixed(2)}`" />
-              <td v-if="client.expenses >= 0" v-text="`-£${client.expenses.toFixed(2)}`" />
-              <td v-else v-text="`-£${Math.abs(client.expenses).toFixed(2)}`" />
-              <td v-if="client.profit >= 0" v-text="`£${client.profit.toFixed(2)}`" />
-              <td v-else v-text="`-£${Math.abs(client.profit).toFixed(2)}`" />
-              <td v-if="client.profit_margin > 0 && client.profit_margin <= 100" v-text="`${client.profit_margin.toFixed(2)}%`" />
-              <td v-else>
-                -
-              </td>
+              <td v-text="getClientRevenue(client, true)" />
+              <td v-text="getClientExpenses(client, true)" />
+              <td v-text="getClientProfit(client, true)" />
+              <td v-text="getClientProfitMargin(client, true)" />
             </tr>
           </template>
         </tbody>
@@ -51,7 +45,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -63,6 +57,12 @@ export default {
   computed: {
     ...mapState([
       'clients'
+    ]),
+    ...mapGetters([
+      'getClientExpenses',
+      'getClientRevenue',
+      'getClientProfit',
+      'getClientProfitMargin'
     ]),
     clientsValue () {
       const clonedClients = []
@@ -82,23 +82,23 @@ export default {
       }
       if (this.sort === 'revenue') {
         return this.reverse
-          ? clonedClients.sort((a, b) => b.revenue - a.revenue)
-          : clonedClients.sort((a, b) => b.revenue - a.revenue).reverse()
+          ? clonedClients.sort((a, b) => this.getClientRevenue(b) - this.getClientRevenue(a))
+          : clonedClients.sort((a, b) => this.getClientRevenue(b) - this.getClientRevenue(a)).reverse()
       }
       if (this.sort === 'expenses') {
         return this.reverse
-          ? clonedClients.sort((a, b) => b.expenses - a.expenses)
-          : clonedClients.sort((a, b) => b.expenses - a.expenses).reverse()
+          ? clonedClients.sort((a, b) => this.getClientExpenses(b) - this.getClientExpenses(a))
+          : clonedClients.sort((a, b) => this.getClientExpenses(b) - this.getClientExpenses(a)).reverse()
       }
       if (this.sort === 'net-profit') {
         return this.reverse
-          ? clonedClients.sort((a, b) => b.profit - a.profit)
-          : clonedClients.sort((a, b) => b.profit - a.profit).reverse()
+          ? clonedClients.sort((a, b) => this.getClientProfit(b) - this.getClientProfit(a))
+          : clonedClients.sort((a, b) => this.getClientProfit(b) - this.getClientProfit(a)).reverse()
       }
       if (this.sort === 'profit-margin') {
         return this.reverse
-          ? clonedClients.sort((a, b) => parseInt(b.profit_margin) - parseInt(a.profit_margin))
-          : clonedClients.sort((a, b) => parseInt(b.profit_margin) - parseInt(a.profit_margin)).reverse()
+          ? clonedClients.sort((a, b) => this.getClientProfitMargin(b) - this.getClientProfitMargin(a))
+          : clonedClients.sort((a, b) => this.getClientProfitMargin(b) - this.getClientProfitMargin(a)).reverse()
       }
       return clonedClients
     }

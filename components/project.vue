@@ -154,8 +154,6 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import EventSourcePolyfill from 'eventsource'
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import Worker from 'worker-loader!../workers/projectSSE.js'
 
 export default {
   props: {
@@ -174,15 +172,12 @@ export default {
       modalsProjectMoneyGraphActive: false,
       show: true,
       showArchived: false,
-      sseWorker: null,
-      sse: null,
-      timeout: null
+      sse: null
     }
   },
   computed: {
     ...mapState([
       'userInfo',
-      'isRenewingTokens',
       'projects'
     ]),
     ...mapGetters([
@@ -218,7 +213,7 @@ export default {
     daysToComplete () {
       const daysToComplete = this.getProjectDaysToComplete(this.project)
       // If this is an ongoing project, then there is no end date really
-      if (this.project.ongoing) {
+      if (this.project.ongoing || !this.project.start_date) {
         return null
       }
       if (this.project.completion_date) {
@@ -243,21 +238,6 @@ export default {
       return `Project has been with us for ${daysWithUs} days`
     }
   },
-  watch: {
-    isRenewingTokens (newVal) {
-      if (document.visibilityState === 'visible') {
-        if (newVal) {
-        // eslint-disable-next-line no-console
-          console.log('Stopping SSE due to renewing tokens and we need to send the new token with SSE')
-          this.sse_end()
-        } else {
-        // eslint-disable-next-line no-console
-          console.log('Starting SSE due to tokens now being renewed')
-          this.sse_start()
-        }
-      }
-    }
-  },
   mounted () {
     this.sse_start()
     document.addEventListener('visibilitychange', this.visibleChange)
@@ -267,7 +247,6 @@ export default {
     }
   },
   beforeDestroy () {
-    clearTimeout(this.timeout)
     document.removeEventListener('visibilitychange', this.visibleChange)
     this.sse_end()
   },
@@ -278,64 +257,43 @@ export default {
     },
     visibleChange () {
       if (document.visibilityState !== 'visible') {
-        clearTimeout(this.timeout)
         this.sse_end()
+      } else {
+        this.sse_start()
       }
     },
-    sse_start () {
-      this.timeout = window.setTimeout(async () => {
-        if (!this.isRenewingTokens && document.visibilityState === 'visible') {
-          const id = this.project.id
-          const authToken = `Bearer ${await this.$auth.getAccessToken()}`
-          const self = this
-          const url = `https://api.galexia.agency/projects/sse?id=${id}`
-          if (window.Worker) {
-            if (!this.sseWorker) {
-              this.sseWorker = new Worker()
-              this.sseWorker.postMessage(['start', url, id, authToken])
-              this.sseWorker.onmessage = (e) => {
-                self.sse_updateProject(e.data)
-              }
-              // eslint-disable-next-line no-console
-              console.log('Started SSE')
-            } else {
-              this.sse_end()
-              this.sse_start()
-            }
-          } else if (!this.sse) {
-            this.sse = new EventSourcePolyfill(url, {
-              headers: {
-                Authorization: authToken
-              },
-              withCredentials: false
-            })
-            this.sse.addEventListener(id, function (event) {
+    async sse_start () {
+      if (document.visibilityState === 'visible') {
+        const id = this.project.id
+        const authToken = `Bearer ${await this.$auth.getAccessToken()}`
+        const self = this
+        const url = `https://api.galexia.agency/projects/sse?id=${id}`
+        if (!this.sse) {
+          this.sse = new EventSourcePolyfill(url, {
+            headers: {
+              Authorization: authToken
+            },
+            withCredentials: false,
+            retry: 5000
+          })
+          this.sse.addEventListener(
+            id,
+            function (event) {
               self.sse_updateProject(JSON.parse(event.data)[0])
-            }, {
-              once: false,
-              retry: 5000
-            })
-            // eslint-disable-next-line no-console
-            console.log('Started SSE')
-          } else {
-            this.sse_end()
-            this.sse_start()
-          }
+            }
+          )
+          // eslint-disable-next-line no-console
+          console.log('Started SSE')
+        } else {
+          this.sse_end()
         }
-        // Delay the SSE request slightly for each consecutive project
-      }, (this.index + 1) * 500)
+      }
     },
     sse_end () {
-      if (window.Worker) {
-        if (this.sseWorker) {
-          this.sseWorker.postMessage(['stop'])
-          this.sseWorker = null
-          // eslint-disable-next-line no-console
-          console.log('Stopped SSE')
-        }
-      } else if (this.sse) {
+      if (this.sse) {
         this.sse.close()
         this.sse = null
+        this.$store.commit('loading', false)
         // eslint-disable-next-line no-console
         console.log('Stopped SSE')
       }
@@ -344,7 +302,7 @@ export default {
       try {
         this.$store.commit('loading', true)
         newProject.lists = JSON.parse(newProject.lists)
-        const currentProject = this.$store.getters.getProjectById(newProject.id)
+        const currentProject = this.getProjectById(newProject.id)
         // If the database content is newer, then replace our version
         if (new Date(newProject.updated_at) > new Date(currentProject.updated_at)) {
           this.$store.commit('updateProject', newProject)

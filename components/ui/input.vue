@@ -149,10 +149,6 @@ export default {
       type: String,
       required: true
     },
-    value: {
-      type: [String, Number, Boolean],
-      required: true
-    },
     label: {
       type: String,
       required: true

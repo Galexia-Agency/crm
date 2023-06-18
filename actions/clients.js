@@ -23,7 +23,6 @@ export default {
       const textB = b.business_shortname.toUpperCase()
       return (textA < textB) ? -1 : (textA > textB) ? 1 : 0
     }))
-    await dispatch('updateClientPandleDataHelper')
   },
   async updateClient ({ commit, dispatch, getters }, data) {
     await commit('updateClient', data)

@@ -145,7 +145,7 @@
         <UiInput
           v-model="updatedProject.ongoing"
           name="ongoing"
-          :label="(new Date(updatedProject.start_date) > new Date() ? 'Is ' : 'Was ') + 'this an ongoing project?'"
+          :label="`${new Date(updatedProject.start_date) > new Date() ? 'Is' : 'Was'} this an ongoing project?`"
           type="checkbox"
         />
         <UiInput

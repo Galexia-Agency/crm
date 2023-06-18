@@ -47,17 +47,18 @@
       </h1>
       <p v-if="client.about" class="about_the_business" v-text="client.about" />
       <div v-if="userInfo.groups.includes('billing')" class="monies">
-        <h2 v-if="client.revenue != undefined" v-text="'Total Revenue: £' + client.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-if="client.expenses != undefined" v-text="'Total Expenses: £' + client.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-if="client.profit != undefined" v-text="'Total Net Profit: £' + client.profit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
-        <h2 v-if="client.completion_amount != undefined" v-text="'Completion Total: £' + client.completion_amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+        <h2 v-text="`Revenue: ${getClientRevenue(client, true)}`" />
+        <h2 v-text="`Expenses: ${getClientExpenses(client, true)}`" />
+        <h2 v-text="`Net Profit: ${getClientProfit(client, true)}`" />
+        <h2 v-text="`Profit Margin: ${getClientProfitMargin(client, true)}`" />
+        <h2 v-text="`Completion Total: ${getClientCompletionAmount(client, true)}`" />
       </div>
       <button v-if="!client.pandle_id && userInfo.groups.includes('admin')" class="button primary" type="button" @click="addClientPandle()">
         Add to Pandle
       </button>
       <div v-if="userInfo.groups.includes('admin')" class="contact container">
         <template v-for="contact in contactsForClient">
-          <span :key="contact.id + 'i'" style="display: none">
+          <span :key="`${contact.id}i`" style="display: none">
             {{ contact.org = client.business_name }}
           </span>
           <button :key="contact.id" type="button" class="list-container" @click="showDisplayContactModal(contact)">
@@ -146,7 +147,12 @@ export default {
     ...mapGetters([
       'getClientByShortname',
       'getProjectById',
-      'getProjectsForClient'
+      'getProjectsForClient',
+      'getClientExpenses',
+      'getClientRevenue',
+      'getClientProfit',
+      'getClientProfitMargin',
+      'getClientCompletionAmount'
     ]),
     client () {
       return this.getClientByShortname(this.$route.params.client)
@@ -245,7 +251,7 @@ export default {
       this.hideUpdateClientModal()
       await this.$store.dispatch('updateClient', client)
       if (this.$route.params.client !== client.business_shortname.toLowerCase()) {
-        this.$router.push('/client/' + client.business_shortname.toLowerCase())
+        this.$router.push(`/client/${client.business_shortname.toLowerCase()}`)
       }
     },
     addClientPandle () {

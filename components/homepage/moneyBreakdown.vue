@@ -13,30 +13,30 @@
             <td v-text="humanReadableDate($config.COMPANY_INCORPORATION)" />
           </tr>
           <template v-for="year, index in yearlyMoneyBreakdown">
-            <tr :key="index + '_divider'" class="divider" />
-            <tr :key="index + '_revenue'">
+            <tr :key="`${index}_divider`" class="divider" />
+            <tr :key="`${index}_revenue`">
               <td>
                 {{ index }} Revenue
               </td>
-              <td v-text="'£' + year.revenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+              <td v-text="`£${makeHumanReadableCurrency(year.revenue)}`" />
             </tr>
-            <tr :key="index + '_expenses'">
+            <tr :key="`${index}_expenses`">
               <td>
                 {{ index }} Expenses
               </td>
-              <td v-text="'-£' + year.expenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+              <td v-text="`-£${makeHumanReadableCurrency(year.expenses)}`" />
             </tr>
-            <tr :key="index + '_netProfit'">
+            <tr :key="`${index}_netProfit`">
               <td>
                 {{ index }} Net Profit
               </td>
-              <td v-text="'£' + year.netProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+              <td v-text="`£${makeHumanReadableCurrency(year.netProfit)}`" />
             </tr>
-            <tr :key="index + '_netProfitMargin'">
+            <tr :key="`${index}_netProfitMargin`">
               <td>
                 {{ index }} Net Profit Margin
               </td>
-              <td v-text="year.netProfitMargin.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '%'" />
+              <td v-text="`${makeHumanReadableCurrency(year.netProfitMargin)}%`" />
             </tr>
           </template>
           <tr class="divider" />
@@ -44,25 +44,25 @@
             <td>
               All Time Revenue
             </td>
-            <td v-text="'£' + allTimeRevenue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+            <td v-text="`£${makeHumanReadableCurrency(allTimeRevenue)}`" />
           </tr>
           <tr>
             <td>
               All Time Expenses
             </td>
-            <td v-text="'-£' + allTimeExpenses.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+            <td v-text="`-£${makeHumanReadableCurrency(allTimeExpenses)}`" />
           </tr>
           <tr>
             <td>
               All Time Net Profit
             </td>
-            <td v-text="'£' + allTimeNetProfit.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')" />
+            <td v-text="`£${makeHumanReadableCurrency(allTimeNetProfit)}`" />
           </tr>
           <tr>
             <td>
               All Time Net Profit Margin
             </td>
-            <td v-text="allTimeNetProfitMargin.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '%'" />
+            <td v-text="`${makeHumanReadableCurrency(allTimeNetProfitMargin)}%`" />
           </tr>
         </tbody>
       </table>

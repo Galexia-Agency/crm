@@ -44,13 +44,9 @@
                   @drag-end="dragEndHandler()"
                   @drop="e => onCardDrop(e, list, listIndex)"
                 >
-                  <template v-for="card in list.items">
-                    <Draggable
-                      v-if="!card.archived || (showArchived && card.archived)"
-                      :key="`${card.id}_${card.archived}_parent`"
-                    >
+                  <template v-for="(card, index) in list.items">
+                    <Draggable v-if="!card.archived || (showArchived && card.archived)" :key="`card_container_${card.id}_${index}`">
                       <KanbanCard
-                        :key="`${card.id}_${card.archived}_child`"
                         :card="card"
                         :project="project"
                         @openUpdateModal="e => addOrUpdateCard({...e, more: true})"
@@ -61,10 +57,10 @@
                     </Draggable>
                   </template>
                 </DraggableContainer>
-                <template v-for="card in list.items" v-else>
+                <template v-for="(card, index) in list.items" v-else>
                   <KanbanCard
                     v-if="!card.archived || (showArchived && card.archived)"
-                    :key="`${card.id}_${card.archived}`"
+                    :key="`card_container_${card.id}_${index}`"
                     :card="card"
                     :project="project"
                     @openUpdateModal="e => addOrUpdateCard({...e, more: true})"
@@ -101,7 +97,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { Container as DraggableContainer, Draggable } from 'vue-smooth-dnd'
 
 import { makeDropHandler } from '~/utils/plugins'
@@ -131,8 +127,11 @@ export default {
     ...mapState([
       'userInfo'
     ]),
+    ...mapGetters([
+      'getProjectById'
+    ]),
     lists () {
-      return this.$store.getters.getProjectById(this.project.id).lists
+      return this.getProjectById(this.project.id).lists
     }
   },
   methods: {

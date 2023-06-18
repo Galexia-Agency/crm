@@ -65,7 +65,7 @@
 </style>
 
 <template>
-  <div class="card" :class="classes" :data-id="card.id" @click="openUpdateModal">
+  <div :key="`${card.id}_${card.archived}_${card.date}`" class="card" :class="classes" :data-id="card.id" @click="openUpdateModal">
     <div class="icons">
       <template v-if="icons && (project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))">
         <template v-if="card.archived">
@@ -92,7 +92,7 @@
       </p>
       <p v-if="card.date" class="card-date">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
-        {{ card.day + ' ' + card.dayNo + ' ' + card.month + ' - ' + daysRemaining(card.dateUNIX) }}
+        {{ `${card.day} ${card.dayNo} ${card.month} - ${daysRemaining(card.dateUNIX)}` }}
       </p>
       <p v-if="card.assignee && card.assignee !== userInfo.email" class="card-date">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-user']" />
@@ -146,7 +146,7 @@ export default {
   methods: {
     openUpdateModal () {
       if (!this.card.archived) {
-        this.$emit('openUpdateModal', { card: this.card })
+        this.$emit('open-update-modal', { card: this.card })
       }
     },
     unarchive () {
