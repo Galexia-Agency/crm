@@ -15,7 +15,7 @@ export function makeCard ({ title, description, date, createdDate, updatedDate, 
   return { id, title, description, date, dateUNIX, createdDate, updatedDate, dayNo, day, month, clientName, clientShortName, updatedBy, assignee }
 }
 
-export function makeList (title, items = []) {
+export function makeList (title, items = [], archived = false) {
   const id = uuidv1()
-  return { id, title, items }
+  return { id, title, items, archived }
 }

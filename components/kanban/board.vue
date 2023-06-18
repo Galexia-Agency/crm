@@ -159,11 +159,9 @@ export default {
     },
     async archiveList (listId) {
       await this.$store.dispatch('archiveList', { projectId: this.project.id, listId })
-      this.$forceUpdate()
     },
     async unarchiveList (listId) {
       await this.$store.dispatch('unarchiveList', { projectId: this.project.id, listId })
-      this.$forceUpdate()
     },
     async removeList (listId) {
       await this.$store.dispatch('removeList', { projectId: this.project.id, listId })
