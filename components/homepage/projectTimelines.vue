@@ -33,12 +33,12 @@
                 </NuxtLink>
               </td>
               <td v-text="humanReadableDate(project.enquiry_date)" />
-              <td v-text="project.daysToStart" />
-              <td v-if="project.daysToComplete" v-text="project.daysToComplete" />
+              <td v-text="getProjectDaysToStart(project)" />
+              <td v-if="getProjectDaysToComplete(project)" v-text="getProjectDaysToComplete(project)" />
               <td v-else>
                 -
               </td>
-              <td v-if="project.daysWithUs" v-text="project.daysWithUs" />
+              <td v-if="getProjectDaysWithUs(project)" v-text="getProjectDaysWithUs(project)" />
               <td v-else>
                 -
               </td>
@@ -67,7 +67,10 @@ export default {
     ]),
     ...mapGetters([
       'getProjectLink',
-      'getProjectClientName'
+      'getProjectClientName',
+      'getProjectDaysToStart',
+      'getProjectDaysToComplete',
+      'getProjectDaysWithUs'
     ]),
     projectsTimelinesValue () {
       const clonedProjects = []
@@ -92,18 +95,18 @@ export default {
       }
       if (this.sort === 'start') {
         return this.reverse
-          ? clonedProjects.sort((a, b) => b.daysToStart - a.daysToStart)
-          : clonedProjects.sort((a, b) => b.daysToStart - a.daysToStart).reverse()
+          ? clonedProjects.sort((a, b) => this.getProjectDaysToStart(b) - this.getProjectDaysToStart(a))
+          : clonedProjects.sort((a, b) => this.getProjectDaysToStart(b) - this.getProjectDaysToStart(a)).reverse()
       }
       if (this.sort === 'complete') {
         return this.reverse
-          ? clonedProjects.sort((a, b) => parseInt(b.daysToComplete) - parseInt(a.daysToComplete))
-          : clonedProjects.sort((a, b) => parseInt(b.daysToComplete) - parseInt(a.daysToComplete)).reverse()
+          ? clonedProjects.sort((a, b) => this.getProjectDaysToComplete(b) - this.getProjectDaysToComplete(a))
+          : clonedProjects.sort((a, b) => this.getProjectDaysToComplete(b) - this.getProjectDaysToComplete(a)).reverse()
       }
       if (this.sort === 'with-us') {
         return this.reverse
-          ? clonedProjects.sort((a, b) => parseInt(b.daysWithUs) - parseInt(a.daysWithUs))
-          : clonedProjects.sort((a, b) => parseInt(b.daysWithUs) - parseInt(a.daysWithUs)).reverse()
+          ? clonedProjects.sort((a, b) => this.getProjectDaysWithUs(b) - this.getProjectDaysWithUs(a))
+          : clonedProjects.sort((a, b) => this.getProjectDaysWithUs(b) - this.getProjectDaysWithUs(a)).reverse()
       }
       return clonedProjects
     }
