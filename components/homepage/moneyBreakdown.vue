@@ -93,7 +93,7 @@ export default {
     bb_projectExpenses () {
       let a = 0
       this.projects.forEach((project) => {
-        const projectBbExpenses = parseFloat(this.projects[project].bb_expenses)
+        const projectBbExpenses = parseFloat(project.bb_expenses)
         if (projectBbExpenses) {
           a += projectBbExpenses
         }
