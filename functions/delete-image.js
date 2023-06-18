@@ -60,7 +60,7 @@ exports.handler = async function handler (event, context, callback) {
     if (oktaResponse.data.active === true) {
       try {
         const { file } = await JSON.parse(event.body)
-        const response = await cloudinary.uploader.destroy('BOS/' + file.match(/([^/]+)(?=\.\w+$)/g))
+        const response = await cloudinary.uploader.destroy(`BOS/${file.match(/([^/]+)(?=\.\w+$)/g)}`)
         return callback(null, {
           statusCode: 200,
           headers,

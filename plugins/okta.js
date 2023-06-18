@@ -3,10 +3,10 @@ import OktaVue from '@okta/okta-vue'
 import { OktaAuth } from '@okta/okta-auth-js'
 
 export default (ctx, inject) => {
-  const redirectUri = window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback'
+  const redirectUri = window.location.host === 'localhost:8888' ? `http://${window.location.host}/implicit/callback` : `https://${window.location.host}/implicit/callback`
 
   const oktaAuth = new OktaAuth({
-    issuer: ctx.app.$config.OKTA_ISSUER + '/oauth2/default',
+    issuer: `${ctx.app.$config.OKTA_ISSUER}/oauth2/default`,
     clientId: ctx.app.$config.OKTA_CLIENT_ID,
     redirectUri,
     scopes: ctx.app.$config.OKTA_SCOPES,

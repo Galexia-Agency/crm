@@ -27,7 +27,7 @@
     <section v-if="overdueCards.length > 0">
       <h2>
         Overdue
-        <span class="card-count" v-html="`(${showInHouseItems ? '' : overdueCardsWithoutInHouse.length !== overdueCards.length ? overdueCardsWithoutInHouse.length + '/' : ''}${overdueCards.length} tasks total)`" />
+        <span class="card-count" v-html="`(${showInHouseItems ? '' : overdueCardsWithoutInHouse.length !== overdueCards.length ? `${overdueCardsWithoutInHouse.length }/` : ''}${overdueCards.length} tasks total)`" />
       </h2>
       <section class="list-container">
         <NuxtLink v-for="(card, index) in overdueCards" :key="card.id" :to="`/client/${card.clientShortName.toLowerCase()}/#${safeURL(card.projectName)}`" class="home-card-container">
@@ -39,7 +39,7 @@
     <section v-if="dueCards.length > 0">
       <h2>
         To Do
-        <span class="card-count" v-html="`(${showInHouseItems ? '' : dueCardsWithoutInHouse.length !== dueCards.length ? dueCardsWithoutInHouse.length + '/' : ''}${dueCards.length} tasks total)`" />
+        <span class="card-count" v-html="`(${showInHouseItems ? '' : dueCardsWithoutInHouse.length !== dueCards.length ? `${dueCardsWithoutInHouse.length }/` : ''}${dueCards.length} tasks total)`" />
       </h2>
       <section class="list-container">
         <NuxtLink v-for="(card, index) in dueCards" :key="card.id" :to="`/client/${card.clientShortName.toLowerCase()}/#${safeURL(card.projectName)}`" class="home-card-container">

@@ -29,7 +29,7 @@
           v-model="updatedCard.description"
           label="Description"
           :disabled="!(project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))"
-          @editorUpdateShim="editorUpdateShim"
+          @editor-update-shim="editorUpdateShim"
         />
         <UiInput
           v-model="updatedCard.date"
@@ -195,7 +195,7 @@ export default {
       }
       const self = this
       function uploadImage (image) {
-        return self.$axios.post(location.origin + '/.netlify/functions/upload-image', { file: image })
+        return self.$axios.post(`${location.origin}/.netlify/functions/upload-image`, { file: image })
           .then((response) => {
             RETURN_ARR.push(response.data.url)
             self.cloudinaryImages.startingWith.push(response.data.url)
@@ -220,7 +220,7 @@ export default {
       }
       const self = this
       function deleteImage (image) {
-        return self.$axios.post(location.origin + '/.netlify/functions/delete-image', { file: image })
+        return self.$axios.post(`${location.origin}/.netlify/functions/delete-image`, { file: image })
           .catch(function (e) {
             const error = {}
             error.description = e

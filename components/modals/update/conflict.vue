@@ -37,7 +37,7 @@
           <UiEditor
             v-model="updated"
             label="Your updated content"
-            @editorUpdateShim="editorUpdateShim"
+            @editor-update-shim="editorUpdateShim"
           />
         </template>
         <template v-else>

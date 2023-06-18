@@ -65,21 +65,21 @@ exports.handler = async function handler (event, context, callback) {
       const data = JSON.parse(event.body)
       try {
         if (data.type === 'POST') {
-          const response = await axios.post('https://my.pandle.com/api/v1' + data.url, data.body)
+          const response = await axios.post(`https://my.pandle.com/api/v1${data.url}`, data.body)
           return callback(null, {
             statusCode: 200,
             headers,
             body: JSON.stringify(response.data)
           })
         } else if (data.type === 'GET') {
-          const response = await axios.get('https://my.pandle.com/api/v1' + data.url)
+          const response = await axios.get(`https://my.pandle.com/api/v1${data.url}`)
           return callback(null, {
             statusCode: 200,
             headers,
             body: JSON.stringify(response.data)
           })
         } else if (data.type === 'PATCH') {
-          const response = await axios.patch('https://my.pandle.com/api/v1' + data.url, data.body)
+          const response = await axios.patch(`https://my.pandle.com/api/v1${data.url}`, data.body)
           return callback(null, {
             statusCode: 200,
             headers,

@@ -2,7 +2,7 @@ import { safeURL } from '~/plugins/mixins/urls'
 
 export default {
   async addClientPandle ({ dispatch }, data) {
-    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/pandle_request', {
+    const pandle = await this.$axios.$post(`${window.location.origin}/.netlify/functions/pandle_request`, {
       type: 'POST',
       url: `/companies/${this.$config.PANDLE_COMPANY_ID}/customers`,
       body: {
@@ -39,14 +39,14 @@ export default {
     const day = dateObj.getUTCDate()
     const year = dateObj.getUTCFullYear()
 
-    const pandle = await this.$axios.$post(window.location.origin + '/.netlify/functions/pandle_request', {
+    const pandle = await this.$axios.$post(`${window.location.origin}/.netlify/functions/pandle_request`, {
       type: 'POST',
       url: `/companies/${this.$config.PANDLE_COMPANY_ID}/projects`,
       body: {
         project: {
-          name: data.client_name + '-' + safeURL(data.name),
+          name: `${data.client_name}-${safeURL(data.name)}`,
           status: 'Open',
-          date_started: day + '/' + month + '/' + year
+          date_started: `${day}/${month}/${year}`
         }
       }
     })

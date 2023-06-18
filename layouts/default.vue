@@ -455,7 +455,7 @@ export default {
     async newClient (newClient) {
       this.hideClientModal()
       await this.$store.dispatch('addClient', newClient)
-      this.$router.push('/client/' + safeURL(newClient.business_shortname))
+      this.$router.push(`/client/${safeURL(newClient.business_shortname)}`)
     }
   }
 }

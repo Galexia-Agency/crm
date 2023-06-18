@@ -120,11 +120,11 @@ export default {
     await import(/* webpackChunkName: "okta.signin", webpackPreload: true  */ '@okta/okta-signin-widget/dist/js/okta-sign-in.no-polyfill.min.js').then((module) => {
       OktaSignIn = module.default
     })
-    const redirectUri = window.location.host === 'localhost:8888' ? 'http://' + window.location.host + '/implicit/callback' : 'https://' + window.location.host + '/implicit/callback'
+    const redirectUri = window.location.host === 'localhost:8888' ? `http://${window.location.host}/implicit/callback` : `https://${window.location.host}/implicit/callback`
     this.$nextTick(function () {
       this.widget = new OktaSignIn({
         baseUrl: this.$config.OKTA_ISSUER,
-        issuer: this.$config.OKTA_ISSUER + '/oauth2/default',
+        issuer: `${this.$config.OKTA_ISSUER}/oauth2/default`,
         clientId: this.$config.OKTA_CLIENT_ID,
         redirectUri,
         useClassicEngine: true,

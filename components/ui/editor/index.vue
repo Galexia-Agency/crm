@@ -344,7 +344,7 @@ export default {
       content: this.value,
       extensions: [StarterKit, Underline, Link, TaskList, TaskItem, LazyImage],
       onUpdate: ({ editor }) => {
-        this.$emit('editorUpdateShim', editor)
+        this.$emit('editor-update-shim', editor)
       },
       onFocus: () => {
         this.caretInEditor = true

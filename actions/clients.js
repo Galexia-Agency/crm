@@ -33,7 +33,7 @@ export default {
     async function updatePandle () {
       if (client.pandle_id) {
         try {
-          await self.$axios.$patch(window.location.origin + '/.netlify/functions/pandle_request', {
+          await self.$axios.$patch(`${window.location.origin}/.netlify/functions/pandle_request`, {
             type: 'PATCH',
             url: `/companies/${self.$config.PANDLE_COMPANY_ID}/customers/${client.pandle_id}`,
             body: {
