@@ -44,9 +44,10 @@
                   @drag-end="dragEndHandler()"
                   @drop="e => onCardDrop(e, list, listIndex)"
                 >
-                  <template v-for="(card, index) in list.items">
-                    <Draggable v-if="!card.archived || (showArchived && card.archived)" :key="`card_container_${card.id}_${index}`">
+                  <template v-for="card in list.items">
+                    <Draggable v-if="!card.archived || (showArchived && card.archived)" :key="`${card.id}_${card.archived}_${card.date}_container`">
                       <KanbanCard
+                        :key="`${card.id}_${card.archived}_${card.date}_component`"
                         :card="card"
                         :project="project"
                         @openUpdateModal="e => addOrUpdateCard({...e, more: true})"
@@ -57,10 +58,10 @@
                     </Draggable>
                   </template>
                 </DraggableContainer>
-                <template v-for="(card, index) in list.items" v-else>
+                <template v-for="card in list.items" v-else>
                   <KanbanCard
                     v-if="!card.archived || (showArchived && card.archived)"
-                    :key="`card_container_${card.id}_${index}`"
+                    :key="`${card.id}_${card.archived}_${card.date}_component`"
                     :card="card"
                     :project="project"
                     @openUpdateModal="e => addOrUpdateCard({...e, more: true})"
@@ -199,11 +200,9 @@ export default {
       // Update item first as we may have archived it from the modal
       await this.addOrUpdateCard({ card })
       await this.$store.dispatch('archiveCard', { projectId: this.project.id, cardId: card.id })
-      this.$forceUpdate()
     },
     async unarchiveCard (item) {
       await this.$store.dispatch('unarchiveCard', { projectId: this.project.id, cardId: item.id })
-      this.$forceUpdate()
     },
     async removeCard (item) {
       await this.$store.dispatch('removeCard', { projectId: this.project.id, cardId: item.id })
