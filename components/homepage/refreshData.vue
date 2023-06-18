@@ -51,7 +51,6 @@ export default {
       } catch (e) {
         this.$store.commit('error', e)
       }
-      this.$parent.$forceUpdate()
     },
     async refreshClientProfitLoss () {
       try {
@@ -60,7 +59,6 @@ export default {
       } catch (e) {
         this.$store.commit('error', e)
       }
-      this.$parent.$forceUpdate()
     }
   }
 }

@@ -4,25 +4,25 @@
       <h2>
         Sales Performance
       </h2>
-      <ChartsBar :chart-data="salesData" />
+      <ChartsBar :key="`sales_chart_${salesValues[salesValues.length - 1]}`" :chart-data="salesData" />
     </section>
     <section class="span-3">
       <h2>
         Expenses Performance
       </h2>
-      <ChartsBar :chart-data="expensesData" />
+      <ChartsBar :key="`expenses_chart_${expensesValues[expensesValues.length - 1]}`" :chart-data="expensesData" />
     </section>
     <section class="span-3">
       <h2>
         Profit &amp; Loss Performance
       </h2>
-      <ChartsBar :chart-data="profitLossData" />
+      <ChartsBar :key="`profit_and_loss_chart_${profitLossValues[profitLossValues.length - 1]}`" :chart-data="profitLossData" />
     </section>
     <section class="span-3">
       <h2>
         Cash Flow
       </h2>
-      <ChartsBar :chart-data="cashFlowData" />
+      <ChartsBar :key="`cash_flow_chart_${cashFlowValues[cashFlowValues.length - 1]}`" :chart-data="cashFlowData" />
     </section>
   </main>
 </template>
