@@ -17,6 +17,8 @@
   },
   // add your custom rules here
   "rules": {
+    "prefer-template": "error",
+    "vue/prefer-template": "error",
     "vue/custom-event-name-casing": ["error"],
     "vue/comment-directive": 0,
     "vue/no-v-html": 0,
