@@ -41,6 +41,7 @@ async function automaticTokenRenewal (ctx) {
     if (isNow) {
       await renewTokens(ctx)
     } else {
+      clearTimeout(window.timer)
       window.timer = setTimeout(async () => { await renewTokens(ctx) }, delay)
     }
   }
