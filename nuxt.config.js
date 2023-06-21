@@ -117,5 +117,16 @@ export default {
         useShortDoctype: true
       }
     }
+  },
+  babel: {
+    presets ({ isClient }, preset) {
+      if (isClient) {
+        // https://babeljs.io/docs/en/babel-preset-env
+        preset[1].targets = {
+          chrome: '58'
+        }
+      }
+      return [preset]
+    }
   }
 }
