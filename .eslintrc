@@ -2,24 +2,25 @@
   "root": true,
   "env": {
     "browser": true,
-    "node": true,
-    "es6": true
+    "es2017": true
   },
   "extends": [
     "@nuxtjs/eslint-config",
     "plugin:nuxt/recommended"
   ],
   "parserOptions": {
-    "requireConfigFile": false,
     "parser": "@babel/eslint-parser",
+    "requireConfigFile": false,
     "ecmaVersion": 8,
     "sourceType": "module"
   },
   // add your custom rules here
   "rules": {
+    "vue/multi-word-component-names": 0,
+    "vue/component-name-in-template-casing": ["error", "PascalCase"],
     "prefer-template": "error",
     "vue/prefer-template": "error",
-    "vue/custom-event-name-casing": ["error"],
+    "vue/custom-event-name-casing": ["error", "kebab-case"],
     "vue/comment-directive": 0,
     "vue/no-v-html": 0,
     "vue/component-tags-order": [
