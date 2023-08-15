@@ -33,7 +33,7 @@
     "axios": "^0.27.2",
     "bulma": "^0.9.3",
     "chart.js": "^2.9.4",
-    "cloudinary": "^1.37.1",
+    "cloudinary": "^1.39.0",
     "compressorjs": "^1.0.7",
     "cross-env": "^7.0.3",
     "eventsource": "^2.0.2",
