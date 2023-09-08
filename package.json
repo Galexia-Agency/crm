@@ -22,7 +22,7 @@
     "@okta/okta-auth-js": "^7.3.0",
     "@okta/okta-signin-widget": "^7.7.2",
     "@okta/okta-vue": "^3.1.0",
-    "@tiptap/core": "^2.0.0-beta.125",
+    "@tiptap/core": "^2.1.4",
     "@tiptap/extension-image": "^2.0.0-beta.19",
     "@tiptap/extension-link": "^2.0.0-beta.23",
     "@tiptap/extension-task-item": "^2.0.0-beta.22",
