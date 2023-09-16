@@ -92,6 +92,11 @@ sw.*
 # Local Netlify folder
 .netlify
 
-.yarn
-
-.yarnrc.yml
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

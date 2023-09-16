@@ -1,7 +1,12 @@
 [build]
-command = "yarn generate --ignore-optional"
+command = "yarn generate"
 publish = "dist"
 functions = "functions"
+
+[build.environment]
+NODE_VERSION = "18"
+YARN_FLAGS = "--ignore-optional"
+CI = "1"
 
 [[redirects]]
 from = "https://galexia-crm.netlify.app/*"
