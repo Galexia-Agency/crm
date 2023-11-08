@@ -8,9 +8,11 @@ export default {
       clientsToPush[client].profit = 0
       clientsToPush[client].completion_amount = 0
       const projects = []
-      clientsToPush[client].projects.forEach((projectId) => {
-        projects.push(getters.getProjectById(projectId))
-      })
+      if (clientsToPush[client].projects) {
+        clientsToPush[client].projects.forEach((projectId) => {
+          projects.push(getters.getProjectById(projectId))
+        })
+      }
       if (projects.length > 0) {
         for (const project in projects) {
           // Set client expenses
