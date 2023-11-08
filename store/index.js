@@ -44,17 +44,7 @@ export const actions = {
     commit('loading', true)
     commit('isClientLoaded', false)
     if (await $auth.manuallyRenewTokens()) {
-      if (
-        (route &&
-        route.name &&
-        route.name === 'login') ||
-        (app &&
-        app.router &&
-        app.router.app &&
-        app.router.app._route &&
-        app.router.app._route.name &&
-        app.router.app._route.name === 'login')
-      ) {
+      if (route?.name === 'login' || app?.router?.app?._route?.name === 'login') {
         // We do this to go home as soon as possible
         app.router.push('/')
         // We then have to do this to stop nuxt redirecting back to the login page when it's initialised
