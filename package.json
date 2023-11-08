@@ -5,6 +5,7 @@
   "author": "Galexia Creative Agency Ltd",
   "private": true,
   "scripts": {
+    "dev": "netlify dev",
     "start": "nuxt",
     "generate": "nuxt generate --modern --quiet --fail-on-error",
     "lint:scripts": "eslint --ext .js,.vue --ignore-path .gitignore .",
@@ -57,6 +58,7 @@
     "@nuxtjs/stylelint-module": "^4.2.1",
     "eslint": "^7.29.0",
     "eslint-plugin-nuxt": "^4.0.0",
+    "netlify-cli": "^17.1.0",
     "postcss-scss": "^4.0.6",
     "stylelint": "^15.3.0",
     "stylelint-config-rational-order": "^0.1.2",
@@ -83,7 +85,7 @@
     "last 5 versions and not ie <= 11 and > 0.2% and not dead and not op_mini all"
   ],
   "engines": {
-    "node": "^16.14.2",
+    "node": "^18.12.0",
     "yarn": "^1.10"
   },
   "packageManager": "yarn@1.22.19"
