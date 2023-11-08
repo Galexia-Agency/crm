@@ -71,6 +71,19 @@ export default {
     ...mapState([
       'userInfo'
     ])
+  },
+  mounted () {
+    document.addEventListener('visibilitychange', this.visibleChange)
+  },
+  beforeDestroy () {
+    document.removeEventListener('visibilitychange', this.visibleChange)
+  },
+  methods: {
+    visibleChange () {
+      if (document.visibilityState !== 'visible') {
+        this.$store.dispatch('nuxtClientInit', this.$store, this.$nuxt.context)
+      }
+    }
   }
 }
 </script>
