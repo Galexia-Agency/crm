@@ -1,6 +1,7 @@
 <style scoped lang="scss">
   .card-modal-buttons-container {
-    flex-direction: initial;
+    /* stylelint-disable-next-line declaration-no-important */
+    flex-direction: initial!important;
     justify-content: space-between;
     > div {
       display: flex;

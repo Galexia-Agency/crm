@@ -37,7 +37,7 @@
                   @drop="e => onCardDrop(e, list, listIndex)"
                 >
                   <template v-for="item in list.items">
-                    <Draggable v-if="!item.archived || ($parent.showArchived && item.archived)" :key="item.id + + item.title + item.description + item.date">
+                    <Draggable v-show="!item.archived || ($parent.showArchived && item.archived)" :key="item.id + + item.title + item.description + item.date">
                       <Card
                         :item="item"
                         :project="$parent.project"
@@ -70,10 +70,10 @@
               </section>
             </Draggable>
           </template>
+          <div v-if="$parent.project.admin.includes($parent.userInfo.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.userInfo.email))" class="new-list">
+            <UiItemEntry placeholder="Add a list" @enter="onAddList" />
+          </div>
         </Container>
-        <div v-if="$parent.project.admin.includes($parent.userInfo.email) || ($parent.project.contributor && $parent.project.contributor.includes($parent.userInfo.email))" class="new-list">
-          <UiItemEntry placeholder="Add a list" @enter="onAddList" />
-        </div>
       </div>
     </div>
     <UiModal

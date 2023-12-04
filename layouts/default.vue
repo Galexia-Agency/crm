@@ -200,13 +200,6 @@
   }
 
   $column-width: 320px;
-  .smooth-dnd-container.horizontal {
-    /* stylelint-disable-next-line declaration-no-important */
-    display: initial!important
-  }
-  .smooth-dnd-container:empty {
-    display: none
-  }
   .smooth-dnd-draggable-wrapper .list-container {
     padding-bottom: 0
   }
