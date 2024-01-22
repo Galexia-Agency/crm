@@ -24,12 +24,12 @@ export default {
     return await dispatch('filteredProjectsHelper')
   },
   async updateClient ({ commit, dispatch }, data) {
-    async function updatePandle () {
+    async function updatePandle ($axios, $config) {
       if (data.pandle_id) {
         try {
-          await this.$axios.$patch(window.location.origin + '/.netlify/functions/pandle_request', {
+          await $axios.$patch(window.location.origin + '/.netlify/functions/pandle_request', {
             type: 'PATCH',
-            url: `/companies/${this.$config.PANDLE_COMPANY_ID}/customers/${data.pandle_id}`,
+            url: `/companies/${$config.PANDLE_COMPANY_ID}/customers/${data.pandle_id}`,
             body: {
               customer: {
                 address_attributes: {
@@ -70,7 +70,7 @@ export default {
         }
       )
       await commit('updateClient', response[0])
-      await updatePandle()
+      await updatePandle(this.$axios, this.$config)
       return response
     } catch (e) {
       if (await e.response && await e.response.status === 429 && JSON.parse(e.response.data[0].address)) {
@@ -204,7 +204,7 @@ export default {
             }
           )
           await commit('updateClient', response[0])
-          await updatePandle()
+          await updatePandle(this.$axios, this.$config)
           return response
         } catch (e) {
           const error = {}
