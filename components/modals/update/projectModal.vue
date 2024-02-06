@@ -25,6 +25,9 @@
         <option value="Development">
           Development
         </option>
+        <option value="Ad-Hoc">
+          Ad-Hoc
+        </option>
         <option value="Paused">
           Paused
         </option>

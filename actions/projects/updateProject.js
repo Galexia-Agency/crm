@@ -47,7 +47,7 @@ export default {
               type: 'select',
               before: whatToForcePush.status,
               after: data.status,
-              options: ['Hot Lead', 'Cold Lead', 'Development', 'Paused', 'In House', 'On-Going', 'Closed Lead', 'Completed', 'Cancelled'],
+              options: ['Hot Lead', 'Cold Lead', 'Development', 'Ad-Hoc', 'Paused', 'In House', 'On-Going', 'Closed Lead', 'Completed', 'Cancelled'],
               required: true
             })
           }
