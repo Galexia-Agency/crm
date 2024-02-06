@@ -51,7 +51,7 @@
     <template>
       <h1>Welcome back {{ userInfo.name }}</h1>
       <ToDoLists />
-      <NetData />
+      <!-- <NetData /> -->
       <ClientStatusGraphs />
       <template v-if="userInfo.groups.includes('billing')">
         <MoneyBreakdown />
@@ -67,7 +67,7 @@
 <script>
 import { mapState } from 'vuex'
 import ToDoLists from '~/components/homepage/toDoLists'
-import NetData from '~/components/homepage/netData'
+// import NetData from '~/components/homepage/netData'
 import ClientStatusGraphs from '~/components/homepage/clientStatusGraphs'
 import MoneyBreakdown from '~/components/homepage/moneyBreakdown'
 import MonthlyCharts from '~/components/homepage/monthlyCharts'
@@ -79,7 +79,7 @@ export default {
   name: 'Home',
   components: {
     ToDoLists,
-    NetData,
+    // NetData,
     ClientStatusGraphs,
     MoneyBreakdown,
     MonthlyCharts,
