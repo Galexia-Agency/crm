@@ -3,7 +3,6 @@
     max-width: 500px;
     margin-bottom: 1rem
   }
-
 </style>
 
 <template>
@@ -27,16 +26,15 @@
       </thead>
       <tbody>
         <template v-for="(product, index) in productsValues">
-          <Product :key="`product_${index}`" :product="product" @update-product="showProductModal" />
+          <Product :key="`product_${index}`" :product="product" />
         </template>
       </tbody>
     </table>
     <div v-if="userInfo.groups.includes('admin')">
-      <button type="button" class="button primary" @click="showProductModal">
+      <button type="button" class="button primary" @click="$store.dispatch('product/add')">
         New Product
       </button>
     </div>
-    <ModalsUpdateProduct :key="`product_modal_${JSON.stringify(productToEdit)}`" :active="modalsProductActive" :product="productToEdit" @submit="submitProduct" @cancel="hideProductModal" />
   </main>
 </template>
 
@@ -45,24 +43,27 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'Products',
-  metaInfo () {
-    return {
-      title: 'Products'
-    }
-  },
   data () {
     return {
-      modalsProductActive: false,
-      productToEdit: null,
       sort: '',
       reverse: false
     }
   },
+  head () {
+    return {
+      title: 'Products'
+    }
+  },
   computed: {
     ...mapState([
-      'userInfo',
-      'products'
+      'userInfo'
     ]),
+    ...mapState(
+      'product',
+      {
+        products: 'all'
+      }
+    ),
     productsValues () {
       const clonedProducts = []
       Object.assign(clonedProducts, this.products)
@@ -98,25 +99,6 @@ export default {
           : clonedProducts.sort((a, b) => b.price - a.price).reverse()
       }
       return clonedProducts
-    }
-  },
-  methods: {
-    showProductModal (product) {
-      this.modalsProductActive = true
-      if (product) {
-        this.productToEdit = product
-      }
-    },
-    hideProductModal () {
-      this.modalsProductActive = false
-    },
-    submitProduct (product) {
-      this.hideProductModal()
-      if (product.id) {
-        this.$store.dispatch('updateProduct', product)
-      } else {
-        this.$store.dispatch('addProduct', product)
-      }
     }
   }
 }

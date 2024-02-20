@@ -25,7 +25,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="client in clientsValue ? clientsValue : clients">
+          <template v-for="client in clientsValue">
             <tr v-if="getClientProfit(client)" :key="`client_profit_loss_${client.business_name}`">
               <td>
                 <NuxtLink :to="`/client/${client.business_shortname}`" style="color: black">
@@ -55,15 +55,21 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      'clients'
-    ]),
-    ...mapGetters([
-      'getClientExpenses',
-      'getClientRevenue',
-      'getClientProfit',
-      'getClientProfitMargin'
-    ]),
+    ...mapState(
+      'client',
+      {
+        clients: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client',
+      {
+        getClientExpenses: 'getExpenses',
+        getClientRevenue: 'getRevenue',
+        getClientProfit: 'getProfit',
+        getClientProfitMargin: 'getProfitMargin'
+      }
+    ),
     clientsValue () {
       const clonedClients = []
       Object.assign(clonedClients, this.clients)

@@ -24,8 +24,8 @@ export default {
         enabled: true,
         mode: 'single',
         callbacks: {
-          label (tooltipItems, data) {
-            if (parseFloat(tooltipItems.yLabel) > 0) {
+          label (tooltipItems) {
+            if (tooltipItems.yLabel > 0) {
               return `£${makeHumanReadableCurrency(tooltipItems.yLabel)}`
             }
             return `-£${makeHumanReadableCurrency(Math.abs(tooltipItems.yLabel))}`

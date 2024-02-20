@@ -18,7 +18,8 @@
           @drag-end="dragEndHandler()"
         >
           <template v-for="(list, listIndex) in lists">
-            <Draggable v-if="list.archived !== true || (showArchived && list.archived)" :key="`${list.id}_${list.archived}`">
+            <!-- This needs to be v-show to allow dragging/moving to work -->
+            <Draggable v-show="list.archived !== true || (showArchived && list.archived)" :key="list.id">
               <section ref="list" class="list-container" :data-id="list.id" :class="{archived: list.archived}">
                 <div v-if="project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email))" class="list-header">
                   <FontAwesomeIcon :icon="['fa-solid', 'fa-grip']" class="list-drag-handle" />
@@ -45,12 +46,12 @@
                   @drop="e => onCardDrop(e, list, listIndex)"
                 >
                   <template v-for="card in list.items">
-                    <Draggable v-if="!card.archived || (showArchived && card.archived)" :key="`${card.id}_${card.archived}_${card.date}_container`">
+                    <!-- This needs to be v-show to allow dragging/moving to work -->
+                    <Draggable v-show="!card.archived || (showArchived && card.archived)" :key="card.id">
                       <KanbanCard
-                        :key="`${card.id}_${card.archived}_${card.date}_component`"
                         :card="card"
                         :project="project"
-                        @openUpdateModal="e => addOrUpdateCard({...e, more: true})"
+                        @open-update-modal="e => addOrUpdateCard({...e, more: true})"
                         @archive="archiveCard"
                         @unarchive="unarchiveCard"
                         @remove="removeCard"
@@ -59,19 +60,20 @@
                   </template>
                 </DraggableContainer>
                 <template v-for="card in list.items" v-else>
+                  <!-- This needs to be v-show to allow dragging/moving to work -->
                   <KanbanCard
-                    v-if="!card.archived || (showArchived && card.archived)"
-                    :key="`${card.id}_${card.archived}_${card.date}_component`"
+                    v-show="!card.archived || (showArchived && card.archived)"
+                    :key="card.id"
                     :card="card"
                     :project="project"
-                    @openUpdateModal="e => addOrUpdateCard({...e, more: true})"
+                    @open-update-modal="e => addOrUpdateCard({...e, more: true})"
                   />
                 </template>
                 <div class="card-entry">
                   <UiItemEntry
                     v-if="project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email))"
                     :list-id="list.id"
-                    placeholder="Add an card"
+                    placeholder="Add a card"
                     icon="ellipsis-h"
                     @enter="addOrUpdateCard"
                   />
@@ -80,28 +82,20 @@
             </Draggable>
           </template>
           <div v-if="project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email))" class="new-list">
-            <UiItemEntry placeholder="Add a list" @enter="addList" />
+            <section class="list-container">
+              <UiItemEntry placeholder="Add a list" @enter="addList" />
+            </section>
           </div>
         </DraggableContainer>
       </div>
     </div>
-    <ModalsUpdateCard
-      :key="`card_modal_${JSON.stringify(cardToUpdate)}`"
-      :active="modalsUpdateCardActive"
-      :project="project"
-      :card="cardToUpdate"
-      @submit="addOrUpdateCard"
-      @archive="archiveCard"
-      @cancel="hideUpdateCardModal"
-    />
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex'
 import { Container as DraggableContainer, Draggable } from 'vue-smooth-dnd'
-
-import { makeDropHandler } from '~/utils/plugins'
+import { makeDropHandler } from '~/plugins/makeDropHandler'
 
 export default {
   components: {
@@ -128,9 +122,12 @@ export default {
     ...mapState([
       'userInfo'
     ]),
-    ...mapGetters([
-      'getProjectById'
-    ]),
+    ...mapGetters(
+      'client/project',
+      {
+        getProjectById: 'getById'
+      }
+    ),
     lists () {
       return this.getProjectById(this.project.id).lists
     }
@@ -138,7 +135,7 @@ export default {
   methods: {
     /* Lists */
     async addList ({ text }) {
-      await this.$store.dispatch('addList', { projectId: this.project.id, title: text })
+      await this.$store.dispatch('list/add', { projectId: this.project.id, title: text })
       // Focus on the list entry
       this.$nextTick(() => {
         const lists = this.$refs.list
@@ -149,23 +146,23 @@ export default {
     },
     onListDrop: makeDropHandler('onListDropComplete'),
     async onListDropComplete (src, trg) {
-      await this.$store.dispatch('moveList', [
+      await this.$store.dispatch('list/move', [
         this.project.id,
         src.index,
         trg.index
       ])
     },
     async updateList (event, id) {
-      await this.$store.dispatch('updateList', { projectId: this.project.id, title: event.target.value, id })
+      await this.$store.dispatch('list/update', { projectId: this.project.id, title: event.target.value, id })
     },
     async archiveList (listId) {
-      await this.$store.dispatch('archiveList', { projectId: this.project.id, listId })
+      await this.$store.dispatch('list/archive', { projectId: this.project.id, listId })
     },
     async unarchiveList (listId) {
-      await this.$store.dispatch('unarchiveList', { projectId: this.project.id, listId })
+      await this.$store.dispatch('list/unarchive', { projectId: this.project.id, listId })
     },
     async removeList (listId) {
-      await this.$store.dispatch('removeList', { projectId: this.project.id, listId })
+      await this.$store.dispatch('list/remove', { projectId: this.project.id, listId })
     },
     /* Cards */
     showUpdateCardModal (card) {
@@ -173,6 +170,7 @@ export default {
       this.modalsUpdateCardActive = true
     },
     hideUpdateCardModal () {
+      this.cardToUpdate = null
       this.modalsUpdateCardActive = false
     },
     async addOrUpdateCard ({ card, text, listId, more }) {
@@ -182,13 +180,13 @@ export default {
         return
       }
       if (card && card.id) {
-        await this.$store.dispatch('updateCard', {
+        await this.$store.dispatch('card/update', {
           projectId: this.project.id,
           cardId: card.id,
           ...card
         })
       } else {
-        await this.$store.dispatch('addCard', {
+        await this.$store.dispatch('card/add', {
           projectId: this.project.id,
           listId,
           title: text
@@ -199,17 +197,17 @@ export default {
     async archiveCard (card) {
       // Update item first as we may have archived it from the modal
       await this.addOrUpdateCard({ card })
-      await this.$store.dispatch('archiveCard', { projectId: this.project.id, cardId: card.id })
+      await this.$store.dispatch('card/archive', { projectId: this.project.id, cardId: card.id })
     },
     async unarchiveCard (item) {
-      await this.$store.dispatch('unarchiveCard', { projectId: this.project.id, cardId: item.id })
+      await this.$store.dispatch('card/unarchive', { projectId: this.project.id, cardId: item.id })
     },
     async removeCard (item) {
-      await this.$store.dispatch('removeCard', { projectId: this.project.id, cardId: item.id })
+      await this.$store.dispatch('card/remove', { projectId: this.project.id, cardId: item.id })
     },
     onCardDrop: makeDropHandler('onCardDropComplete'),
     async onCardDropComplete (src, trg) {
-      await this.$store.dispatch('moveCard', [
+      await this.$store.dispatch('card/move', [
         this.project.id,
         src.params[1],
         src.index,

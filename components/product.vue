@@ -4,7 +4,7 @@
     <td v-text="product.type" />
     <td v-text="`£${product.price}`" />
     <td>
-      <button @click="$emit('update-product', product)">
+      <button @click="$store.dispatch('product/update', product)">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-edit']" />
       </button>
     </td>
@@ -17,14 +17,7 @@ export default {
   props: {
     product: {
       type: Object,
-      default () {
-        return {
-          id: null,
-          name: '',
-          type: '',
-          price: 0.00
-        }
-      }
+      required: true
     }
   }
 }

@@ -18,8 +18,50 @@ export function isJsonString (str) {
   return true
 }
 
+export function flattenObject (object, prefix = '') {
+  const flattened = {}
+
+  for (const key in object) {
+    const value = object[key]
+    const flattenedKey = prefix ? `${prefix}.${key}` : key
+
+    if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+      const nestedFlattened = flattenObject(value, flattenedKey)
+      Object.assign(flattened, nestedFlattened)
+    } else {
+      flattened[flattenedKey] = value
+    }
+  }
+
+  return flattened
+}
+
+export function unflattenObject (object) {
+  const result = {}
+
+  for (const key in object) {
+    const value = object[key]
+    const keys = key.split('.')
+
+    let nestedObject = result
+    for (let i = 0; i < keys.length - 1; i++) {
+      const nestedKey = keys[i]
+      if (!nestedObject[nestedKey] || typeof nestedObject[nestedKey] !== 'object') {
+        nestedObject[nestedKey] = {}
+      }
+      nestedObject = nestedObject[nestedKey]
+    }
+
+    nestedObject[keys[keys.length - 1]] = value
+  }
+
+  return result
+}
+
 Vue.mixin({
   methods: {
-    isJsonString
+    isJsonString,
+    flattenObject,
+    unflattenObject
   }
 })

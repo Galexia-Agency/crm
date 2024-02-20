@@ -202,11 +202,6 @@ export default {
             self.cloudinaryImages.endingWith.push(response.data.url)
             self.description = self.description.replace(`${image}"`, `${response.data.url}" loading="lazy"`)
           })
-          .catch(function (e) {
-            const error = {}
-            error.description = e
-            self.$store.commit('error', error)
-          })
       }
       await Promise.all(imagesToUpload.map(uploadImage))
       return RETURN_ARR
@@ -221,11 +216,6 @@ export default {
       const self = this
       function deleteImage (image) {
         return self.$axios.post(`${location.origin}/.netlify/functions/delete-image`, { file: image })
-          .catch(function (e) {
-            const error = {}
-            error.description = e
-            self.$store.commit('error', error)
-          })
       }
       await Promise.all(imagesToDelete.map(deleteImage))
     }

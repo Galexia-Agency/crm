@@ -18,7 +18,7 @@ export default function ({ store, app: { $axios } }, inject) {
           PENDING_REQUESTS++
           clearInterval(interval)
           // Refresh the updated_at time from the store so that we're always at the latest point
-          config.data.updated_at = store.getters.getProjectById(config.data.id).updated_at
+          config.data.updated_at = store.getters['client/project/getById'](config.data.id).updated_at
           resolve(config)
         }
       }, INTERVAL_MS)

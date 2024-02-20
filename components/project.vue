@@ -63,7 +63,7 @@
         <FontAwesomeIcon v-else :icon="['fa-solid', 'fa-sort-down']" />
       </button>
       <h2 v-text="project.name" />
-      <a v-if="project.admin.includes(userInfo.email)" class="edit" @click="showProjectModal(project)">
+      <a v-if="project.admin.includes(userInfo.email)" class="edit" @click="$store.dispatch('client/project/update', {project})">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-edit']" />
       </a>
       <a v-if="project.project_url" class="list-container" :href="project.project_url" target="_blank">
@@ -118,7 +118,7 @@
         <FontAwesomeIcon :icon="['fa-solid', 'fa-calendar-alt']" />
         <span v-text="daysWithUs" />
       </div>
-      <a v-if="client.pandle_id && !project.pandle_id && userInfo.groups.includes('admin')" class="list-container" @click="addProjectPandle()">
+      <a v-if="client.pandle_id && !project.pandle_id && userInfo.groups.includes('admin')" class="list-container" @click="addProjectToPandle()">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-calculator']" />
         Add to Pandle
       </a>
@@ -131,11 +131,11 @@
       </button>
       <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="createQuote()">
         Create Quote
-      </button> -->
+      </button>
       <button v-if="project.pandle_id && userInfo.groups.includes('billing')" class="list-container" type="button" @click="showMoneyGraphsModal">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-chart-bar']" />
         View Monthly Monetary Accounts
-      </button>
+      </button> -->
       <div class="list-container">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-trash-can']" />
         <UiToggle :model="showArchived" label="Show Deleted Items" :class="{toggled: showArchived}" @input="showArchived = $event" />
@@ -146,8 +146,6 @@
       :project="project"
       :show-archived="showArchived"
     />
-    <ModalsUpdateProject :active="modalsUpdateProjectActive" :project="project" @submit="updateProject" @cancel="hideProjectModal" />
-    <ModalsDisplayProjectMoneyGraphs :active="modalsProjectMoneyGraphActive" :project="project" @cancel="hideMoneyGraphsModal" />
   </div>
 </template>
 
@@ -168,7 +166,6 @@ export default {
   },
   data () {
     return {
-      modalsUpdateProjectActive: false,
       modalsProjectMoneyGraphActive: false,
       show: true,
       showArchived: false,
@@ -177,17 +174,29 @@ export default {
   },
   computed: {
     ...mapState([
-      'userInfo',
-      'projects'
+      'userInfo'
     ]),
-    ...mapGetters([
-      'getProjectById',
-      'getClientById',
-      'getProjectClientName',
-      'getProjectDaysToStart',
-      'getProjectDaysToComplete',
-      'getProjectDaysWithUs'
-    ]),
+    ...mapState(
+      'client/project',
+      {
+        projects: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client',
+      {
+        getClientById: 'getById'
+      }
+    ),
+    ...mapGetters(
+      'client/project',
+      {
+        getProjectById: 'getById',
+        getProjectClientName: 'getClientName',
+        getProjectDaysToStart: 'getDaysToStart',
+        getProjectDaysToComplete: 'getDaysToComplete',
+        getProjectDaysWithUs: 'getDaysWithUs'
+      }),
     client () {
       return this.getClientById(this.project.client_id)
     },
@@ -301,11 +310,10 @@ export default {
     sse_updateProject (newProject) {
       try {
         this.$store.commit('loading', true)
-        newProject.lists = JSON.parse(newProject.lists)
         const currentProject = this.getProjectById(newProject.id)
         // If the database content is newer, then replace our version
         if (new Date(newProject.updated_at) > new Date(currentProject.updated_at)) {
-          this.$store.commit('updateProject', newProject)
+          this.$store.commit('client/project/update', { data: newProject, rootState: this.$store.state })
         }
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -321,27 +329,16 @@ export default {
     changeArchived () {
       this.showArchived = !this.showArchived
     },
-    showProjectModal () {
-      this.modalsUpdateProjectActive = true
-    },
-    hideProjectModal () {
-      this.modalsUpdateProjectActive = false
-    },
     showMoneyGraphsModal () {
       this.modalsProjectMoneyGraphActive = true
     },
     hideMoneyGraphsModal () {
       this.modalsProjectMoneyGraphActive = false
     },
-    updateProject (data) {
-      this.hideProjectModal()
-      this.$store.dispatch('updateProject', data)
-    },
-    addProjectPandle () {
-      const data = {}
-      Object.assign(data, this.project)
+    addProjectToPandle () {
+      const data = { ...this.project }
       data.client_name = this.client.business_shortname
-      this.$store.dispatch('addProjectPandle', data)
+      this.$store.dispatch('client/project/addToPandle', data)
     }
   }
 }

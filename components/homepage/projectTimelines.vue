@@ -61,17 +61,22 @@ export default {
     }
   },
   computed: {
-    ...mapState([
-      'clients',
-      'projects'
-    ]),
-    ...mapGetters([
-      'getProjectLink',
-      'getProjectClientName',
-      'getProjectDaysToStart',
-      'getProjectDaysToComplete',
-      'getProjectDaysWithUs'
-    ]),
+    ...mapState(
+      'client/project',
+      {
+        projects: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client/project',
+      {
+        getProjectLink: 'getLink',
+        getProjectClientName: 'getClientName',
+        getProjectDaysToStart: 'getDaysToStart',
+        getProjectDaysToComplete: 'getDaysToComplete',
+        getProjectDaysWithUs: 'getDaysWithUs'
+      }
+    ),
     projectsTimelinesValue () {
       const clonedProjects = []
       Object.assign(clonedProjects, this.projects)

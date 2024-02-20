@@ -8,18 +8,18 @@
 </style>
 
 <template>
-  <UiModal :active="confirm.reveal" :cancellable="false">
-    <div class="query-form card">
-      <form class="card-content" @submit.prevent="submit">
-        <p v-text="confirm.text" />
+  <UiModal :active="reveal" :cancellable="false">
+    <form class="query-form card" @submit.prevent="submit">
+      <div class="card-content">
+        <p v-text="text" />
         <UiButton :autofocus="true" style-type="primary" type="submit">
           Yes
         </UiButton>
         <UiButton style-type="text" @click="cancel">
           No
         </UiButton>
-      </form>
-    </div>
+      </div>
+    </form>
   </UiModal>
 </template>
 
@@ -28,25 +28,17 @@ import { mapState } from 'vuex'
 
 export default {
   computed: {
-    ...mapState([
-      'confirm'
-    ])
-  },
-  watch: {
-    'confirm.reveal': {
-      handler (value) {
-        if (value) {
-          return window.addEventListener('keydown', this.onKeyDown)
-        }
-        return window.removeEventListener('keydown', this.onKeyDown)
-      },
-      immediate: true
-    }
+    ...mapState('confirm',
+      [
+        'resolvePromise',
+        'text',
+        'reveal'
+      ])
   },
   methods: {
     submit () {
-      this.confirm.resolvePromise(true)
-      this.$store.commit('confirm', {
+      this.resolvePromise(true)
+      this.$store.commit('confirm/update', {
         promise: null,
         resolvePromise: null,
         text: '',
@@ -54,18 +46,13 @@ export default {
       })
     },
     cancel () {
-      this.confirm.resolvePromise(false)
-      this.$store.commit('confirm', {
+      this.resolvePromise(false)
+      this.$store.commit('confirm/update', {
         promise: null,
         resolvePromise: null,
         text: '',
         reveal: false
       })
-    },
-    onKeyDown (event) {
-      if (event.key === 'Escape') {
-        this.cancel()
-      }
     }
   }
 }

@@ -32,16 +32,22 @@ import { mapState, mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapState([
-      'clients'
-    ]),
-    ...mapGetters([
-      'getClientCompletionAmount'
-    ]),
+    ...mapState(
+      'client',
+      {
+        clients: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client',
+      {
+        getClientCompletionAmount: 'getCompletionAmount'
+      }
+    ),
     completion_total () {
       let completionTotal = 0
       this.clients.forEach((client) => {
-        completionTotal += parseFloat(this.getClientCompletionAmount(client))
+        completionTotal += this.getClientCompletionAmount(client)
       })
       return this.makeHumanReadableCurrency(completionTotal)
     }

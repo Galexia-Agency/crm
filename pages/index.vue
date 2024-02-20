@@ -50,7 +50,7 @@
   <div class="home">
     <h1>Welcome back {{ userInfo.name }}</h1>
     <HomepageToDoLists />
-    <HomepageNetData />
+    <!-- <HomepageNetData /> -->
     <HomepageClientStatusGraphs />
     <template v-if="userInfo.groups.includes('billing')">
       <HomepageMoneyBreakdown />

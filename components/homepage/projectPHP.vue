@@ -25,13 +25,19 @@ import { mapState, mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapState([
-      'projects'
-    ]),
-    ...mapGetters([
-      'getProjectLink',
-      'getProjectClientName'
-    ])
+    ...mapState(
+      'client/project',
+      {
+        projects: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client/project',
+      {
+        getProjectLink: 'getLink',
+        getProjectClientName: 'getClientName'
+      }
+    )
   }
 }
 </script>

@@ -52,17 +52,13 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.5",
-    "@nuxtjs/eslint-config": "^12.0.0",
     "@nuxtjs/eslint-module": "^3.1.0",
     "@nuxtjs/stylelint-module": "^4.2.1",
     "eslint": "^8.49.0",
-    "eslint-plugin-nuxt": "^4.0.0",
+    "eslint-config-galexia": "https://github.com/Galexia-Agency/eslint-config",
     "postcss-scss": "^4.0.8",
     "stylelint": "^15.10.3",
-    "stylelint-config-rational-order": "^0.1.2",
-    "stylelint-config-recommended-vue": "^1.5.0",
-    "stylelint-config-standard-scss": "^7.0.1",
-    "stylelint-processor-html": "^1.0.0"
+    "stylelint-config-galexia": "https://github.com/Galexia-Agency/stylelint-config"
   },
   "optionalDependencies": {
     "@babel/core": "^7.22.5",
@@ -70,9 +66,6 @@
     "consola": "^2.15.3",
     "postcss": "^8.4.29",
     "postcss-html": "^1.5.0",
-    "stylelint-config-recommended": "^11.0.0",
-    "stylelint-config-standard": "^34.0.0",
-    "stylelint-order": "^6.0.3",
     "typescript": "^4.9.5",
     "vue": "^2.7.14",
     "vue-router": "3",

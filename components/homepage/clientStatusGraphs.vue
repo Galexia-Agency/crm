@@ -1,6 +1,6 @@
 <template>
   <main>
-    <section v-if="Object.keys(filteredProjects).length > 0" class="chart">
+    <section v-if="Object.keys(getFilteredProjectsByStatus()).length > 0" class="chart">
       <h2>Projects Status</h2>
       <ChartsPie :chart-data="projectStatus" />
     </section>
@@ -20,44 +20,57 @@ import { mapState, mapGetters } from 'vuex'
 
 export default {
   computed: {
-    ...mapState([
-      'projects',
-      'clients'
-    ]),
-    ...mapGetters([
-      'getFilteredProjects'
-    ]),
-    filteredProjects () {
-      return this.getFilteredProjects()
-    },
+    ...mapState(
+      'client',
+      {
+        clients: 'all'
+      }
+    ),
+    ...mapState(
+      'client/project',
+      {
+        projects: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client/project',
+      {
+        getFilteredProjectsByStatus: 'getFilteredByStatus'
+      }
+    ),
     projectStatus () {
-      if (Object.keys(this.filteredProjects).length > 0) {
-        const leads = this.filteredProjects['Hot Lead'].concat(this.filteredProjects['Cold Lead']).filter((thing, index, self) =>
+      if (Object.keys(this.getFilteredProjectsByStatus()).length > 0) {
+        const leads = this.getFilteredProjectsByStatus()['Hot Lead'].concat(this.getFilteredProjectsByStatus()['Cold Lead']).filter((thing, index, self) =>
           index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
-        const development = this.filteredProjects.Development.filter((thing, index, self) =>
+        const development = this.getFilteredProjectsByStatus().Development.filter((thing, index, self) =>
           index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
-        const onGoing = this.filteredProjects['On-Going'].filter((thing, index, self) =>
+        const adHoc = this.getFilteredProjectsByStatus()['Ad-Hoc'].filter((thing, index, self) =>
           index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
-        const paused = this.filteredProjects.Paused.filter((thing, index, self) =>
+        const onGoing = this.getFilteredProjectsByStatus()['On-Going'].filter((thing, index, self) =>
+          index === self.findIndex((t) => (
+            t.client_id === thing.client_id
+          ))
+        )
+        const paused = this.getFilteredProjectsByStatus().Paused.filter((thing, index, self) =>
           index === self.findIndex((t) => (
             t.client_id === thing.client_id
           ))
         )
         return {
-          labels: ['Leads', 'Development', 'On-Going', 'Paused'],
+          labels: ['Leads', 'Development', 'Ad-Hoc', 'On-Going', 'Paused'],
           datasets: [
             {
-              backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#FFA500'],
-              data: [leads.length, development.length, onGoing.length, paused.length]
+              backgroundColor: ['#41B883', '#E46651', '', '#00D8FF', '#FFA500'],
+              data: [leads.length, development.length, adHoc.length, onGoing.length, paused.length]
             }
           ]
         }

@@ -1,4 +1,3 @@
-
 <style lang="scss" scoped>
   .card {
     position: relative;
@@ -65,7 +64,7 @@
 </style>
 
 <template>
-  <div :key="`${card.id}_${card.archived}_${card.date}_inner`" class="card" :class="classes" :data-id="card.id" @click="openUpdateModal">
+  <div class="card" :class="classes" :data-id="card.id" @click="openUpdateModal">
     <div class="icons">
       <template v-if="icons && (project.admin.includes(userInfo.email) || (project.contributor && project.contributor.includes(userInfo.email)))">
         <template v-if="card.archived">

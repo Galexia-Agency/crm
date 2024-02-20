@@ -22,39 +22,39 @@
 </style>
 <template>
   <UiModal
-    :active="!!display"
+    :active="displayContact.reveal"
     @close="cancel"
   >
-    <div class="card">
+    <div v-if="displayContact.reveal" class="card">
       <div class="card-content">
         <FontAwesomeIcon :icon="['fa-solid', 'fa-address-card']" />
-        <button type="button" class="edit" @click="submit">
+        <button type="button" class="edit" @click="$store.dispatch('client/contact/update', displayContact.contact)">
           <FontAwesomeIcon :icon="['fa-solid', 'fa-edit']" />
         </button>
-        <h2 v-if="display.title && display.f_name && display.l_name" v-text="`${display.f_name} ${display.l_name} (${display.title})`" />
-        <h2 v-else-if="display.f_name && display.l_name" v-text="`${display.f_name} ${display.l_name}`" />
-        <h2 v-else v-text="`${display.f_name}`" />
-        <h3 v-if="display.role" v-text="display.role" />
-        <template v-if="display.email">
-          <template v-for="email in display.email.split(',')">
+        <h2 v-if="displayContact.contact.title && displayContact.contact.f_name && displayContact.contact.l_name" v-text="`${displayContact.contact.f_name} ${displayContact.contact.l_name} (${displayContact.contact.title})`" />
+        <h2 v-else-if="displayContact.contact.f_name && displayContact.contact.l_name" v-text="`${displayContact.contact.f_name} ${displayContact.contact.l_name}`" />
+        <h2 v-else v-text="`${displayContact.contact.f_name}`" />
+        <h3 v-if="displayContact.contact.role" v-text="displayContact.contact.role" />
+        <template v-if="displayContact.contact.email">
+          <template v-for="email in displayContact.contact.email.split(',')">
             <a :key="email" target="_blank" :href="`mailto:${email.toLowerCase()}`">
               <FontAwesomeIcon :icon="['fa-solid', 'fa-envelope']" />
               {{ email.toLowerCase() }}
             </a>
           </template>
         </template>
-        <template v-if="display.tel">
-          <template v-for="tel in display.tel.split(',')">
+        <template v-if="displayContact.contact.tel">
+          <template v-for="tel in displayContact.contact.tel.split(',')">
             <a :key="tel" target="_blank" :href="`tel:${tel}`">
               <FontAwesomeIcon :icon="['fa-solid', 'fa-phone']" />
               {{ tel }}
             </a>
           </template>
         </template>
-        <template v-if="display.facebook">
-          <a target="_blank" :href="display.facebook">
+        <template v-if="displayContact.contact.facebook">
+          <a target="_blank" :href="displayContact.contact.facebook">
             <FontAwesomeIcon :icon="['fa-brands', 'fa-facebook-f']" />
-            {{ display.facebook }}
+            {{ displayContact.contact.facebook }}
           </a>
         </template>
       </div>
@@ -63,19 +63,20 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  props: {
-    display: {
-      type: [Object, Boolean],
-      required: true
-    }
+  computed: {
+    ...mapState(
+      'client/contact',
+      [
+        'displayContact'
+      ]
+    )
   },
   methods: {
     cancel () {
-      this.$emit('cancel')
-    },
-    submit () {
-      this.$emit('submit', this.display)
+      this.$store.dispatch('client/contact/hideContact')
     }
   }
 }

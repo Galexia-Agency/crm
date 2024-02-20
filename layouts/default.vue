@@ -394,31 +394,24 @@
   <div>
     <LayoutLoading />
     <div v-if="isAuthenticated && isClientLoaded" class="contentWrapper">
-      <Sidebar @show-client-modal="showClientModal()" />
+      <Sidebar />
       <Nuxt />
-      <ModalsUpdateClient :active="modalsClientActive" @submit="newClient" @cancel="hideClientModal" />
-      <ModalsDisplayError />
-      <ConflictsModal v-if="conflicts.reveal" ref="conflicts" />
-      <UiConfirm ref="confirm" />
+      <UiError />
+      <UiConflict />
+      <UiConfirm />
+      <UiCreateModel />
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { safeURL } from '~/plugins/mixins/urls'
 
 export default {
   name: 'DefaultLayout',
-  data () {
-    return {
-      modalsClientActive: false
-    }
-  },
   computed: {
     ...mapState([
       'isAuthenticated',
-      'conflicts',
       'isClientLoaded'
     ])
   },
@@ -439,23 +432,6 @@ export default {
         // Renew tokens now as we've just got back to the page
         this.$auth.manuallyRenewTokens()
       }
-    },
-    showClientModal () {
-      this.modalsClientActive = true
-      const self = this
-      document.documentElement.classList.remove('nav_open')
-      setTimeout(function () {
-        document.documentElement.classList.add('nav_close')
-        self.expanded = false
-      }, 500)
-    },
-    hideClientModal () {
-      this.modalsClientActive = false
-    },
-    async newClient (newClient) {
-      this.hideClientModal()
-      await this.$store.dispatch('addClient', newClient)
-      this.$router.push(`/client/${safeURL(newClient.business_shortname)}`)
     }
   }
 }

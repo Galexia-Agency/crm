@@ -20,17 +20,14 @@ export default {
   },
   computed: {
     income () {
-      return JSON.parse(this.project.pandle_expenses_transactions)
-    },
-    expenses () {
-      return JSON.parse(this.project.pandle_income_transactions)
+      return this.project.pandle_expenses_transactions
     }
   },
   mounted () {
-    if (this.income && this.income.length > 0) {
+    if (this.project.pandle_expenses_transactions && this.project.pandle_expenses_transactions.length > 0) {
     // Get the first and last transactions with their month and year
-      const firstTransaction = this.income[0]
-      const lastTransaction = this.income[this.income.length - 1]
+      const firstTransaction = this.project.pandle_expenses_transactions[0]
+      const lastTransaction = this.project.pandle_expenses_transactions[this.project.pandle_expenses_transactions.length - 1]
       const firstMonth = new Date(firstTransaction.attributes.date).getMonth()
       const lastMonth = new Date(lastTransaction.attributes.date).getMonth()
       const firstYear = new Date(firstTransaction.attributes.date).getFullYear()
@@ -49,11 +46,11 @@ export default {
           if (year === lastYear && month > lastMonth) {
             continue
           }
-          const transactions = this.bankTransactions.filter((transaction) => {
-            const date = new Date(transaction.attributes.date)
-            return date.getFullYear() === year && date.getMonth() === month
-          })
-          transactionsByYearAndMonth[year][month] = transactions
+          // const transactions = bankTransactions.filter((transaction) => {
+          //   const date = new Date(transaction.attributes.date)
+          //   return date.getFullYear() === year && date.getMonth() === month
+          // })
+          // transactionsByYearAndMonth[year][month] = transactions
         }
       }
 

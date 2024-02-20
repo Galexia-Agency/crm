@@ -24,7 +24,7 @@
         <NuxtLink v-if="userInfo.groups.includes('billing')" to="/products" class="button primary">
           Products
         </NuxtLink>
-        <button v-if="userInfo.groups.includes('admin')" type="button" class="button primary" @click="$emit('show-client-modal')">
+        <button v-if="userInfo.groups.includes('admin')" type="button" class="button primary" @click="$store.dispatch('client/add')">
           New Client
         </button>
         <button type="button" class="button primary" @click="$logout()">
@@ -39,25 +39,25 @@
         aria-label="Search clients..."
         class="search"
       >
-      <template v-if="Object.keys(filteredProjects).length > 0">
-        <template v-for="(type, index) in filteredProjects">
+      <template v-if="Object.keys(getFilteredProjectsByStatus()).length > 0">
+        <template v-for="(type, index) in getFilteredProjectsByStatus()">
           <SidebarProjectNavLink
-            v-if="filteredProjects[index].length > 0 && index !== 'Other'"
-            :key="`${index}_${filteredProjects[index].length}`"
+            v-if="getFilteredProjectsByStatus()[index].length > 0 && index !== 'Other'"
+            :key="index"
             :type="index"
             :clients="clients"
-            :filtered-projects="filteredProjects[index]"
+            :filtered-projects="getFilteredProjectsByStatus()[index]"
             :search="search"
           />
         </template>
-        <template v-if="filteredProjects.Other.length > 0">
+        <template v-if="getFilteredProjectsByStatus().Other.length > 0">
           <h4 id="other">
             Other
           </h4>
-          <template v-for="(client, index) in filteredProjects.Other">
+          <template v-for="(client, index) in getFilteredProjectsByStatus().Other">
             <NuxtLink
               v-show="((!search) || ((client.business_name).toLowerCase()).startsWith(search.toLowerCase()))"
-              :key="`${index}_${client.business_name}`"
+              :key="index"
               :to="`/client/${client.business_shortname.toLowerCase()}`"
               class="navLink other"
             >
@@ -86,15 +86,20 @@ export default {
   },
   computed: {
     ...mapState([
-      'clients',
       'userInfo'
     ]),
-    ...mapGetters([
-      'getFilteredProjects'
-    ]),
-    filteredProjects () {
-      return this.getFilteredProjects()
-    }
+    ...mapState(
+      'client',
+      {
+        clients: 'all'
+      }
+    ),
+    ...mapGetters(
+      'client/project',
+      {
+        getFilteredProjectsByStatus: 'getFilteredByStatus'
+      }
+    )
   }
 }
 </script>

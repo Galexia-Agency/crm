@@ -1,4 +1,3 @@
-
 <style lang="scss">
   .ui-card-entry {
     margin: 5px

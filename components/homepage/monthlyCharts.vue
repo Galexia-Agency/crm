@@ -4,25 +4,25 @@
       <h2>
         Sales Performance
       </h2>
-      <ChartsBar :key="`sales_chart_${salesValues[salesValues.length - 1]}`" :chart-data="salesData" />
+      <ChartsBar :chart-data="salesData" />
     </section>
     <section class="span-3">
       <h2>
         Expenses Performance
       </h2>
-      <ChartsBar :key="`expenses_chart_${expensesValues[expensesValues.length - 1]}`" :chart-data="expensesData" />
+      <ChartsBar :chart-data="expensesData" />
     </section>
     <section class="span-3">
       <h2>
         Profit &amp; Loss Performance
       </h2>
-      <ChartsBar :key="`profit_and_loss_chart_${profitLossValues[profitLossValues.length - 1]}`" :chart-data="profitLossData" />
+      <ChartsBar :chart-data="profitLossData" />
     </section>
     <section class="span-3">
       <h2>
         Cash Flow
       </h2>
-      <ChartsBar :key="`cash_flow_chart_${cashFlowValues[cashFlowValues.length - 1]}`" :chart-data="cashFlowData" />
+      <ChartsBar :chart-data="cashFlowData" />
     </section>
   </main>
 </template>
@@ -33,11 +33,11 @@ import { mapState } from 'vuex'
 export default {
   computed: {
     ...mapState([
-      'pandle'
+      'pandleMonthlyCharts'
     ]),
     months () {
       const a = []
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a.push(new Date(month.month).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }))
       })
       return a
@@ -55,7 +55,7 @@ export default {
     },
     salesValues () {
       const a = []
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a.push(parseFloat(month.sales).toFixed(2))
       })
       return a
@@ -73,7 +73,7 @@ export default {
     },
     expensesValues () {
       const a = []
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a.push(parseFloat(month.expenses).toFixed(2))
       })
       return a
@@ -91,7 +91,7 @@ export default {
     },
     profitLossValues () {
       const a = []
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a.push(parseFloat(month.profit_loss).toFixed(2))
       })
       return a
@@ -109,7 +109,7 @@ export default {
     },
     cashFlowValues () {
       const a = []
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a.push(parseFloat(month.cash_flow).toFixed(2))
       })
       return a

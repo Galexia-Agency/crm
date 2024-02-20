@@ -77,13 +77,18 @@ import { mapState } from 'vuex'
 export default {
   computed: {
     ...mapState([
-      'projects',
-      'pandle'
+      'pandleMonthlyCharts'
     ]),
+    ...mapState(
+      'client/project',
+      {
+        projects: 'all'
+      }
+    ),
     bb_projectsRevenue () {
       let a = 0
       this.projects.forEach((project) => {
-        const projectBbRevenue = parseFloat(project.bb_revenue)
+        const projectBbRevenue = project.bb_revenue
         if (projectBbRevenue) {
           a += projectBbRevenue
         }
@@ -93,7 +98,7 @@ export default {
     bb_projectExpenses () {
       let a = 0
       this.projects.forEach((project) => {
-        const projectBbExpenses = parseFloat(project.bb_expenses)
+        const projectBbExpenses = project.bb_expenses
         if (projectBbExpenses) {
           a += projectBbExpenses
         }
@@ -102,14 +107,14 @@ export default {
     },
     allTimeRevenue () {
       let a = this.bb_projectsRevenue
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a += parseFloat(month.sales)
       })
       return a
     },
     allTimeExpenses () {
       let a = this.bb_projectExpenses
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         a += parseFloat(month.expenses)
       })
       return a
@@ -122,7 +127,7 @@ export default {
     },
     yearlyMoneyBreakdown () {
       const a = {}
-      this.pandle.dashboard.monthlyCharts.forEach((month) => {
+      this.pandleMonthlyCharts.forEach((month) => {
         let date = new Date(month.month)
         date.setMonth(date.getMonth() - (this.$config.TAX_YEAR_MONTH - 1))
         date = date.getFullYear()
